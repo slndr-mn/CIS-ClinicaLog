@@ -8,7 +8,7 @@ unset($_SESSION['error_message']);
 $database = new Database();
 $db = $database->getConnection();
 $user = new User($db);
-
+ 
 $jsScript = '';
 $message = ''; 
 $type = '';

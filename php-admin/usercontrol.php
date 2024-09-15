@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['status'] = 'error';
                     $_SESSION['message'] = 'Failed to upload profile picture.';
                     header('Location: datatables.php');
-                    exit();
+                    exit(); 
                 }
             } else {
                 $_SESSION['status'] = 'error';

@@ -8,7 +8,7 @@ session_start();
 include '../database/config.php'; 
 include '../php/user.php';
  
-$database = new Database();
+$database = new Database();      
 $db = $database->getConnection();
 
 $user = new User($db);
@@ -24,13 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
     if ($userData) { 
         $_SESSION['logged_in'] = true;
         $_SESSION['user_id'] = $userData->user_id; 
-        header('Location: ../php-admin/index.php');
+        header('Location: ../php-admin/index.php'); 
         exit;
-    }
-    
+    } 
+     
     if ($email == $username && $password == $defaultpass) { 
         header('Location: ../php-admin/index.php');
-        exit;
+        exit; 
     } else { 
         $_SESSION['error_message'] = 'Invalid email or password.';
         header('Location: ' . $_SERVER['PHP_SELF']);

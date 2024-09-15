@@ -245,7 +245,6 @@ class User {
                 $this->linkedList->addNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_status, $user_dateadded, $user_profile, $hashedpassword, $code);
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = 'User registered successfully!';
-                header('Location: datatables.php');
                 exit();
             } else {
                 $errorInfo = $stmt->errorInfo();

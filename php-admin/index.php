@@ -13,7 +13,7 @@ $conn = $db->getConnection();
 
 $user = new User($conn); 
 $user_id = $_SESSION['user_id'];
-$userData = $user->getUserData($user_id); 
+$userData = $user->getUserData($user_id);  
 ?>
  
 <!DOCTYPE html>
@@ -24,7 +24,7 @@ $userData = $user->getUserData($user_id);
     <meta
       content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
       name="viewport"
-    />
+    /> 
     <link
       rel="icon"
       href="../assets/img/ClinicaLog.ico"
@@ -43,7 +43,7 @@ $userData = $user->getUserData($user_id);
             "Font Awesome 5 Brands",
             "simple-line-icons",
           ],
-          urls: ["../css/fonts.min.css"],
+          urls: ["../css/fonts.min.css"], 
         },
         active: function () {
           sessionStorage.fonts = true;

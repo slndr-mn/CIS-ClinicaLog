@@ -8,7 +8,7 @@ class Database {
 
     // Constructor to automatically connect when an instance is created
     public function __construct() {
-        $this->connect();
+        $this->connect(); 
     }
 
     // Method to create and return a PDO connection

@@ -44,7 +44,7 @@ $userData = $user->getUserData($user_id);
             "simple-line-icons",
           ],
           urls: ["../css/fonts.min.css"],
-        },
+        }, 
         active: function () {
           sessionStorage.fonts = true;
         },
