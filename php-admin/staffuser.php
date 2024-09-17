@@ -2,7 +2,7 @@
 session_start();
 include('../database/config.php');
 include('../php/user.php');
-
+ 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header('Location: login.php'); 
     exit;
@@ -15,7 +15,7 @@ $user = new User($conn);
 $user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id);  
 ?>
-
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +42,7 @@ $userData = $user->getUserData($user_id);
           sessionStorage.fonts = true;
         },
       });
-    </script>
+    </script> 
 
     <!-- CSS Files -->
     <link rel="stylesheet" href="../css/bootstrap.min.css" />
@@ -61,9 +61,18 @@ $userData = $user->getUserData($user_id);
       .logo-header {
           transition: background 0.3s ease;
       }
-  </style>
+      .nav-item.active {
+            background-color: rgba(0, 0, 0, 0.1); 
+            color: #fff; 
+        }
+
+        .nav-item.active i {
+            color: #fff;
+        }
+
+  </style>  
 </head>
-<body>
+<body> 
     <div class="wrapper">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar"></div>
@@ -75,7 +84,7 @@ $userData = $user->getUserData($user_id);
             <div class="container" id="content">
             <div class="page-inner">
             <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-12"> 
                 <div class="card">
                   <div class="card-header">
                     <div class="d-flex align-items-center">
@@ -128,6 +137,12 @@ $userData = $user->getUserData($user_id);
                                     <input id="addid" name="addid" type="text" class="form-control" placeholder="fill ID" required />
                                   </div>
                                 </div>
+                                <div class="col-md-12">
+                                  <div class="form-group form-group-default">
+                                    <label>Profile Upload</label>
+                                    <input id="addprofile" name="addprofile" type="file" class="form-control" accept=".png, .jpg, .jpeg" />
+                                  </div> 
+                                </div>
                                 <div class="col-md-6 pe-0">
                                   <div class="form-group form-group-default">
                                     <label>First Name</label>
@@ -160,17 +175,20 @@ $userData = $user->getUserData($user_id);
                                 </div>
                                 <div class="col-md-6">
                                   <div class="form-group form-group-default">
+                                    <label>System Role</label>
+                                    <select id="addrole" name="addrole" class="form-control">
+                                      <option value="Super Admin">Super Admin</option>
+                                      <option value="Admin">Admin</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div class="col-md-6 pe-0">
+                                  <div class="form-group form-group-default">
                                     <label>Status</label>
                                     <select id="addstatus" name="addstatus" class="form-control">
                                       <option value="Active">Active</option>
                                       <option value="Inactive">Inactive</option>
                                     </select>
-                                  </div>
-                                </div>
-                                <div class="col-md-12">
-                                  <div class="form-group form-group-default">
-                                    <label>Profile Upload</label>
-                                    <input id="addprofile" name="addprofile" type="file" class="form-control" accept=".png, .jpg, .jpeg" />
                                   </div>
                                 </div>
                               </div>
@@ -182,7 +200,6 @@ $userData = $user->getUserData($user_id);
                             
                              <!-- End Add Modal Form-->`
                           </div>
-
                         </div>
                       </div>
                     </div>
@@ -269,6 +286,16 @@ $userData = $user->getUserData($user_id);
                         </div>
                         <div class="col-md-6">
                             <div class="form-group form-group-default">
+                                <label>System Role</label>
+                                <!-- Dropdown for Status -->
+                                <select id="editrole" name="editrole" class="form-control">
+                                    <option value="Super Admin">Super Admin</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 pe-0">
+                            <div class="form-group form-group-default">
                                 <label>Status</label>
                                 <!-- Dropdown for Status -->
                                 <select id="editstatus" name="editstatus" class="form-control">
@@ -305,6 +332,7 @@ $userData = $user->getUserData($user_id);
                                 <th>Full Name</th>
                                 <th>Email</th>
                                 <th>Position</th>
+                                <th>System Role</th>
                                 <th>Date Added</th>
                                 <th>Status</th>
                                 <th style="width: 10%">Action</th>
@@ -317,6 +345,7 @@ $userData = $user->getUserData($user_id);
                                 <th>Full Name</th>
                                 <th>Email</th>
                                 <th>Position</th>
+                                <th>System Role</th>
                                 <th>Date Added</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -324,40 +353,56 @@ $userData = $user->getUserData($user_id);
                         </tfoot> 
                         <tbody>
                         <?php
-                        $nodes = $user->getAllUsers();
-                        foreach ($nodes as $node) {
-                            $fullName = "{$node->user_lname}, {$node->user_fname} {$node->user_mname}";
-                            echo "<tr data-id='{$node->user_id}' data-lname='{$node->user_lname}' data-fname='{$node->user_fname}' data-mname='{$node->user_mname}' data-email='{$node->user_email}' data-position='{$node->user_position}' data-dateadded='{$node->user_dateadded}' data-status='{$node->user_status}'>
-                                <td><img src='uploads/{$node->user_profile}' alt='Profile Picture' style='width: 50px; height: 50px; border-radius: 50%;'></td>
-                                <td>{$node->user_id}</td>
-                                <td>{$fullName}</td>
-                                <td>{$node->user_email}</td>
-                                <td>{$node->user_position}</td>
-                                <td>{$node->user_dateadded}</td>
-                                <td>{$node->user_status}</td>
-                                <td>
-                                    <div class='form-button-action'>
-                                        <button type='button' class='btn btn-link btn-primary btn-lg editButton'>
-                                            <i class='fa fa-edit'></i>
-                                        </button>
-                                        <button type='button' class='btn btn-link btn-danger removeAccess'>
-                                            <i class='fa fa-times'></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>";
-                        }
-                        ?>
+                          $nodes = $user->getAllUsers();
+                          foreach ($nodes as $node) {
+                              $fullName = "{$node->user_lname}, {$node->user_fname} {$node->user_mname}";
+                              $statusColor = ($node->user_status === 'Active') ?  '#77dd77' : '#ff6961';
+                              $statusText = ucfirst($node->user_status); 
+                              
+                              echo "<tr data-id='{$node->user_id}' data-lname='{$node->user_lname}' data-fname='{$node->user_fname}' data-mname='{$node->user_mname}' data-email='{$node->user_email}' data-position='{$node->user_position}' data-role='{$node->user_role}' data-dateadded='{$node->user_dateadded}' data-status='{$node->user_status}'> 
+                                  <td><img src='uploads/{$node->user_profile}' alt='Profile Picture' style='width: 50px; height: 50px; border-radius: 50%;'></td>
+                                  <td>{$node->user_id}</td>
+                                  <td>{$fullName}</td>
+                                  <td>{$node->user_email}</td>
+                                  <td>{$node->user_position}</td>
+                                  <td>{$node->user_role}</td>
+                                  <td>{$node->user_dateadded}</td>
+                                  <td>
+                                      <span style='
+                                          display: inline-block;
+                                          padding: 5px 10px;
+                                          border-radius: 50px;
+                                          background-color: {$statusColor};
+                                          color: white; 
+                                          text-align: center;
+                                          min-width: 60px;'>
+                                          {$statusText}
+                                      </span>
+                                  </td>
+                                  <td>
+                                      <div class='form-button-action'>
+                                          <button type='button' class='btn btn-link btn-primary btn-lg editButton'>
+                                              <i class='fa fa-edit'></i>
+                                          </button>
+                                          <button type='button' class='btn btn-link btn-danger removeAccess'>
+                                              <i class='fa fa-times'></i>
+                                          </button>
+                                      </div>
+                                  </td>
+                              </tr>";
+                          }
+                          ?>
+
                         </tbody>
                     </table>
-                </div>
+                  </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>               
-            </div>
         </div>
+      </div>
     </div>
 
     
@@ -382,7 +427,7 @@ $userData = $user->getUserData($user_id);
     $("#add-row").DataTable({
         pageLength: 7,
     });
-
+ 
     // Add row
     $("#addRowButton").click(function () {
         var action =
@@ -396,7 +441,8 @@ $userData = $user->getUserData($user_id);
                 $("#addlname").val(),
                 $("#addemail").val(),
                 $("#addposition").val(),
-                $("#addstatus").val(),
+                $("#addrole").val(),
+                $("#addstatus").val(), 
                 action,
             ]);
         $("#addRowModal").modal("hide");
@@ -410,6 +456,7 @@ $userData = $user->getUserData($user_id);
         var mname = row.data('mname');
         var email = row.data('email');
         var position = row.data('position');
+        var role = row.data('role');
         var dateadded = row.data('dateadded');
         var status = row.data('status');
       
@@ -420,6 +467,7 @@ $userData = $user->getUserData($user_id);
         $("#editmname").val(mname);
         $("#editemail").val(email);
         $("#editposition").val(position);
+        $("#editrole").val(role);
         $("#dateadded").text(dateadded);
         $("#editstatus").val(status);
        
@@ -445,6 +493,7 @@ $userData = $user->getUserData($user_id);
             $("#editmname").val(),
             $("#editemail").val(),
             $("#editposition").val(),
+            $("#editrole").val(),
             $("#editstatus").val(),
             '<td> <div class="form-button-action"> <button class="editButton" type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button class="removeAccess" type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>',
         ]).draw();
@@ -550,39 +599,87 @@ $userData = $user->getUserData($user_id);
             <?php endif; ?>
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+    $(document).ready(function() {
+        // Check for session status and message
+        <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
+            var status = '<?php echo $_SESSION['status']; ?>';
+            var message = '<?php echo $_SESSION['message']; ?>';
+
+            if (status === 'success') {
+                Swal.fire({
+                    title: "Success!",
+                    text: message,
+                    icon: "success",
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#28a745" // Green
+                });
+            } else if (status === 'error') {
+                Swal.fire({
+                    title: "Error!",
+                    text: message,
+                    icon: "error",
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#dc3545" // Red
+                });
+            }
+
+            // Clear session messages after showing alert
+            <?php
+                unset($_SESSION['status']);
+                unset($_SESSION['message']);
+            ?>
+        <?php endif; ?>
+    });
+</script>
     <script>
       document.getElementById('editprofile').addEventListener('change', function(event) {
-    var file = event.target.files[0]; // Get the selected file
+      var file = event.target.files[0]; // Get the selected file
 
-    if (file) {
-        var reader = new FileReader(); // Create a new FileReader
+      if (file) {
+          var reader = new FileReader(); // Create a new FileReader
 
-        reader.onload = function(e) {
-            // Update the src attribute of the img element
-            document.getElementById('currentProfile').src = e.target.result;
-        };
+          reader.onload = function(e) {
+              // Update the src attribute of the img element
+              document.getElementById('currentProfile').src = e.target.result;
+          };
 
-        reader.readAsDataURL(file); // Read the file as a Data URL
-    }
-});
+          reader.readAsDataURL(file); // Read the file as a Data URL
+        }
+      });
 
     </script>
     
+    
     <script>
-        $(document).ready(function() {
-            // Dynamically load the sidebar
-            $("#sidebar").load("sidebar.php", function(response, status, xhr) {
-                if (status == "error") {
-                    console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
-                }
-            });
+    $(document).ready(function() {
+       
+        $("#sidebar").load("sidebar.php", function(response, status, xhr) {
+            if (status == "error") {
+                console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
+            } else {
+                
+                var currentPage = window.location.pathname.split('/').pop(); 
 
-            $("#header").load("header.php", function(response, status, xhr) {
-                if (status == "error") {
-                    console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
-                }
-            });
+                $('.nav-item').removeClass('active');
+
+                $('.nav-item').each(function() {
+                    var href = $(this).find('a').attr('href');
+                    if (href.indexOf(currentPage) !== -1) {
+                        $(this).addClass('active');
+                    }
+                });
+            }
         });
-    </script>
+
+        $("#header").load("header.php", function(response, status, xhr) {
+            if (status == "error") {
+                console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
+            }
+        });
+    });
+</script>
 </body>
 </html>

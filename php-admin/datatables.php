@@ -21,16 +21,8 @@ $userData = $user->getUserData($user_id);
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Clinic Staff User</title>
-    <meta
-      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-      name="viewport" 
-    />
-    <link
-      rel="icon"
-      href="../assets/img/ClinicaLog.ico"
-      type="image/x-icon"
-    />
-
+    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
+    <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
     <!-- Fonts and icons -->
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
     <script>
@@ -50,10 +42,7 @@ $userData = $user->getUserData($user_id);
         },
       });
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
     <!-- CSS Files -->
     <link rel="stylesheet" href="../css/bootstrap.min.css" />
     <link rel="stylesheet" href="../css/plugins.min.css" />
@@ -62,15 +51,17 @@ $userData = $user->getUserData($user_id);
     <style>
       .sidebar {
           transition: background 0.3s ease;
-          /* Initial background */
           background: linear-gradient(to bottom, #DB6079, #DA6F65, #E29AB4);
       }
       .logo-header {
           transition: background 0.3s ease;
       }
   </style>
-
   </head>
+
+
+
+
   <body>
     <div class="wrapper">
       <!-- Sidebar -->

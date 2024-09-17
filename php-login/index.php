@@ -26,9 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
         $_SESSION['user_id'] = $userData->user_id; 
         header('Location: ../php-admin/index.php'); 
         exit;
-    } 
+    }  
      
-    if ($email == $username && $password == $defaultpass) { 
+    if ($email == $username && $password == $defaultpass) {  
         header('Location: ../php-admin/index.php');
         exit; 
     } else { 

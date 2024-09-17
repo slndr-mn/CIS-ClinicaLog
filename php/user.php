@@ -7,6 +7,7 @@ class ListNode {
     public $user_mname;
     public $user_email;
     public $user_position;
+    public $user_role;
     public $user_status;
     public $user_dateadded;
     public $user_profile;
@@ -14,13 +15,14 @@ class ListNode {
     public $code; 
     public $next;
 
-    public function __construct($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_status, $user_dateadded, $user_profile, $passwordhash, $code, $next = null) {
+    public function __construct($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $passwordhash, $code, $next = null) {
         $this->user_id = $user_id;
         $this->user_fname = $user_fname;
         $this->user_lname = $user_lname;
         $this->user_mname = $user_mname;
         $this->user_email = $user_email;
         $this->user_position = $user_position;
+        $this->user_role = $user_role;
         $this->user_status = $user_status;
         $this->user_dateadded = $user_dateadded;
         $this->user_profile = $user_profile;
@@ -41,8 +43,8 @@ class LinkedList {
         return $this->head;
     }
 
-    public function addNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_status, $user_dateadded, $user_profile, $passwordhash, $code) {
-        $newNode = new ListNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_status, $user_dateadded, $user_profile, $passwordhash, $code, $this->head);
+    public function addNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $passwordhash, $code) {
+        $newNode = new ListNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $passwordhash, $code, $this->head);
         $this->head = $newNode;
     }
 
@@ -98,11 +100,21 @@ class User {
     }
 
     public function getAllUsers() {
-        return $this->linkedList->getAllNodes();
+        $allUsers = $this->linkedList->getAllNodes();
+        $filteredUsers = [];
+    
+        foreach ($allUsers as $user) {
+            if ($user->user_id !== 'ADMIN001') {
+                $filteredUsers[] = $user;
+            }
+        }
+    
+        return $filteredUsers;
     }
+    
 
     private function loadUsers() {
-        $query = "SELECT user_id, user_fname, user_lname, user_mname, user_email, user_position, user_status, user_dateadded, user_profile, user_password, user_code FROM staffusers";
+        $query = "SELECT user_id, user_fname, user_lname, user_mname, user_email, user_position, user_role, user_status, user_dateadded, user_profile, user_password, user_code FROM staffusers";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -113,6 +125,7 @@ class User {
                 $row['user_mname'],
                 $row['user_email'],
                 $row['user_position'],
+                $row['user_role'],
                 $row['user_status'],
                 $row['user_dateadded'],
                 $row['user_profile'],
@@ -122,7 +135,7 @@ class User {
         }
     }
     public function getUserDataa($user_id) {
-        // First, try to get user data from the linked list
+    
         $node = $this->linkedList->findNode($user_id);
         
         if ($node) {
@@ -133,6 +146,7 @@ class User {
                 'user_mname' => $node->user_mname,
                 'user_email' => $node->user_email,
                 'user_position' => $node->user_position,
+                'user_role' => $node->user_role,
                 'user_status' => $node->user_status,
                 'user_dateadded' => $node->user_dateadded,
                 'user_profile' => $node->user_profile,
@@ -140,15 +154,15 @@ class User {
                 'code' => $node->code
             ];
         } else {
-            // If not found in linked list, fetch from the database
-            $query = "SELECT user_id, user_fname, user_lname, user_mname, user_email, user_position, user_status, user_dateadded, user_profile, user_password, user_code FROM staffusers WHERE user_id = ?";
+            
+            $query = "SELECT user_id, user_fname, user_lname, user_mname, user_email, user_position, user_role, user_status, user_dateadded, user_profile, user_password, user_code FROM staffusers WHERE user_id = ?";
             $stmt = $this->conn->prepare($query);
             $stmt->bindValue(1, $user_id);
             $stmt->execute();
             
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($row) {
-                // Add the retrieved user data to the linked list
+                
                 $this->linkedList->addNode(
                     $row['user_id'],
                     $row['user_fname'],
@@ -156,8 +170,9 @@ class User {
                     $row['user_mname'],
                     $row['user_email'],
                     $row['user_position'],
+                    $row['user_role'],
                     $row['user_status'],
-                    $row['user_dateadded'],
+                    $row['user_dateadded'],    
                     $row['user_profile'],
                     $row['user_password'],
                     $row['user_code']
@@ -165,9 +180,9 @@ class User {
                 
                 return $row;
             } else {
-                return null; // User not found
+                return null; 
             }
-        }
+        } 
     }
 
     public function getUserData($user_id) {
@@ -183,7 +198,7 @@ class User {
     public function userExists($email, $password) {
         $node = $this->linkedList->findNode($email);
         if ($node && password_verify($password, $node->passwordhash)) {
-            return $node;  // Return the user node (which should contain user_id)
+            return $node; 
         }
         return false;
     }
@@ -207,16 +222,14 @@ class User {
         
         $node = $this->linkedList->findNode($user_id);
         if ($node) {
-            // Return the current profile image URL from the node
             return $node->user_profile;
         } else {
-            // Handle the case where the node is not found
             return null;
         }
     }
     
 
-    public function register($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_status, $user_dateadded, $user_profile, $password, $code) {
+    public function register($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $password, $code) {
         if ($this->emailVerify($user_email)) {
             $_SESSION['status'] = 'error';
             $_SESSION['message'] = 'Email already exists.';
@@ -225,7 +238,7 @@ class User {
 
         $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
 
-        $query = "INSERT INTO staffusers (user_id, user_fname, user_lname, user_mname, user_email, user_position, user_status, user_dateadded, user_profile, user_password, user_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $query = "INSERT INTO staffusers (user_id, user_fname, user_lname, user_mname, user_email, user_position, user_role, user_status, user_dateadded, user_profile, user_password, user_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($query);
 
         if ($stmt) {
@@ -235,14 +248,15 @@ class User {
             $stmt->bindValue(4, $user_mname);
             $stmt->bindValue(5, $user_email);
             $stmt->bindValue(6, $user_position);
-            $stmt->bindValue(7, $user_status);
-            $stmt->bindValue(8, $user_dateadded); 
-            $stmt->bindValue(9, $user_profile);
-            $stmt->bindValue(10, $hashedpassword);
-            $stmt->bindValue(11, $code);
+            $stmt->bindValue(7, $user_role);
+            $stmt->bindValue(8, $user_status);
+            $stmt->bindValue(9, $user_dateadded); 
+            $stmt->bindValue(10, $user_profile);
+            $stmt->bindValue(11, $hashedpassword);
+            $stmt->bindValue(12, $code);
 
             if ($stmt->execute()) {
-                $this->linkedList->addNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_status, $user_dateadded, $user_profile, $hashedpassword, $code);
+                $this->linkedList->addNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $hashedpassword, $code);
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = 'User registered successfully!';
                 exit();
@@ -323,7 +337,7 @@ class User {
         }
     }
 
-    public function updateUser($old_user_id, $new_user_id, $new_fname, $new_lname, $new_mname, $new_email, $new_position, $new_status) {
+    public function updateUser($old_user_id, $new_user_id, $new_fname, $new_lname, $new_mname, $new_email, $new_position, $new_role, $new_status) {
        
         $sql_update_statement = "UPDATE staffusers SET 
             user_id = ?, 
@@ -332,6 +346,7 @@ class User {
             user_mname = ?, 
             user_email = ?, 
             user_position = ?, 
+            user_role = ?, 
             user_status = ? 
             WHERE user_id = ?"; 
         
@@ -339,15 +354,15 @@ class User {
     
         if ($stmt) {
            
-            $stmt->bindParam(1, $new_user_id);  // New user ID
+            $stmt->bindParam(1, $new_user_id);  
             $stmt->bindParam(2, $new_fname);
             $stmt->bindParam(3, $new_lname);
             $stmt->bindParam(4, $new_mname);
             $stmt->bindParam(5, $new_email);
             $stmt->bindParam(6, $new_position);
-            $stmt->bindParam(7, $new_status);
-            $stmt->bindParam(8, $old_user_id);  // Old user ID to locate the user
-    
+            $stmt->bindParam(7, $new_role);
+            $stmt->bindParam(8, $new_status);
+            $stmt->bindParam(9, $old_user_id);  
             if ($stmt->execute()) {
               
                 $node = $this->linkedList->findNode($old_user_id);
@@ -359,6 +374,7 @@ class User {
                     $node->user_mname = $new_mname;
                     $node->user_email = $new_email;
                     $node->user_position = $new_position;
+                    $node->user_position = $new_role;
                     $node->user_status = $new_status;
                 }
     
@@ -395,7 +411,7 @@ class User {
     
             if ($stmt->execute()) {
                 return true;
-            } else {
+            } else {  
                 
                 $_SESSION['status'] = 'error';
                 $_SESSION['message'] = 'Error updating profile picture in the database: ' . $stmt->errorInfo()[2];

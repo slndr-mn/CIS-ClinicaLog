@@ -61,15 +61,6 @@ $user_id = $_SESSION['user_id'];
       .logo-header {
           transition: background 0.3s ease;
       }
-      .nav-item.active {
-            background-color: rgba(0, 0, 0, 0.1); 
-            color: #fff; 
-        }
-
-        .nav-item.active i {
-            color: #fff;
-        }
-
   </style>
 </head>
 <body>
@@ -78,12 +69,12 @@ $user_id = $_SESSION['user_id'];
         <div class="sidebar" id="sidebar"></div>
         <!-- End Sidebar -->
         <div class="main-panel">
-            <!-- Header --> 
+            <!-- Header -->
             <div class="main-header" id="header"></div>
             <!-- Main Content -->
             <div class="container" id="content">
                 <h1>
-                Dashboard
+                Reports
                 </h1>
             </div>
         </div>
@@ -125,33 +116,20 @@ $user_id = $_SESSION['user_id'];
     <script src="../assets/js/kaiadmin.min.js"></script>
     
     <script>
-    $(document).ready(function() {
-       
-        $("#sidebar").load("sidebar.php", function(response, status, xhr) {
-            if (status == "error") {
-                console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
-            } else {
-                
-                var currentPage = window.location.pathname.split('/').pop(); 
+        $(document).ready(function() {
+            // Dynamically load the sidebar
+            $("#sidebar").load("sidebar.php", function(response, status, xhr) {
+                if (status == "error") {
+                    console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
+                }
+            });
 
-                $('.nav-item').removeClass('active');
-
-                $('.nav-item').each(function() {
-                    var href = $(this).find('a').attr('href');
-                    if (href.indexOf(currentPage) !== -1) {
-                        $(this).addClass('active');
-                    }
-                });
-            }
+            $("#header").load("header.php", function(response, status, xhr) {
+                if (status == "error") {
+                    console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
+                }
+            });
         });
-
-        $("#header").load("header.php", function(response, status, xhr) {
-            if (status == "error") {
-                console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
-            }
-        });
-    });
-</script>
-
+    </script>
 </body>
 </html>

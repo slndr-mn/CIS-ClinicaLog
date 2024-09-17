@@ -10,18 +10,19 @@ $user = new User($conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['addstaff'])) {
-        // Get form data
+        
         $id = $_POST['addid'];
         $first_name = $_POST['addfname'];
         $last_name = $_POST['addlname'];
         $middle_name = $_POST['addmname'];
         $email = filter_var($_POST['addemail'], FILTER_SANITIZE_EMAIL);
         $position = $_POST['addposition'];
+        $role = $_POST['addrole'];
         $status = $_POST['addstatus'];
         $dateadded = date('Y-m-d H:i:s');
-        $password = $id; // Consider hashing the password
+        $password = $id; 
         $code = 0;
-
+ 
         // Handle file upload
         $user_profile = '';
         if (isset($_FILES['addprofile']) && $_FILES['addprofile']['error'] === UPLOAD_ERR_OK) {
@@ -44,21 +45,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $_SESSION['status'] = 'error';
                     $_SESSION['message'] = 'Failed to upload profile picture.';
-                    header('Location: datatables.php');
-                    exit(); 
+
                 }
             } else {
                 $_SESSION['status'] = 'error';
                 $_SESSION['message'] = 'Invalid file extension.';
-                header('Location: datatables.php');
-                exit();
             }
+            header('Location: staffuser.php');
+            exit(); 
         }
 
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            if ($user->register($id, $first_name, $last_name, $middle_name, $email, $position, $status, $dateadded, $user_profile, $password, $code)) {
+            if ($user->register($id, $first_name, $last_name, $middle_name, $email, $position, $role, $status, $dateadded, $user_profile, $password, $code)) {
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = 'User registered successfully!';
+
             } else {
                 $_SESSION['status'] = 'error';
                 $_SESSION['message'] = 'Registration failed. Please try again.';
@@ -68,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['message'] = 'Invalid email address.';
         }
 
-        header('Location: datatables.php');
+        header('Location: staffuser.php');
         exit();
     }
 
@@ -81,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new_mname = $_POST['editmname'];
         $new_email = filter_var($_POST['editemail'], FILTER_SANITIZE_EMAIL);
         $new_position = $_POST['editposition'];
+        $new_role = $_POST['editrole'];
         $new_status = $_POST['editstatus'];
     
         // Initialize new profile picture variable
@@ -103,19 +105,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!move_uploaded_file($fileTmpPath, $dest_path)) {
                     $_SESSION['status'] = 'error';
                     $_SESSION['message'] = 'Error moving the uploaded file.';
-                    header('Location: datatables.php');
-                    exit();
                 }
             } else {
                 $_SESSION['status'] = 'error';
                 $_SESSION['message'] = 'Invalid file extension.';
-                header('Location: datatables.php');
-                exit();
             }
+            header('Location: staffuser.php');
+            exit();
         }
     
         // Update user details
-        if ($user->updateUser($user_oldid, $user_id, $new_fname, $new_lname, $new_mname, $new_email, $new_position, $new_status)) {
+        if ($user->updateUser($user_oldid, $user_id, $new_fname, $new_lname, $new_mname, $new_email, $new_position, $new_role, $new_status)) {
             // Update profile picture if needed
             if ($new_profile) {
                 if ($user->updateProfilePicture($user_id, $new_profile)) {
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['message'] = 'Failed to update user.';
         }
     
-        header('Location: datatables.php');
+        header('Location: staffuser.php');
         exit();
     }
 
