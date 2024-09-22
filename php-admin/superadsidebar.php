@@ -15,9 +15,9 @@
           families: [
             "Font Awesome 5 Solid",
             "Font Awesome 5 Regular",
-            "Font Awesome 5 Brands",
+            "Font Awesome 5 Brands",  
             "simple-line-icons",
-          ], 
+          ],
           urls: ["../css/fonts.min.css"], 
         },
         active: function () {
@@ -55,7 +55,6 @@
   </style>  
 </head>
 <body>
-<div class="sidebar" id="sidebar">
 <div class="sidebar-logo">
           <!-- Logo Header -->
           <div class="logo-header" id="logo-header">
@@ -70,7 +69,7 @@
             </a>
             <div class="nav-toggle">
               <button class="btn btn-toggle toggle-sidebar">
-                <i class="gg-menu-right"></i>
+                <i class="gg-menu-right"></i> 
               </button>
               <button class="btn btn-toggle sidenav-toggler">
                 <i class="gg-menu-left"></i>
@@ -91,7 +90,7 @@
                 </span>
               </li>
               <li class="nav-item" id="dashboard-item">
-                <a href="index.php">
+                <a href="superadindex.php">
                   <i class="fa fas fas fa-home"></i>
                   <p>Dashboard</p>
                 </a>
@@ -127,7 +126,7 @@
                 </a>
               </li>
               <li class="nav-item" id="staffuser-item">
-                <a href="staffuser.php">
+                <a href="superstaffuser.php">
                   <i class="fas fa-users"></i>
                   <p>Clinic Staff User</p>
                 </a>

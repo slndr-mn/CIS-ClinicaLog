@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["emaill"])) {
     $email = trim($_POST["emaill"]);
 
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $otp = random_int(100000, 999999); 
+        $otp = random_int(100000, 999999);  
 
         if ($user->emailverify($email)) {
             if ($user->updateCode($email, $otp)) {

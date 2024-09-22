@@ -17,10 +17,10 @@ $user_id = $_SESSION['user_id'];
 ?>
  
 <!DOCTYPE html> 
-<html lang="en"> 
+<html lang="en">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Sample Index</title> 
+    <title>Dashboard</title> 
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
 
@@ -30,7 +30,7 @@ $user_id = $_SESSION['user_id'];
       WebFont.load({ 
         google: { families: ["Public Sans:300,400,500,600,700"] },
         custom: {
-          families: [ 
+          families: [
             "Font Awesome 5 Solid",
             "Font Awesome 5 Regular",
             "Font Awesome 5 Brands",
@@ -39,7 +39,6 @@ $user_id = $_SESSION['user_id'];
           urls: ["../css/fonts.min.css"], 
         },
         active: function () {
-            
           sessionStorage.fonts = true;
         },
       });
@@ -127,7 +126,7 @@ $user_id = $_SESSION['user_id'];
     
     <script>
     $(document).ready(function() {
-       
+        
         $("#sidebar").load("sidebar.php", function(response, status, xhr) {
             if (status == "error") {
                 console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);

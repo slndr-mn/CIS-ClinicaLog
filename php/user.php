@@ -201,7 +201,7 @@ class User {
             return $node; 
         }
         return false;
-    }
+    }  
     
 
     public function emailVerify($email) {
@@ -252,7 +252,7 @@ class User {
             $stmt->bindValue(8, $user_status);
             $stmt->bindValue(9, $user_dateadded); 
             $stmt->bindValue(10, $user_profile);
-            $stmt->bindValue(11, $hashedpassword);
+            $stmt->bindValue(11, $hashedpassword); 
             $stmt->bindValue(12, $code);
 
             if ($stmt->execute()) {
@@ -270,7 +270,7 @@ class User {
         } else {
             $errorInfo = $this->conn->errorInfo();
             $_SESSION['status'] = 'error';
-            $_SESSION['message'] = 'Error preparing statement: ' . $errorInfo[2];
+            $_SESSION['message'] = 'Error preparing statement: ' . $errorInfo[2]; 
             error_log("Error preparing statement: " . $errorInfo[2]);
             return false;
         }

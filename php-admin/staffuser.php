@@ -249,9 +249,8 @@ $userData = $user->getUserData($user_id);
                         <div class="col-md-12">
                             <div class="form-group form-group-default">
                                 <label>ID</label>
-                                <input id="editid" name="editid" type="text" class="form-control" placeholder="fill ID" />
+                                <input id="editid" name="editid" type="text" class="form-control" placeholder="fill ID" readonly/>
                                 <input id="editoldid" name="editoldid" type="text" class="form-control" placeholder="fill ID" hidden/>
-
                             </div>
                         </div>
                         <div class="col-md-6 pe-0">

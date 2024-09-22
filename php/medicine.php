@@ -1,264 +1,362 @@
 <?php
-
-class MedicineListNode {
+// Medicine class
+class Medicine {
     public $medicine_id;
-    public $medicine_category;
     public $medicine_name;
-    public $medicine_qty;
-    public $medicine_dosage;
-    public $medicine_dateadded;
-    public $medicine_expirationdt;
-    public $next;
+    public $medicine_category;
 
-    public function __construct($medicine_id, $medicine_category, $medicine_name, $medicine_qty, $medicine_dosage, $medicine_dateadded, $medicine_expirationdt, $next = null) {
-        $this->medicine_id = $medicine_id;
-        $this->medicine_category = $medicine_category;
-        $this->medicine_name = $medicine_name;
-        $this->medicine_qty = $medicine_qty;
-        $this->medicine_dosage = $medicine_dosage;
-        $this->medicine_dateadded = $medicine_dateadded;
-        $this->medicine_expirationdt = $medicine_expirationdt;
-        $this->next = $next;
-    } 
+    public function __construct($id, $name, $category) {
+        $this->medicine_id = $id;
+        $this->medicine_name = $name;
+        $this->medicine_category = $category;
+    }
 }
 
-class MedLinkedList {
-    private $head;
+// Medstock class
+class Medstock {
+    public $medstock_id;
+    public $medicine_id;
+    public $medstock_qty;
+    public $medstock_dosage;
+    public $medstock_dateadded;
+    public $medstock_timeadded;
+    public $medstock_expirationdt;
+    public $medstock_disabled;
+
+    public function __construct($medstock_id, $medicine_id, $quantity, $dosage, $date_added, $time_added, $expiration_date, $disabled) {
+        $this->medstock_id = $medstock_id;
+        $this->medicine_id = $medicine_id;
+        $this->medstock_qty = $quantity;
+        $this->medstock_dosage = $dosage;
+        $this->medstock_dateadded = $date_added;
+        $this->medstock_timeadded = $time_added;
+        $this->medstock_expirationdt = $expiration_date;
+        $this->medstock_disabled = $disabled;
+    }
+}
+
+// MedListNode class
+class MedListNode {
+    public $item;
+    public $next;
+
+    public function __construct($item) {
+        $this->item = $item;
+        $this->next = null;
+    }
+}
+
+// MedicineLinkedList class
+class MedicineLinkedList {
+    public $head;
 
     public function __construct() {
         $this->head = null;
     }
 
-    public function getHead() {
-        return $this->head;
-    }
-
-    public function addNode($medicine_id, $medicine_category, $medicine_name, $medicine_qty, $medicine_dosage, $medicine_dateadded, $medicine_expirationdt) {
-        $newNode = new MedicineListNode($medicine_id, $medicine_category, $medicine_name, $medicine_qty, $medicine_dosage, $medicine_dateadded, $medicine_expirationdt, $this->head);
-        $this->head = $newNode;
-    }
-
-    public function findNode($medicine_id) {
-        $current = $this->head;
-        while ($current !== null) {
-            if ($current->medicine_id === $medicine_id) {
-                return $current;
+    public function add($item) {
+        $newNode = new MedListNode($item);
+        if ($this->head === null) {
+            $this->head = $newNode;
+        } else {
+            $current = $this->head;
+            while ($current->next !== null) {
+                $current = $current->next;
             }
-            $current = $current->next;
+            $current->next = $newNode;
         }
-        return null;
-    }        
+    }
 
     public function getAllNodes() {
         $nodes = [];
         $current = $this->head;
         while ($current !== null) {
-            $nodes[] = $current;
+            $nodes[] = $current->item;
             $current = $current->next;
         }
         return $nodes;
     }
 
-    public function removeNode($medicine_id) {
+    public function find($id) {
         $current = $this->head;
-        $prev = null;
-
         while ($current !== null) {
-            if ($current->medicine_id === $medicine_id) {
-                if ($prev === null) {
-                    $this->head = $current->next; 
-                } else {
-                    $prev->next = $current->next;
-                }
-                return true;
+            if ($current->item->medicine_id == $id) { // Use medicine_id for searching
+                return $current->item;
             }
-            $prev = $current;
             $current = $current->next;
         }
-        return false;
+        return null;
     }
+
+    public function remove($id) {
+        if ($this->head === null) return false; // List is empty
+
+        if ($this->head->item->medicine_id == $id) {
+            $this->head = $this->head->next; // Remove head
+            return true;
+        }
+
+        $current = $this->head;
+        while ($current->next !== null) {
+            if ($current->next->item->medicine_id == $id) {
+                $current->next = $current->next->next; // Remove node
+                return true;
+            }
+            $current = $current->next;
+        }
+        return false; // Not found
+    }
+
+    public function findByName($name) {
+        $current = $this->head;
+        while ($current !== null) {
+            if (strcasecmp($current->item->medicine_name, $name) === 0) { // Case-insensitive comparison
+                return $current->item; // Return the medicine object
+            }
+            $current = $current->next;
+        }
+        return null; // Medicine not found
+    }
+
+    public function medicineExists($name) {
+        $current = $this->head;
+        while ($current !== null) {
+            if (strcasecmp($current->item->medicine_name, $name) === 0) { // Case-insensitive comparison
+                return true; // Medicine exists
+            }
+            $current = $current->next;
+        }
+        return false; // Medicine does not exist
+    }
+    
 }
 
-class Medicine {
-    private $conn;
-    private $linkedList;
+// MedicineManager class
+class MedicineManager {
+    private $db;
+    public $medicines;
+    public $medstocks;
 
     public function __construct($db) {
-        $this->conn = $db;
-        $this->linkedList = new MedLinkedList();
+        $this->db = $db; // Assuming $db is a PDO instance
+        $this->medicines = new MedicineLinkedList();
+        $this->medstocks = new MedicineLinkedList();
         $this->loadMedicines();
-    }
-
-    public function getAllMedicines() {
-        return $this->linkedList->getAllNodes();
+        $this->loadMedstocks();
     }
 
     private function loadMedicines() {
-        $query = "SELECT * FROM medicine";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
+        $sql = "SELECT * FROM medicine";
+        $stmt = $this->db->query($sql); // Use PDO query method
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->linkedList->addNode(
+            $medicine = new Medicine($row['medicine_id'], $row['medicine_name'], $row['medicine_category']);
+            $this->medicines->add($medicine);
+        }
+    }
+
+    private function loadMedstocks() {
+        $sql = "SELECT * FROM medstock";
+        $stmt = $this->db->query($sql); // Use PDO query method
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $medstock = new Medstock(
+                $row['medstock_id'],
                 $row['medicine_id'],
-                $row['medicine_category'],
-                $row['medicine_name'],
-                $row['medicine_qty'],
-                $row['medicine_dosage'],
-                $row['medicine_dateadded'],
-                $row['medicine_expirationdt']
+                $row['medstock_qty'],
+                $row['medstock_dosage'],
+                $row['medstock_dateadded'],
+                $row['medstock_timeadded'],
+                $row['medstock_expirationdt'],
+                $row['medstock_disable']
             );
+            $this->medstocks->add($medstock);
         }
     }
 
-    public function getMedicineDataByID($medicine_id) {
-        $node = $this->linkedList->findNode($medicine_id);
-        
-        if ($node) {
-            return [
-                'medicine_id' => $node->medicine_id,
-                'medicine_category' => $node->medicine_category,
-                'medicine_name' => $node->medicine_name,
-                'medicine_qty' => $node->medicine_qty,
-                'medicine_dosage' => $node->medicine_dosage,
-                'medicine_dateadded' => $node->medicine_dateadded,
-                'medicine_expirationdt' => $node->medicine_expirationdt,
-            ];
-        } else {
-            $query = "SELECT medicine_id, medicine_category, medicine_name, medicine_qty, medicine_dosage, medicine_dateadded, medicine_expirationdt FROM medicine WHERE medicine_id = ?";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindValue(1, $medicine_id);
-            $stmt->execute();
-            
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($row) {
-                $this->linkedList->addNode(
-                    $row['medicine_id'],
-                    $row['medicine_category'],
-                    $row['medicine_name'],
-                    $row['medicine_qty'],
-                    $row['medicine_dosage'],
-                    $row['medicine_dateadded'],
-                    $row['medicine_expirationdt']
-                );
-                
-                return $row;
-            } else {
-                return null;
-            }
-        }
-    }        
-
-    public function medicineExists($medicine_id) {
-        return $this->linkedList->findNode($medicine_id) !== null;
-    }
-    
-    public function addMedicine($medicine_id, $medicine_category, $medicine_name, $medicine_qty, $medicine_dosage, $medicine_dateadded, $medicine_expirationdt) {
-        if ($this->medicineExists($medicine_id)) {
-            $_SESSION['status'] = 'error';
-            $_SESSION['message'] = 'Medicine already exists.';
+    public function insertMedicine($name, $category) {
+        if ($this->medicines->medicineExists($name)) {
+            echo "Medicine already exists.<br>";
             return false;
         }
-    
-        $query = "INSERT INTO medicine (medicine_category, medicine_name, medicine_qty, medicine_dosage, medicine_dateadded, medicine_expirationdt) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $this->conn->prepare($query);
-    
+
+        $sql = "INSERT INTO medicine (medicine_name, medicine_category) VALUES (?, ?)";
+        $stmt = $this->db->prepare($sql);
         if ($stmt) {
-            $stmt->bindValue(1, $medicine_category);
-            $stmt->bindValue(2, $medicine_name);
-            $stmt->bindValue(3, $medicine_qty);
-            $stmt->bindValue(4, $medicine_dosage);
-            $stmt->bindValue(5, $medicine_dateadded);
-            $stmt->bindValue(6, $medicine_expirationdt);
-            if ($stmt->execute()) {
-                $this->linkedList->addNode($medicine_id, $medicine_category, $medicine_name, $medicine_qty, $medicine_dosage, $medicine_dateadded, $medicine_expirationdt);
-                $_SESSION['status'] = 'success';
-                $_SESSION['message'] = 'Medicine added successfully!';
-                header('Location: medicinetable.php');
-                exit();
-            } else {
-                $errorInfo = $stmt->errorInfo();
-                $_SESSION['status'] = 'error';
-                $_SESSION['message'] = 'Error executing query: ' . $errorInfo[2];
-                error_log("Error executing query: " . $errorInfo[2]);
-                return false;
-            }
+            $stmt->execute([$name, $category]);
+            $medicine_id = $this->db->lastInsertId(); // Get last inserted ID
+            $medicine = new Medicine($medicine_id, $name, $category);
+            $this->medicines->add($medicine);
+            echo "Medicine inserted successfully.<br>";
+            return true;
         } else {
-            $_SESSION['status'] = 'error';
-            $_SESSION['message'] = 'Error preparing statement: ' . $this->conn->errorInfo()[2];
-            error_log("Error preparing statement: " . $this->conn->errorInfo()[2]);
+            echo "Error inserting medicine.<br>";
             return false;
         }
     }
+
+    public function insertMedstock($medicine_id, $quantity, $dosage, $date_added, $time_added, $expiration_date, $disabled) {
+        $sql = "INSERT INTO medstock (medicine_id, medstock_qty, medstock_dosage, medstock_dateadded, medstock_timeadded, medstock_expirationdt, medstock_disable) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->db->prepare($sql);
+        if ($stmt) {
+            $stmt->execute([$medicine_id, $quantity, $dosage, $date_added, $time_added, $expiration_date, $disabled]);
+            $medstock_id = $this->db->lastInsertId(); // Get last inserted ID
+            $medstock = new Medstock($medstock_id, $medicine_id, $quantity, $dosage, $date_added, $time_added, $expiration_date, $disabled);
+            $this->medstocks->add($medstock);
+            echo "Medstock inserted successfully.<br>";
+            return true;
+        } else {
+            echo "Error inserting medstock.<br>";
+            return false;
+        }
+    }
+
+    public function getAllMedicines() {
+        return $this->medicines->getAllNodes();
+    }
+
+    public function getAllMedstocks() {
+        return $this->medstocks->getAllNodes();
+    }
+
+    public function getAllItems() {
+        $medstocks = $this->medstocks->getAllNodes();
+        $medicines = $this->medicines->getAllNodes();
+        
+        $medicineMap = [];
+        
+        // Create a map of medicine IDs to medicine names
+        foreach ($medicines as $medicine) {
+            $medicineMap[$medicine->medicine_id] = $medicine->medicine_name;
+        }
+    
+        // Combine medstocks with corresponding medicine names
+        $combinedItems = [];
+        foreach ($medstocks as $medstock) {
+            $medstock->medicine_name = $medicineMap[$medstock->medicine_id] ?? 'Unknown'; // Set medicine name
+            $combinedItems[] = $medstock; // Add the medstock object with the medicine name
+        }
+    
+        return $combinedItems; // Return the combined array
+    }
+    public function getMedicinesWithStockCount() {
+        $medstocks = $this->medstocks->getAllNodes();
+        $medicines = $this->medicines->getAllNodes();
+        
+        // Create a map to count occurrences (stocks) per medicine
+        $stockCountMap = [];
+    
+        // Count occurrences of each medicine_id in medstocks
+        foreach ($medstocks as $medstock) {
+            if (!isset($stockCountMap[$medstock->medicine_id])) {
+                $stockCountMap[$medstock->medicine_id] = 0;
+            }
+            // Increment occurrence for each medstock entry
+            $stockCountMap[$medstock->medicine_id]++;
+        }
+    
+        // Combine medicines with their stock counts
+        $combinedItems = [];
+        foreach ($medicines as $medicine) {
+            $combinedItems[] = [
+                'medicine_id' => $medicine->medicine_id,
+                'medicine_name' => $medicine->medicine_name,
+                'medicine_category' => $medicine->medicine_category,
+                'stock_count' => $stockCountMap[$medicine->medicine_id] ?? 0 // Default to 0 if no stock
+            ];
+        }
+    
+        return $combinedItems; // Return the combined array
+    }
+    
+
+    public function updateMedicine($medicine_id, $name, $category) {
+        try {
+            // Prepare the SQL update statement
+            $sql = "UPDATE medicine SET medicine_name = ?, medicine_category = ? WHERE medicine_id = ?";
+            $stmt = $this->db->prepare($sql);
+            
+            if (!$stmt) {
+                throw new Exception("Failed to prepare the SQL statement.");
+            }
+    
+            // Execute the statement with bound parameters
+            if ($stmt->execute([$name, $category, $medicine_id])) {
+                // Update the linked list after the database operation succeeds
+                $medicine = $this->medicines->find($medicine_id);
+                if ($medicine) {
+                    $medicine->medicine_name = $name;
+                    $medicine->medicine_category = $category;
+                }
+                echo "Medicine updated successfully.<br>";
+                return true;
+            } else {
+                // Handle execution failure
+                throw new Exception("Failed to execute the update statement.");
+            }
+        } catch (Exception $e) {
+            // Display detailed error message
+            echo "Error updating medicine: " . $e->getMessage() . "<br>";
+            return false;
+        }
+    }
+    
+
+    
+    public function updateMedstock($medstock_id, $medicine_id, $medicine_qty, $medicine_dosage, $medicine_expirationdt, $medicine_disable) {
+        try {
+            
+            // Prepare the SQL statement to update medstock
+            $sql = "UPDATE medstock SET medicine_id = ?, medstock_qty = ?, medstock_dosage = ?, medstock_expirationdt = ?, medstock_disable = ? WHERE medstock_id = ?";
+            $stmt = $this->db->prepare($sql);
+            
+            if (!$stmt) {
+                throw new Exception("Failed to prepare SQL statement.");
+            }
+    
+            // Execute the statement with bound parameters
+            if ($stmt->execute([$medicine_id, $medicine_qty, $medicine_dosage, $medicine_expirationdt, $medicine_disable, $medstock_id])) {
+                // Update the linked list
+                $medstock = $this->medstocks->find($medstock_id);
+                if ($medstock) {
+                    $medstock->medicine_id = $medicine_id; // Update to new medicine ID
+                    $medstock->medstock_qty = $medicine_qty;
+                    $medstock->medstock_dosage = $medicine_dosage;
+                    $medstock->medstock_expirationdt = $medicine_expirationdt;
+                    $medstock->medstock_disabled = $medicine_disable;
+                }
+                return ['status' => 'success', 'message' => 'Medstock updated successfully.'];
+            } else {
+                throw new Exception("Failed to execute update statement.");
+            }
+        } catch (Exception $e) {
+            // Return error message
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+    
+    
     
 
     public function deleteMedicine($medicine_id) {
-        $sql_delete = "DELETE FROM medicine WHERE medicine_id = ?";
-        $stmt = $this->conn->prepare($sql_delete);
-
+        // Remove from the database
+        $sql = "DELETE FROM medicine WHERE medicine_id = ?";
+        $stmt = $this->db->prepare($sql);
         if ($stmt) {
-            $stmt->bindValue(1, $medicine_id);
-
-            if ($stmt->execute()) {
-                $this->linkedList->removeNode($medicine_id);
+            $stmt->execute([$medicine_id]);
+            // Also remove from the linked list
+            if ($this->medicines->remove($medicine_id)) {
+                echo "Medicine deleted successfully.<br>";
                 return true;
             } else {
-                $_SESSION['status'] = 'error';
-                $_SESSION['message'] = 'Error executing delete query: ' . $stmt->errorInfo()[2];
-                error_log("Error executing delete query: " . $stmt->errorInfo()[2]);
-                return false;
+                echo "Error deleting medicine from linked list.<br>";
             }
         } else {
-            $_SESSION['status'] = 'error';
-            $_SESSION['message'] = 'Error preparing delete statement: ' . $this->conn->errorInfo()[2];
-            error_log("Error preparing delete statement: " . $this->conn->errorInfo()[2]);
-            return false;
+            echo "Error deleting medicine from database.<br>";
         }
+        return false;
     }
 
-    public function updateMedicine($medicine_id, $medicine_category, $medicine_name, $medicine_qty, $medicine_dosage, $medicine_expirationdt) {
-        $sql_update_statement = "UPDATE medicine SET
-            medicine_category = ?,  
-            medicine_name = ?, 
-            medicine_qty = ?, 
-            medicine_dosage = ?,  
-            medicine_expirationdt = ?
-            WHERE medicine_id = ?"; 
-        
-        $stmt = $this->conn->prepare($sql_update_statement);
+
+
     
-        if ($stmt) {
-            $stmt->bindParam(1, $medicine_category); 
-            $stmt->bindParam(2, $medicine_name); 
-            $stmt->bindParam(3, $medicine_qty);
-            $stmt->bindParam(4, $medicine_dosage);
-            $stmt->bindParam(5, $medicine_expirationdt);
-            $stmt->bindParam(6, $medicine_id);
-    
-            if ($stmt->execute()) {
-                $node = $this->linkedList->findNode($medicine_id);
-                if ($node) {
-                    $node->medicine_category = $medicine_category;
-                    $node->medicine_name = $medicine_name;
-                    $node->medicine_qty = $medicine_qty;
-                    $node->medicine_dosage = $medicine_dosage;
-                    $node->medicine_expirationdt = $medicine_expirationdt;
-                }
-    
-                $_SESSION['status'] = 'success';
-                $_SESSION['message'] = 'Medicine updated successfully!';
-                return true;
-            } else {
-                $_SESSION['status'] = 'error';
-                $_SESSION['message'] = 'Error updating medicine in the database: ' . $stmt->errorInfo()[2];
-                error_log("Error updating medicine in the database: " . $stmt->errorInfo()[2]);
-                return false;
-            }
-        } else {
-            $_SESSION['status'] = 'error';
-            $_SESSION['message'] = 'Error preparing update statement: ' . $this->conn->errorInfo()[2];
-            error_log("Error preparing update statement: " . $this->conn->errorInfo()[2]);
-            return false;
-        }
-    }
 }
 ?>

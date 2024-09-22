@@ -2,20 +2,17 @@
 session_start();
 include('../database/config.php');
 include('../php/user.php');
-
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: login.php'); 
-    exit;
-}
+include('../php/medicine.php');
 
 $db = new Database();
-$conn = $db->getConnection();
+$conn = $db->getConnection(); 
+
+$medicine = new Medicine($conn); 
 
 $user = new User($conn); 
 $user_id = $_SESSION['user_id'];
-
+$userData = $user->getUserData($user_id); 
 ?>
-
 <!DOCTYPE html> 
 <html lang="en">
 <head>
@@ -64,72 +61,190 @@ $user_id = $_SESSION['user_id'];
   </style>
 </head>
 <body>
-    <div class="wrapper">
+      <div class="wrapper">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar"></div>
         <!-- End Sidebar -->
+
         <div class="main-panel">
             <!-- Header -->
             <div class="main-header" id="header"></div>
             <!-- Main Content -->
-            <div class="container" id="content">
-                <h1>
-                Patient Record
-                </h1>
-            </div>
-        </div>
-    </div>
 
-    
-    
+            <div class="container" id="content">
+            <div class="page-inner">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card">
+                    <div class="card-header">
+                      <div class="d-flex align-items-center">
+                        <h4 class="card-title">Patient</h4>
+                        <button
+                          class="btn btn-primary btn-round ms-auto"
+                          data-bs-toggle="modal"
+                          data-bs-target="#addPatientModal"
+                          id="addbutton"
+                        >
+                          <i class="fa fa-plus"></i>
+                          Add Patient
+                        </button>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <!-- Modal -->
+                      <div
+                        class="modal fade"
+                        id="addPatientModal"
+                        tabindex="-1"
+                        role="dialog"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog modal-dialog-centered" role="document" id="AddPatient">
+                          <div class="modal-content">
+                            <div class="modal-header border-0">
+                              <h5 class="modal-title">
+                                <span class="fw-mediumbold">Add Patient</span>
+                              </h5>
+                              <button
+                                type="button"
+                                class="close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                                id="edit-exit"
+                              >
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              <form class="modalButton">
+                                <!-- Button for Student Patient -->
+                                <a href="add-student.php">
+                                  <button type="button" class="btn btn-primary btn-round ms-auto custom-button" id="addbutton">
+                                    Student
+                                  </button>
+                                </a>
+                                <!-- Button for Staff Patient -->
+                                <a href="add-staff.php">
+                                  <button type="button" class="btn btn-primary btn-round ms-auto custom-button" id="addbutton">
+                                    Staff
+                                  </button>
+                                </a>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="table-responsive">
+                        <table id="add-patient" class="table table-striped table-hover">
+                          <thead>
+                            <tr>
+                              <th>Name</th>
+                              <th>Patient ID</th>
+                              <th>Phone Number</th>
+                              <th>Last Visited Date</th>
+                              <th>Clinic Staff</th>
+                              <th>Reason</th>
+                              <th style="width: 10%">Action</th>
+                            </tr>
+                          </thead>
+                          <tfoot>
+                            <tr>
+                              <th>Name</th>
+                              <th>Patient ID</th>
+                              <th>Phone Number</th>
+                              <th>Last Visited Date</th>
+                              <th>Clinic Staff</th>
+                              <th>Reason</th>
+                              <th>Action</th>
+                            </tr>
+                          </tfoot>
+                          <tbody>
+                          <tr>
+                            <td>Jackilyn M. Furog</td>
+                            <td>2022-00473</td>
+                            <td>09756066512</td>
+                            <td>06/28/2024</td>
+                            <td>Nurse Tweet</td>
+                            <td>Stomach Ache</td>
+                            <td>
+                              <div class="form-button-action">
+                                <button
+                                  id="viewButton"
+                                  type="button"
+                                  data-bs-toggle="tooltip"
+                                  title=""
+                                  class="btn btn-link btn-primary btn-lg"
+                                >
+                                  <i class="fa fa-eye"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <footer class="footer">
+        </div>
+      </div>
+
 
     <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/core/popper.min.js"></script>
     <script src="../assets/js/core/bootstrap.min.js"></script>
+    <script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+
 
     <!-- jQuery Scrollbar -->
     <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
 
-    <!-- Chart JS -->
-    <script src="../assets/js/plugin/chart.js/chart.min.js"></script>
-
-    <!-- jQuery Sparkline -->
-    <script src="../assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
-
-    <!-- Chart Circle -->
-    <script src="../assets/js/plugin/chart-circle/circles.min.js"></script>
-
     <!-- Datatables -->
     <script src="../assets/js/plugin/datatables/datatables.min.js"></script>
-
-    <!-- Bootstrap Notify -->
-    <script src="../assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
-
-    <!-- jQuery Vector Maps -->
-    <script src="../assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
-    <script src="../assets/js/plugin/jsvectormap/world.js"></script>
-
-    <!-- Sweet Alert -->
-    <script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
 
     <!-- Kaiadmin JS -->
     <script src="../assets/js/kaiadmin.min.js"></script>
     
     <script>
         $(document).ready(function() {
-            // Dynamically load the sidebar
-            $("#sidebar").load("sidebar.php", function(response, status, xhr) {
-                if (status == "error") {
-                    console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
-                }
-            });
-
-            $("#header").load("header.php", function(response, status, xhr) {
-                if (status == "error") {
-                    console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
-                }
-            });
+        $('#add-patient').DataTable({
+            responsive: true
         });
+    });
+
     </script>
+    <script>
+    $(document).ready(function() {
+       
+        $("#sidebar").load("sidebar.php", function(response, status, xhr) {
+            if (status == "error") {
+                console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
+            } else {
+                
+                var currentPage = window.location.pathname.split('/').pop(); 
+
+                $('.nav-item').removeClass('active');
+
+                $('.nav-item').each(function() {
+                    var href = $(this).find('a').attr('href');
+                    if (href.indexOf(currentPage) !== -1) {
+                        $(this).addClass('active');
+                    }
+                });
+            }
+        });
+
+        $("#header").load("header.php", function(response, status, xhr) {
+            if (status == "error") {
+                console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
+            }
+        });
+    });
+</script>
 </body>
 </html>

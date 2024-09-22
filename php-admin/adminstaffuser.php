@@ -2,7 +2,7 @@
 session_start();
 include('../database/config.php');
 include('../php/user.php');
-
+ 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header('Location: login.php'); 
     exit;
@@ -13,20 +13,21 @@ $conn = $db->getConnection();
 
 $user = new User($conn); 
 $user_id = $_SESSION['user_id'];
-$userData = $user->getUserData($user_id); 
+$userData = $user->getUserData($user_id);  
 ?>
-
+ 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Clinic Staff User</title>
-    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Sample Index</title>
+    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
+
     <!-- Fonts and icons -->
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
     <script>
-      WebFont.load({
+      WebFont.load({ 
         google: { families: ["Public Sans:300,400,500,600,700"] },
         custom: {
           families: [
@@ -35,441 +36,59 @@ $userData = $user->getUserData($user_id);
             "Font Awesome 5 Brands",
             "simple-line-icons",
           ],
-          urls: ["../css/fonts.min.css"],
-        }, 
+          urls: ["../css/fonts.min.css"], 
+        },
         active: function () {
           sessionStorage.fonts = true;
         },
       });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </script> 
+
     <!-- CSS Files -->
     <link rel="stylesheet" href="../css/bootstrap.min.css" />
     <link rel="stylesheet" href="../css/plugins.min.css" />
     <link rel="stylesheet" href="../css/kaiadmin.min.css" />
 
+    <!-- ICONS -->
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+
     <style>
       .sidebar {
           transition: background 0.3s ease;
+          /* Initial background */
           background: linear-gradient(to bottom, #DB6079, #DA6F65, #E29AB4);
       }
       .logo-header {
           transition: background 0.3s ease;
       }
-  </style>
-  </head>
+      .nav-item.active {
+            background-color: rgba(0, 0, 0, 0.1); 
+            color: #fff; 
+        }
 
+        .nav-item.active i {
+            color: #fff;
+        }
 
-
-
-  <body>
+  </style>  
+</head>
+<body> 
     <div class="wrapper">
-      <!-- Sidebar -->
-      <div class="sidebar" id="sidebar">
-        <div class="sidebar-logo">
-          <!-- Logo Header -->
-          <div class="logo-header" id="logo-header">
-            <a href="index.php" class="logo">
-              <img
-                src="../assets/img/sidebar-logo.svg"
-                alt="navbar brand"
-                class="navbar-brand"
-                height="60"
-              />
-            </a>
-            <div class="nav-toggle">
-              <button class="btn btn-toggle toggle-sidebar">
-                <i class="gg-menu-right"></i>
-              </button>
-              <button class="btn btn-toggle sidenav-toggler">
-                <i class="gg-menu-left"></i>
-              </button>
-            </div>
-            <button class="topbar-toggler more">
-              <i class="gg-more-vertical-alt"></i>
-            </button>
-          </div>
-          <!-- End Logo Header -->
-        </div>
-        <div class="sidebar-wrapper scrollbar scrollbar-inner">
-          <div class="sidebar-content">
-            <ul class="nav nav-secondary">
-              <li class="nav-section">
-                <span class="sidebar-mini-icon">
-                  <i class="fa fa-ellipsis-h"></i>
-                </span>
-              </li>
-              <li class="nav-item">
-                <a href="index.php">
-                  <i class="fa fas fas fa-home"></i>
-                  <p>Dashboard</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="datatables.php">
-                  <i class="fa fas fa-capsules"></i>
-                  <p>Medicine</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="datatables.php">
-                  <i class="fa fas fas fa-notes-medical"></i>
-                  <p>Patient Record</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="datatables.php">
-                  <i class="fas far fa-calendar-check"></i>
-                  <p>Appointments</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="datatables.php">
-                  <i class="fas fas fa-clipboard-list"></i>
-                  <p>Inventory</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="datatables.php">
-                  <i class="fas fas fa-file-medical"></i>
-                  <p>Reports</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="datatables.php">
-                  <i class="fas fa-users"></i>
-                  <p>Clinic Staff User</p>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <!-- End Sidebar -->
-
-      <div class="main-panel">
-        <div class="main-header">
-          <div class="main-header-logo">
-            <!-- Logo Header -->
-            <div class="logo-header" data-background-color="dark">
-              <a href="../index.php" class="logo">
-                <img
-                  src="../assets/img/kaiadmin/logo_light.svg"
-                  alt="navbar brand"
-                  class="navbar-brand"
-                  height="20"
-                />
-              </a>
-              <div class="nav-toggle">
-                <button class="btn btn-toggle toggle-sidebar">
-                  <i class="gg-menu-right"></i>
-                </button>
-                <button class="btn btn-toggle sidenav-toggler">
-                  <i class="gg-menu-left"></i>
-                </button>
-              </div>
-              <button class="topbar-toggler more">
-                <i class="gg-more-vertical-alt"></i>
-              </button>
-            </div>
-            <!-- End Logo Header -->
-          </div>
-          <!-- Navbar Header -->
-          <nav
-            class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
-          >
-            <div class="container-fluid">
-              <nav
-                class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <button type="submit" class="btn btn-search pe-1">
-                      <i class="fa fa-search search-icon"></i>
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Search ..."
-                    class="form-control"
-                  />
-                </div>
-              </nav>
-
-              <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-                <li
-                  class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none"
-                >
-                  <a
-                    class="nav-link dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                    href="#" 
-                    role="button"
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                  >
-                    <i class="fa fa-search"></i>
-                  </a>
-                  <ul class="dropdown-menu dropdown-search animated fadeIn">
-                    <form class="navbar-left navbar-form nav-search">
-                      <div class="input-group">
-                        <input
-                          type="text"
-                          placeholder="Search ..."
-                          class="form-control"
-                        />
-                      </div>
-                    </form>
-                  </ul>
-                </li>
-                <li class="nav-item topbar-icon dropdown hidden-caret">
-                  <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="messageDropdown"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    <i class="fa fa-envelope"></i>
-                  </a>
-                  <ul
-                    class="dropdown-menu messages-notif-box animated fadeIn"
-                    aria-labelledby="messageDropdown"
-                  >
-                    <li>
-                      <div
-                        class="dropdown-title d-flex justify-content-between align-items-center"
-                      >
-                        Messages
-                        <a href="#" class="small">Mark all as read</a>
-                      </div>
-                    </li>
-                    <li>
-                      <div class="message-notif-scroll scrollbar-outer">
-                        <div class="notif-center">
-                          <a href="#">
-                            <div class="notif-img">
-                              <img
-                                src="../assets/img/jm_denis.jpg"
-                                alt="Img Profile"
-                              />
-                            </div>
-                            <div class="notif-content">
-                              <span class="subject">Jimmy Denis</span>
-                              <span class="block"> How are you ? </span>
-                              <span class="time">5 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-img">
-                              <img
-                                src="../assets/img/chadengle.jpg"
-                                alt="Img Profile"
-                              />
-                            </div>
-                            <div class="notif-content">
-                              <span class="subject">Chad</span>
-                              <span class="block"> Ok, Thanks ! </span>
-                              <span class="time">12 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-img">
-                              <img
-                                src="../assets/img/mlane.jpg"
-                                alt="Img Profile"
-                              />
-                            </div>
-                            <div class="notif-content">
-                              <span class="subject">Jhon Doe</span>
-                              <span class="block">
-                                Ready for the meeting today...
-                              </span>
-                              <span class="time">12 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-img">
-                              <img
-                                src="../assets/img/talha.jpg"
-                                alt="Img Profile"
-                              />
-                            </div>
-                            <div class="notif-content">
-                              <span class="subject">Talha</span>
-                              <span class="block"> Hi, Apa Kabar ? </span>
-                              <span class="time">17 minutes ago</span>
-                            </div>
-                          </a>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <a class="see-all" href="javascript:void(0);"
-                        >See all messages<i class="fa fa-angle-right"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="nav-item topbar-icon dropdown hidden-caret">
-                  <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="notifDropdown"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    <i class="fa fa-bell"></i>
-                    <span class="notification">4</span>
-                  </a>
-                  <ul
-                    class="dropdown-menu notif-box animated fadeIn"
-                    aria-labelledby="notifDropdown"
-                  >
-                    <li>
-                      <div class="dropdown-title">
-                        You have 4 new notification
-                      </div>
-                    </li>
-                    <li>
-                      <div class="notif-scroll scrollbar-outer">
-                        <div class="notif-center">
-                          <a href="#">
-                            <div class="notif-icon notif-primary">
-                              <i class="fa fa-user-plus"></i>
-                            </div>
-                            <div class="notif-content">
-                              <span class="block"> New user registered </span>
-                              <span class="time">5 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-icon notif-success">
-                              <i class="fa fa-comment"></i>
-                            </div>
-                            <div class="notif-content">
-                              <span class="block">
-                                Rahmad commented on Admin
-                              </span>
-                              <span class="time">12 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-img">
-                              <img
-                                src="../assets/img/profile2.jpg"
-                                alt="Img Profile"
-                              />
-                            </div>
-                            <div class="notif-content">
-                              <span class="block">
-                                Reza send messages to you
-                              </span>
-                              <span class="time">12 minutes ago</span>
-                            </div>
-                          </a>
-                          <a href="#">
-                            <div class="notif-icon notif-danger">
-                              <i class="fa fa-heart"></i>
-                            </div>
-                            <div class="notif-content">
-                              <span class="block"> Farrah liked Admin </span>
-                              <span class="time">17 minutes ago</span>
-                            </div>
-                          </a>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <a class="see-all" href="javascript:void(0);"
-                        >See all notifications<i class="fa fa-angle-right"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="nav-item topbar-user dropdown hidden-caret">
-                <?php if ($userData): ?>
-                  <a
-                    class="dropdown-toggle profile-pic"
-                    data-bs-toggle="dropdown"
-                    href="#"
-                    aria-expanded="false"
-                  >
-                    <div class="avatar-sm">
-                      <img
-                        src='/php-admin/uploads/<?php echo htmlspecialchars($userData['user_profile']); ?>'
-                        alt='Profile Picture'
-                        class="avatar-img rounded-circle"
-                      />
-                    </div>
-                    <span class="profile-username">
-                      <span class="op-7">Hi,</span>
-                      <span class="fw-bold"><?php echo htmlspecialchars($userData['user_fname']); ?></span>
-                    </span>
-                  </a>
-                  <?php else: ?>
-                      <p>User data not found.</p>
-                  <?php endif; ?>
-                  <ul class="dropdown-menu dropdown-user animated fadeIn">
-                    <div class="dropdown-user-scroll scrollbar-outer">
-                      <li>
-                        <div class="user-box">
-                          <div class="avatar-lg">
-                            <img
-                              src="../assets/img/profile.jpg"
-                              alt="image profile"
-                              class="avatar-img rounded"
-                            />
-                          </div>
-                          <div class="u-text">
-                            <h4>Hizrian</h4>
-                            <p class="text-muted">hello@example.com</p>
-                            <a
-                              href="profile.html"
-                              class="btn btn-xs btn-secondary btn-sm"
-                              >View Profile</a
-                            >
-                          </div>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">My Profile</a>
-                        <a class="dropdown-item" href="#">My Balance</a>
-                        <a class="dropdown-item" href="#">Inbox</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Account Setting</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Logout</a>
-                      </li>
-                    </div>
-                  </ul>
-                </li>
-              </ul>
-            </div>
-          </nav>
-          <!-- End Navbar -->
-        </div>
-        <div class="container">
-          <div class="page-inner">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar"></div>
+        <!-- End Sidebar -->
+        <div class="main-panel">
+            <!-- Header -->
+            <div class="main-header" id="header"></div>
+            <!-- Main Content -->
+            <div class="container" id="content">
+            <div class="page-inner">
             <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-12"> 
                 <div class="card">
                   <div class="card-header">
                     <div class="d-flex align-items-center">
-                      <h4 class="card-title">Add User</h4>
-                      <button
-                        class="btn btn-primary btn-round ms-auto"
-                        data-bs-toggle="modal"
-                        data-bs-target="#addRowModal"
-                      >
-                        <i class="fa fa-plus"></i>
-                        Add User
-                      </button>
+                      <h4 class="card-title">System Users</h4>
                     </div>
                   </div>
                   <div class="card-body">
@@ -510,6 +129,12 @@ $userData = $user->getUserData($user_id);
                                     <input id="addid" name="addid" type="text" class="form-control" placeholder="fill ID" required />
                                   </div>
                                 </div>
+                                <div class="col-md-12">
+                                  <div class="form-group form-group-default">
+                                    <label>Profile Upload</label>
+                                    <input id="addprofile" name="addprofile" type="file" class="form-control" accept=".png, .jpg, .jpeg" />
+                                  </div> 
+                                </div>
                                 <div class="col-md-6 pe-0">
                                   <div class="form-group form-group-default">
                                     <label>First Name</label>
@@ -542,17 +167,20 @@ $userData = $user->getUserData($user_id);
                                 </div>
                                 <div class="col-md-6">
                                   <div class="form-group form-group-default">
+                                    <label>System Role</label>
+                                    <select id="addrole" name="addrole" class="form-control">
+                                      <option value="Super Admin">Super Admin</option>
+                                      <option value="Admin">Admin</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div class="col-md-6 pe-0">
+                                  <div class="form-group form-group-default">
                                     <label>Status</label>
                                     <select id="addstatus" name="addstatus" class="form-control">
                                       <option value="Active">Active</option>
                                       <option value="Inactive">Inactive</option>
                                     </select>
-                                  </div>
-                                </div>
-                                <div class="col-md-12">
-                                  <div class="form-group form-group-default">
-                                    <label>Profile Upload</label>
-                                    <input id="addprofile" name="addprofile" type="file" class="form-control" accept=".png, .jpg, .jpeg" />
                                   </div>
                                 </div>
                               </div>
@@ -564,7 +192,6 @@ $userData = $user->getUserData($user_id);
                             
                              <!-- End Add Modal Form-->`
                           </div>
-
                         </div>
                       </div>
                     </div>
@@ -611,10 +238,10 @@ $userData = $user->getUserData($user_id);
                             </div>
                         </div>
                         <!-- Other Input Fields -->
-                        <div class="col-md-12">
+                        <div class="col-md-12"> 
                             <div class="form-group form-group-default">
                                 <label>ID</label>
-                                <input id="editid" name="editid" type="text" class="form-control" placeholder="fill ID" />
+                                <input id="editid" name="editid" type="text" class="form-control" placeholder="fill ID" readonly />
                                 <input id="editoldid" name="editoldid" type="text" class="form-control" placeholder="fill ID" hidden/>
 
                             </div>
@@ -651,12 +278,22 @@ $userData = $user->getUserData($user_id);
                         </div>
                         <div class="col-md-6">
                             <div class="form-group form-group-default">
+                                <label>System Role</label>
+                                <!-- Dropdown for Status -->
+                                <select id="editrole" name="editrole" class="form-control">
+                                    <option value="Super Admin">Super Admin</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 pe-0">
+                            <div class="form-group form-group-default">
                                 <label>Status</label>
                                 <!-- Dropdown for Status -->
                                 <select id="editstatus" name="editstatus" class="form-control">
                                     <option value="Active">Active</option>
                                     <option value="Inactive">Inactive</option>
-                                </select> 
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -687,9 +324,9 @@ $userData = $user->getUserData($user_id);
                                 <th>Full Name</th>
                                 <th>Email</th>
                                 <th>Position</th>
+                                <th>System Role</th>
                                 <th>Date Added</th>
                                 <th>Status</th>
-                                <th style="width: 10%">Action</th>
                             </tr>
                         </thead>
                         <tfoot>
@@ -699,53 +336,59 @@ $userData = $user->getUserData($user_id);
                                 <th>Full Name</th>
                                 <th>Email</th>
                                 <th>Position</th>
+                                <th>System Role</th>
                                 <th>Date Added</th>
                                 <th>Status</th>
-                                <th>Action</th>
                             </tr>
                         </tfoot> 
                         <tbody>
                         <?php
-                        $nodes = $user->getAllUsers();
-                        foreach ($nodes as $node) {
-                            $fullName = "{$node->user_lname}, {$node->user_fname} {$node->user_mname}";
-                            echo "<tr data-id='{$node->user_id}' data-lname='{$node->user_lname}' data-fname='{$node->user_fname}' data-mname='{$node->user_mname}' data-email='{$node->user_email}' data-position='{$node->user_position}' data-dateadded='{$node->user_dateadded}' data-status='{$node->user_status}'>
-                                <td><img src='uploads/{$node->user_profile}' alt='Profile Picture' style='width: 50px; height: 50px; border-radius: 50%;'></td>
-                                <td>{$node->user_id}</td>
-                                <td>{$fullName}</td>
-                                <td>{$node->user_email}</td>
-                                <td>{$node->user_position}</td>
-                                <td>{$node->user_dateadded}</td>
-                                <td>{$node->user_status}</td>
-                                <td>
-                                    <div class='form-button-action'>
-                                        <button type='button' class='btn btn-link btn-primary btn-lg editButton'>
-                                            <i class='fa fa-edit'></i>
-                                        </button>
-                                        <button type='button' class='btn btn-link btn-danger removeAccess'>
-                                            <i class='fa fa-times'></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>";
-                        }
-                        ?>
+                          $nodes = $user->getAllUsers();
+                          foreach ($nodes as $node) {
+                              $fullName = "{$node->user_lname}, {$node->user_fname} {$node->user_mname}";
+                              $statusColor = ($node->user_status === 'Active') ?  '#77dd77' : '#ff6961';
+                              $statusText = ucfirst($node->user_status); 
+                              
+                              echo "<tr data-id='{$node->user_id}' data-lname='{$node->user_lname}' data-fname='{$node->user_fname}' data-mname='{$node->user_mname}' data-email='{$node->user_email}' data-position='{$node->user_position}' data-role='{$node->user_role}' data-dateadded='{$node->user_dateadded}' data-status='{$node->user_status}'> 
+                                  <td><img src='uploads/{$node->user_profile}' alt='Profile Picture' style='width: 50px; height: 50px; border-radius: 50%;'></td>
+                                  <td>{$node->user_id}</td>
+                                  <td>{$fullName}</td>
+                                  <td>{$node->user_email}</td>
+                                  <td>{$node->user_position}</td>
+                                  <td>{$node->user_role}</td>
+                                  <td>{$node->user_dateadded}</td>
+                                  <td>
+                                      <span style='
+                                          display: inline-block;
+                                          padding: 5px 10px;
+                                          border-radius: 50px;
+                                          background-color: {$statusColor};
+                                          color: white; 
+                                          text-align: center;
+                                          min-width: 60px;'>
+                                          {$statusText}
+                                      </span>
+                                  </td>
+                              </tr>";
+                          }
+                          ?>
+
                         </tbody>
                     </table>
-                </div>
+                  </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </div>               
         </div>
-
-        <footer class="footer">
-
-        </footer>
       </div>
     </div>
 
+    
+    
+
+    
     <!--   Core JS Files   -->
     <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/core/popper.min.js"></script>
@@ -764,7 +407,7 @@ $userData = $user->getUserData($user_id);
     $("#add-row").DataTable({
         pageLength: 7,
     });
-
+ 
     // Add row
     $("#addRowButton").click(function () {
         var action =
@@ -778,7 +421,8 @@ $userData = $user->getUserData($user_id);
                 $("#addlname").val(),
                 $("#addemail").val(),
                 $("#addposition").val(),
-                $("#addstatus").val(),
+                $("#addrole").val(),
+                $("#addstatus").val(), 
                 action,
             ]);
         $("#addRowModal").modal("hide");
@@ -792,6 +436,7 @@ $userData = $user->getUserData($user_id);
         var mname = row.data('mname');
         var email = row.data('email');
         var position = row.data('position');
+        var role = row.data('role');
         var dateadded = row.data('dateadded');
         var status = row.data('status');
       
@@ -802,6 +447,7 @@ $userData = $user->getUserData($user_id);
         $("#editmname").val(mname);
         $("#editemail").val(email);
         $("#editposition").val(position);
+        $("#editrole").val(role);
         $("#dateadded").text(dateadded);
         $("#editstatus").val(status);
        
@@ -827,6 +473,7 @@ $userData = $user->getUserData($user_id);
             $("#editmname").val(),
             $("#editemail").val(),
             $("#editposition").val(),
+            $("#editrole").val(),
             $("#editstatus").val(),
             '<td> <div class="form-button-action"> <button class="editButton" type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button class="removeAccess" type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>',
         ]).draw();
@@ -932,23 +579,87 @@ $userData = $user->getUserData($user_id);
             <?php endif; ?>
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+    $(document).ready(function() {
+        // Check for session status and message
+        <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
+            var status = '<?php echo $_SESSION['status']; ?>';
+            var message = '<?php echo $_SESSION['message']; ?>';
+
+            if (status === 'success') {
+                Swal.fire({
+                    title: "Success!",
+                    text: message,
+                    icon: "success",
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#28a745" // Green
+                });
+            } else if (status === 'error') {
+                Swal.fire({
+                    title: "Error!",
+                    text: message,
+                    icon: "error",
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#dc3545" // Red
+                });
+            }
+
+            // Clear session messages after showing alert
+            <?php
+                unset($_SESSION['status']);
+                unset($_SESSION['message']);
+            ?>
+        <?php endif; ?>
+    });
+</script>
     <script>
       document.getElementById('editprofile').addEventListener('change', function(event) {
-    var file = event.target.files[0]; // Get the selected file
+      var file = event.target.files[0]; // Get the selected file
 
-    if (file) {
-        var reader = new FileReader(); // Create a new FileReader
+      if (file) {
+          var reader = new FileReader(); // Create a new FileReader
 
-        reader.onload = function(e) {
-            // Update the src attribute of the img element
-            document.getElementById('currentProfile').src = e.target.result;
-        };
+          reader.onload = function(e) {
+              // Update the src attribute of the img element
+              document.getElementById('currentProfile').src = e.target.result;
+          };
 
-        reader.readAsDataURL(file); // Read the file as a Data URL
-    }
-});
+          reader.readAsDataURL(file); // Read the file as a Data URL
+        }
+      });
 
     </script>
+    
+    
+    <script>
+    $(document).ready(function() {
+       
+        $("#sidebar").load("adminsidebar.php", function(response, status, xhr) {
+            if (status == "error") {
+                console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
+            } else {
+                
+                var currentPage = window.location.pathname.split('/').pop(); 
 
-  </body>
+                $('.nav-item').removeClass('active');
+
+                $('.nav-item').each(function() {
+                    var href = $(this).find('a').attr('href');
+                    if (href.indexOf(currentPage) !== -1) {
+                        $(this).addClass('active');
+                    }
+                });
+            }
+        });
+
+        $("#header").load("header.php", function(response, status, xhr) {
+            if (status == "error") {
+                console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
+            }
+        });
+    });
+</script>
+</body>
 </html>

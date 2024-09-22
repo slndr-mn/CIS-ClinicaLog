@@ -7,7 +7,7 @@ include('../php/medicine.php');
 $db = new Database();
 $conn = $db->getConnection(); 
 
-$medicine = new Medicine($conn); 
+$medicine = new MedicineManager($conn); 
 
 $user = new User($conn); 
 $user_id = $_SESSION['user_id'];
@@ -53,6 +53,9 @@ $userData = $user->getUserData($user_id);
     <link rel="stylesheet" href="../css/plugins.min.css" />
     <link rel="stylesheet" href="../css/kaiadmin.min.css" />
 
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+
+
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link rel="stylesheet" href="../css/demo.css" />
 
@@ -93,6 +96,9 @@ $userData = $user->getUserData($user_id);
 
         <div class="container" id="content">
           <div class="page-inner">
+
+            <div id="addmedrow"></div>
+          
             <div class="row">
               <div class="col-md-12">
                 <div class="card">
@@ -141,29 +147,25 @@ $userData = $user->getUserData($user_id);
                               <div class="row">
                                 <div class="col-sm-12">
                                   <div class="form-group form-group-default">
-                                    <label>Category</label>
-                                    <input
-                                      id="addcategory"
-                                      name="addcategory"
-                                      type="text"
-                                      class="form-control"
-                                      placeholder="fill category"
-                                    />
+                                    <!-- Medicine Name Dropdown -->
+                                    <div>
+                                    <label for="medicineName">Medicine Name</label>
+                                    <select id="addname" name="addname" class="form-control">
+                                        <option value="" disabled selected hidden>fill medicine name</option>
+                                        <?php
+                                        // Fetch all medicines
+                                        $medicines = $medicine->getAllMedicines();
+
+                                        // Loop through the medicines and create dropdown options
+                                        foreach ($medicines as $med) {
+                                            echo "<option value='" . $med->medicine_id . "'>" . $med->medicine_name . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                    </div>
                                   </div>
                                 </div>
                                 <div class="col-md-6 pe-0">
-                                  <div class="form-group form-group-default">
-                                    <label>Name</label>
-                                    <input
-                                      id="addname"
-                                      name="addname"
-                                      type="text"
-                                      class="form-control"
-                                      placeholder="fill name"
-                                    />
-                                  </div>
-                                </div>
-                                <div class="col-md-6">
                                   <div class="form-group form-group-default">
                                     <label>Quantity</label>
                                     <input
@@ -175,7 +177,7 @@ $userData = $user->getUserData($user_id);
                                     />
                                   </div>
                                 </div>
-                                <div class="col-md-6 pe-0">
+                                <div class="col-md-6">
                                   <div class="form-group form-group-default">
                                     <label>Dosage Strength</label>
                                     <input
@@ -187,7 +189,7 @@ $userData = $user->getUserData($user_id);
                                     />
                                   </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 pe-0">
                                   <div class="form-group form-group-default">
                                     <label>Expiration Date</label>
                                     <input
@@ -247,182 +249,173 @@ $userData = $user->getUserData($user_id);
                             </button>
                           </div>
                           <div class="modal-body">
-                            <form id="editForm" action="medicinecontrol.php" method="POST">
-                              <div class="row">
-                              <div class="col-sm-12">
-                                  <div class="form-group form-group-default">
-                                    <label>ID</label>
-                                    <input
-                                      id="editid"
-                                      name="editid"
-                                      type="text"
-                                      class="form-control"
-                                      placeholder="fill id" readonly
-                                    />
-                                  </div>
-                                </div>
-                              <div class="col-sm-12">
-                                  <div class="form-group form-group-default">
-                                    <label>Category</label>
-                                    <input
-                                      id="editcategory"
-                                      name="editcategory"
-                                      type="text"
-                                      class="form-control"
-                                      placeholder="fill category"
-                                    />
-                                  </div>
-                                </div>
-                                <div class="col-md-6 pe-0">
-                                  <div class="form-group form-group-default">
-                                    <label>Name</label>
-                                    <input
-                                      id="editname"
-                                      name="editname"
-                                      type="text"
-                                      class="form-control"
-                                      placeholder="fill name"
-                                    />
-                                  </div>
-                                </div>
-                                <div class="col-md-6">
-                                  <div class="form-group form-group-default">
-                                    <label>Quantity</label>
-                                    <input
-                                      id="editquantity"
-                                      name="editquantity"
-                                      type="number"
-                                      class="form-control"
-                                      placeholder="fill quantity"
-                                    />
-                                  </div>
-                                </div>
-                                <div class="col-md-6 pe-0">
-                                  <div class="form-group form-group-default">
-                                    <label>Dosage Strength</label>
-                                    <input
-                                      id="editDS"
-                                      name="editDS"
-                                      type="text"
-                                      class="form-control"
-                                      placeholder="fill dosage strength"
-                                    />
-                                  </div>
-                                </div>
-                                <div class="col-md-6">
-                                  <div class="form-group form-group-default">
-                                    <label>Date Added</label>
-                                    <input
-                                      id="editdateadded"
-                                      name="editdateadded"
-                                      type="date"
-                                      class="form-control"
-                                      placeholder="fill date added" readonly
-                                    />
-                                  </div>
-                                </div>
-                                <div class="col-md-6">
-                                  <div class="form-group form-group-default">
-                                    <label>Expiration Date</label>
-                                    <input
-                                      id="editED"
-                                      name="editED"
-                                      type="date"
-                                      class="form-control"
-                                      placeholder="fill expiration date"
-                                    />
-                                  </div>
-                                </div>
+                          <form id="editForm" action="medicinecontrol.php" method="POST">
+                          <div class="row">
+                          <div class="col-md-6">
+                            <p class="fw-light">Date & Time Added: <span id="editdatetimeadded"></span></p>
+                        </div>
+                            <div class="col-sm-12">
+                              <div class="form-group form-group-default">
+                                <label>ID</label>
+                                <input id="editid" name="editid" type="text" class="form-control" placeholder="fill id" readonly />
                               </div>
-                              <div class="modal-footer border-0">
-                            <button
-                              type="submit"
-                              class="btn btn-primary"
-                              data-bs-target="updatemedicine"
-                              id="updatemedicine"
-                              name="updatemedicine"
-                            >
+                            </div>
+                            <div class="col-sm-12">
+                            <div class="form-group form-group-default">
+                                <label for="editname">Medicine Name</label>
+                                <select id="editname" name="editname" class="form-control">
+                                    <?php
+                                    // Fetch all medicines
+                                    $medicines = $medicine->getAllMedicines();
+
+                                    // Loop through the medicines and create dropdown options
+                                    foreach ($medicines as $med) {
+                                        echo "<option value='" . $med->medicine_id . "'>" . $med->medicine_name . "</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group form-group-default">
+                                <label>Quantity</label>
+                                <input id="editquantity" name="editquantity" type="number" class="form-control" placeholder="fill quantity" />
+                              </div>
+                            </div>
+                            <div class="col-md-6 pe-0">
+                              <div class="form-group form-group-default">
+                                <label>Dosage Strength</label>
+                                <input id="editDS" name="editDS" type="text" class="form-control" placeholder="fill dosage strength" />
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group form-group-default">
+                                <label>Expiration Date</label>
+                                <input id="editED" name="editED" type="date" class="form-control" placeholder="fill expiration date" />
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group form-group-default">
+                                <label>Disable</label>
+                                <select id="editDisable" name="editDisable" class="form-control">
+                                  <option value="0">No</option>
+                                  <option value="1">Yes</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="modal-footer border-0">
+                            <button type="submit" class="btn btn-primary" data-bs-target="updatemedicine" id="updatemedicine" name="updatemedicine">
                               Edit
                             </button>
-      
-                            <button
-                              type="button"
-                              class="btn btn-secondary"
-                              data-bs-dismiss="modal"
-                              id="edit-close"
-                            >
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="edit-close">
                               Close
                             </button>
                           </div>
-                            </form>
-                          </div>
-                          
+                        </form>
+
+                          </div>                          
                         </div>
                       </div>
                     </div>
 
                     <div class="table-responsive">
-                      <table
-                        id="add-med"
-                        class="display table table-striped table-hover"
-                      >
+                    <table id="add-med" class="display table table-striped table-hover">
                         <thead>
-                          <tr>
-                            <th>ID</th>
-                            <th>Category</th>
-                            <th>Name</th>
-                            <th>Quantity</th>
-                            <th>Dosage Strength</th>
-                            <th>Date Added</th>
-                            <th>Expiration Date</th>
-                            <th style="width: 10%">Action</th>
-                          </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Quantity</th>
+                                <th>Dosage Strength</th>
+                                <th>Date & Time Added</th>
+                                <th>Expiration Date</th>
+                                <th>Status</th> <!-- Column for Disable status -->
+                                <th style="width: 10%">Action</th>
+                            </tr>
                         </thead>
                         <tfoot>
-                          <tr>
-                            <th>ID</th>
-                            <th>Category</th>
-                            <th>Name</th>
-                            <th>Quantity</th>
-                            <th>Dosage Strength</th>
-                            <th>Date Added</th>
-                            <th>Expiration Date</th>
-                            <th>Action</th>
-                          </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Quantity</th>
+                                <th>Dosage Strength</th>
+                                <th>Date & Time Added</th>
+                                <th>Expiration Date</th>
+                                <th>Status</th> <!-- Column for Disable status -->
+                                <th>Action</th>
+                            </tr>
                         </tfoot>
                         <tbody>
-                          
-                          <?php
-                          $nodes = $medicine->getAllMedicines();
+                        <?php
+                          $nodes = $medicine->getAllItems();
                           foreach ($nodes as $node) {
-                              echo "<tr data-id='{$node->medicine_id}' data-category='{$node->medicine_category}' data-name='{$node->medicine_name}' data-qty='{$node->medicine_qty}' data-dosage='{$node->medicine_dosage}' data-dateadded='{$node->medicine_dateadded}' data-expirationdt='{$node->medicine_expirationdt}'>
-                                  <td>{$node->medicine_id}</td>
-                                  <td>{$node->medicine_category}</td>
-                                  <td>{$node->medicine_name}</td>
-                                  <td>{$node->medicine_qty}</td>
-                                  <td>{$node->medicine_dosage}</td>
-                                  <td>{$node->medicine_dateadded}</td>
-                                  <td>{$node->medicine_expirationdt}</td>
-                                  <td>
-                                      <div class='form-button-action'>
-                                          <button type='button' class='btn btn-link btn-primary btn-lg editButton'>
-                                              <i class='fa fa-edit'></i>
-                                          </button>
-                                          <button type='button' class='btn btn-link btn-danger removeAccess'>
-                                              <i class='fa fa-times'></i>
-                                          </button>
-                                      </div>
-                                  </td>
-                              </tr>";
+                              // Determine status and background color
+                              $disableStatus = $node->medstock_disabled == 1 ? 'Disabled' : 'Enabled';
+                              $statusColor = $node->medstock_disabled == 1 ? '#ff6961' : '#77dd77';
+
+                              // Set background color and status message based on quantity
+                              if ($node->medstock_qty == 0) {
+                                  $statusqtyMessage = "Out of Stock";
+                                  $qtycolor = "#ff6961"; // Pastel red for out of stock
+                              } else {
+                                  $statusqtyMessage = $node->medstock_qty;
+                                  $qtycolor = "#000000"; // No special class for in stock
+                              }
+
+                              // Check if the medicine is expired
+                              $currentDate = date('Y-m-d');
+                              $expirationStatus = (strtotime($node->medstock_expirationdt) < strtotime($currentDate)) ? 'Expired' : '';
+
+                              echo "<tr data-id='{$node->medstock_id}' 
+                                        data-name='{$node->medicine_name}' 
+                                        data-qty='{$node->medstock_qty}' 
+                                        data-dosage='{$node->medstock_dosage}' 
+                                        data-dateadded='{$node->medstock_dateadded} {$node->medstock_timeadded}' 
+                                        data-expirationdt='{$node->medstock_expirationdt}' 
+                                        data-disable='{$node->medstock_disabled}' class='$statusColor'>
+                                    <td>{$node->medstock_id}</td>
+                                    <td>{$node->medicine_name}</td>
+                                    <td style='color: $qtycolor;'>{$statusqtyMessage}</td>
+                                    <td>{$node->medstock_dosage}</td>
+                                    <td>{$node->medstock_dateadded} {$node->medstock_timeadded}</td>
+                                    <td>
+                                        <span style='color: #ff6961;'>$expirationStatus</span>
+                                        <br>
+                                        <span>{$node->medstock_expirationdt}</span>
+                                    </td>
+                                    <td>
+                                        <span style='
+                                            display: inline-block;
+                                            padding: 5px 10px;
+                                            border-radius: 50px;
+                                            background-color: {$statusColor};
+                                            color: white; 
+                                            text-align: center;
+                                            min-width: 60px;'>
+                                            {$disableStatus}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class='form-button-action'>
+                                            <button type='button' class='btn btn-link btn-primary btn-lg editButton'>
+                                                <i class='fa fa-edit'></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>";
                           }
                           ?>
                         </tbody>
-                      </table>
+                    </table>
                     </div>
+
+
                   </div>
                 </div>
               </div>
             </div>
+
+
           </div>
         </div>
 
@@ -469,51 +462,56 @@ $userData = $user->getUserData($user_id);
           $("#addMedModal").modal("hide");
         });
       });
-      //---------------edit------------------------------
-      $(document).on('click', '.editButton', function() {
-      var row = $(this).closest('tr');
-      var id = row.data('id');
-      var category = row.data('category');
-      var name = row.data('name');
-      var qty = row.data('qty');
-      var dosage = row.data('dosage');
-      var dateadded = row.data('dateadded');
-      var expirationdt = row.data('expirationdt');
 
-      // Fill modal inputs with the row data
-      $("#editid").val(id); // Assuming you want to set ID somewhere
-      $("#editcategory").val(category);
-      $("#editname").val(name);
-      $("#editquantity").val(qty);
-      $("#editDS").val(dosage);
-      $("#editdateadded").text(dateadded);
-      $("#editED").val(expirationdt);
+    $(document).on('click', '.editButton', function() {
+        var row = $(this).closest('tr');
+        var id = row.data('id');
+        var name = row.data('name');
+        var qty = row.data('qty');
+        var dosage = row.data('dosage');
+        var dateadded = row.data('dateadded');
+        var expirationdt = row.data('expirationdt');
+        var disable = row.data('disable'); // Assuming you have this in the data attributes
 
-      // Show the modal
-      var myModal = new bootstrap.Modal(document.getElementById('editMedModal'));
-      myModal.show();
-  });
+        // Fill modal inputs with the row data
+        $("#editid").val(id); 
+        $("#editname").val(name); // Pre-select the medicine name in the dropdown
+        $("#editquantity").val(qty);
+        $("#editDS").val(dosage);
+        $("#editdatetimeadded").text(dateadded); // Date added is set into the input field
+        $("#editED").val(expirationdt);
+        $("#editDisable").val(disable); // Set disable value (0 or 1) in the select dropdown
 
-  // When Save/Edit Row button is clicked
-  
-  $(document).on('click', '#updatemedicine', function() {
-    var table = $("#add-med").DataTable();
-    var row = table.row('.selected');
+        // Select the correct medicine in the dropdown by value (medicine_id)
+        $("#editname option").filter(function() {
+            return $(this).text() == name; // Compare the text to match the medicine name
+        }).prop('selected', true);
 
-    // Update row data with the new input values
-    row.data([
-        $("#editcategory").val(),
-        $("#editname").val(),
-        $("#editquantity").val(),
-        $("#editDS").val(),
-        $("#editED").val(),
-        '<td> <div class="form-button-action"> <button class="editButton" type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button class="removeAccess" type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>',
-    ]).draw();
+        // Show the modal
+        var myModal = new bootstrap.Modal(document.getElementById('editMedModal'));
+        myModal.show();
+    });
 
-    // Hide the modal
-    $("#editMedModal").modal("hide");
+// When Save/Edit Row button is clicked
+$(document).on('click', '#updatemedicine', function() {
+  var table = $("#add-med").DataTable();
+  var row = table.row('.selected');
+
+  // Update row data with the new input values
+  row.data([
+    $("#editcategory").val(),
+    $("#editname").val(),
+    $("#editquantity").val(),
+    $("#editDS").val(),
+    $("#editED").val(),
+    $("#editDisable option:selected").text(), // Set the 'Disable' field value as text in the table
+    '<td> <div class="form-button-action"> <button class="editButton" type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button class="removeAccess" type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>',
+  ]).draw();
+
+  // Hide the modal
+  $("#editMedModal").modal("hide");
 });
-  
+
 
 //-----------------------------------------
 $(document).on('click', '.removeAccess', function (e) {
@@ -583,7 +581,7 @@ $(document).on('click', '.removeAccess', function (e) {
             });
         } else {
             swal.close();
-        }
+        } 
     });
 });
 
@@ -619,7 +617,7 @@ $("#edit-exit, #edit-close").click(function (e) {
                     ?>
                 });
 
-            <?php endif; ?>
+            <?php endif; ?> 
         });
     </script>
 
@@ -681,6 +679,12 @@ $("#edit-exit, #edit-close").click(function (e) {
         });
 
         $("#header").load("header.php", function(response, status, xhr) {
+            if (status == "error") {
+                console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
+            }
+        });
+
+        $("#addmedrow").load("addmedicine.php", function(response, status, xhr) {
             if (status == "error") {
                 console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
             }

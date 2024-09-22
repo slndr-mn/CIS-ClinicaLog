@@ -6,7 +6,7 @@ include('../php/user.php');
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header('Location: ../php-login/index.php'); 
     exit;
-}
+} 
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -17,10 +17,10 @@ $user_id = $_SESSION['user_id'];
 ?>
  
 <!DOCTYPE html> 
-<html lang="en"> 
+<html lang="en">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Sample Index</title> 
+    <title>Dashboard</title> 
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
 
@@ -30,16 +30,15 @@ $user_id = $_SESSION['user_id'];
       WebFont.load({ 
         google: { families: ["Public Sans:300,400,500,600,700"] },
         custom: {
-          families: [ 
+          families: [
             "Font Awesome 5 Solid",
             "Font Awesome 5 Regular",
             "Font Awesome 5 Brands",
             "simple-line-icons",
           ],
           urls: ["../css/fonts.min.css"], 
-        },
+        }, 
         active: function () {
-            
           sessionStorage.fonts = true;
         },
       });
@@ -128,7 +127,7 @@ $user_id = $_SESSION['user_id'];
     <script>
     $(document).ready(function() {
        
-        $("#sidebar").load("sidebar.php", function(response, status, xhr) {
+        $("#sidebar").load("superadsidebar.php", function(response, status, xhr) {
             if (status == "error") {
                 console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
             } else {
