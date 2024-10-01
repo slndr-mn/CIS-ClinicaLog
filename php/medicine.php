@@ -6,18 +6,18 @@ class Medicine {
     public $medicine_category;
 
     public function __construct($id, $name, $category) {
-        $this->medicine_id = $id;
+        $this->medicine_id = $id; 
         $this->medicine_name = $name;
         $this->medicine_category = $category;
     }
-}
+} 
 
 // Medstock class
 class Medstock {
     public $medstock_id;
     public $medicine_id;
     public $medstock_qty;
-    public $medstock_dosage;
+    public $medstock_dosage; 
     public $medstock_dateadded;
     public $medstock_timeadded;
     public $medstock_expirationdt;
@@ -80,7 +80,7 @@ class MedicineLinkedList {
     public function find($id) {
         $current = $this->head;
         while ($current !== null) {
-            if ($current->item->medicine_id == $id) { // Use medicine_id for searching
+            if ($current->item->medicine_id == $id) { 
                 return $current->item;
             }
             $current = $current->next;
@@ -89,44 +89,44 @@ class MedicineLinkedList {
     }
 
     public function remove($id) {
-        if ($this->head === null) return false; // List is empty
+        if ($this->head === null) return false; 
 
         if ($this->head->item->medicine_id == $id) {
-            $this->head = $this->head->next; // Remove head
+            $this->head = $this->head->next; 
             return true;
         }
 
         $current = $this->head;
         while ($current->next !== null) {
             if ($current->next->item->medicine_id == $id) {
-                $current->next = $current->next->next; // Remove node
+                $current->next = $current->next->next; 
                 return true;
             }
             $current = $current->next;
         }
-        return false; // Not found
+        return false; 
     }
 
     public function findByName($name) {
         $current = $this->head;
         while ($current !== null) {
-            if (strcasecmp($current->item->medicine_name, $name) === 0) { // Case-insensitive comparison
-                return $current->item; // Return the medicine object
+            if (strcasecmp($current->item->medicine_name, $name) === 0) { 
+                return $current->item; 
             }
             $current = $current->next;
         }
-        return null; // Medicine not found
+        return null; 
     }
 
     public function medicineExists($name) {
         $current = $this->head;
         while ($current !== null) {
-            if (strcasecmp($current->item->medicine_name, $name) === 0) { // Case-insensitive comparison
-                return true; // Medicine exists
+            if (strcasecmp($current->item->medicine_name, $name) === 0) { 
+                return true; 
             }
             $current = $current->next;
-        }
-        return false; // Medicine does not exist
+        } 
+        return false; 
     }
     
 }
@@ -138,7 +138,7 @@ class MedicineManager {
     public $medstocks;
 
     public function __construct($db) {
-        $this->db = $db; // Assuming $db is a PDO instance
+        $this->db = $db; 
         $this->medicines = new MedicineLinkedList();
         $this->medstocks = new MedicineLinkedList();
         $this->loadMedicines();
@@ -223,20 +223,19 @@ class MedicineManager {
         
         $medicineMap = [];
         
-        // Create a map of medicine IDs to medicine names
         foreach ($medicines as $medicine) {
             $medicineMap[$medicine->medicine_id] = $medicine->medicine_name;
         }
     
-        // Combine medstocks with corresponding medicine names
         $combinedItems = [];
         foreach ($medstocks as $medstock) {
             $medstock->medicine_name = $medicineMap[$medstock->medicine_id] ?? 'Unknown'; // Set medicine name
             $combinedItems[] = $medstock; // Add the medstock object with the medicine name
         }
     
-        return $combinedItems; // Return the combined array
+        return $combinedItems; 
     }
+    
     public function getMedicinesWithStockCount() {
         $medstocks = $this->medstocks->getAllNodes();
         $medicines = $this->medicines->getAllNodes();
@@ -252,25 +251,24 @@ class MedicineManager {
             // Increment occurrence for each medstock entry
             $stockCountMap[$medstock->medicine_id]++;
         }
-    
-        // Combine medicines with their stock counts
+
         $combinedItems = [];
         foreach ($medicines as $medicine) {
             $combinedItems[] = [
                 'medicine_id' => $medicine->medicine_id,
                 'medicine_name' => $medicine->medicine_name,
                 'medicine_category' => $medicine->medicine_category,
-                'stock_count' => $stockCountMap[$medicine->medicine_id] ?? 0 // Default to 0 if no stock
+                'stock_count' => $stockCountMap[$medicine->medicine_id] ?? 0 
             ];
         }
     
-        return $combinedItems; // Return the combined array
+        return $combinedItems; 
     }
     
 
     public function updateMedicine($medicine_id, $name, $category) {
         try {
-            // Prepare the SQL update statement
+            
             $sql = "UPDATE medicine SET medicine_name = ?, medicine_category = ? WHERE medicine_id = ?";
             $stmt = $this->db->prepare($sql);
             
@@ -278,9 +276,8 @@ class MedicineManager {
                 throw new Exception("Failed to prepare the SQL statement.");
             }
     
-            // Execute the statement with bound parameters
             if ($stmt->execute([$name, $category, $medicine_id])) {
-                // Update the linked list after the database operation succeeds
+              
                 $medicine = $this->medicines->find($medicine_id);
                 if ($medicine) {
                     $medicine->medicine_name = $name;
@@ -289,11 +286,11 @@ class MedicineManager {
                 echo "Medicine updated successfully.<br>";
                 return true;
             } else {
-                // Handle execution failure
+                
                 throw new Exception("Failed to execute the update statement.");
             }
         } catch (Exception $e) {
-            // Display detailed error message
+            
             echo "Error updating medicine: " . $e->getMessage() . "<br>";
             return false;
         }
@@ -304,7 +301,6 @@ class MedicineManager {
     public function updateMedstock($medstock_id, $medicine_id, $medicine_qty, $medicine_dosage, $medicine_expirationdt, $medicine_disable) {
         try {
             
-            // Prepare the SQL statement to update medstock
             $sql = "UPDATE medstock SET medicine_id = ?, medstock_qty = ?, medstock_dosage = ?, medstock_expirationdt = ?, medstock_disable = ? WHERE medstock_id = ?";
             $stmt = $this->db->prepare($sql);
             
@@ -312,7 +308,6 @@ class MedicineManager {
                 throw new Exception("Failed to prepare SQL statement.");
             }
     
-            // Execute the statement with bound parameters
             if ($stmt->execute([$medicine_id, $medicine_qty, $medicine_dosage, $medicine_expirationdt, $medicine_disable, $medstock_id])) {
                 // Update the linked list
                 $medstock = $this->medstocks->find($medstock_id);

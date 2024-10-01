@@ -43,7 +43,7 @@ $user_id = $_SESSION['user_id'];
         },
       });
     </script>
-
+ 
     <!-- CSS Files -->
     <link rel="stylesheet" href="../css/bootstrap.min.css" />
     <link rel="stylesheet" href="../css/plugins.min.css" />

@@ -3,12 +3,14 @@ session_start();
 include('../database/config.php');
 include('../php/user.php');
 include('../php/medicine.php');
+include('../php/patient.php');
+
 
 $db = new Database();
 $conn = $db->getConnection(); 
 
-$medicine = new Medicine($conn); 
-
+$patient = new PatientManager($db);
+ 
 $user = new User($conn); 
 $user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id); 
@@ -26,11 +28,11 @@ $userData = $user->getUserData($user_id);
     <script>
       WebFont.load({ 
         google: { families: ["Public Sans:300,400,500,600,700"] },
-        custom: {
+        custom: { 
           families: [
             "Font Awesome 5 Solid",
             "Font Awesome 5 Regular",
-            "Font Awesome 5 Brands",
+            "Font Awesome 5 Brands", 
             "simple-line-icons",
           ],
           urls: ["../css/fonts.min.css"], 
@@ -78,7 +80,7 @@ $userData = $user->getUserData($user_id);
                   <div class="card">
                     <div class="card-header">
                       <div class="d-flex align-items-center">
-                        <h4 class="card-title">Patient</h4>
+                        <h4 class="card-title">Patients</h4>
                         <button
                           class="btn btn-primary btn-round ms-auto"
                           data-bs-toggle="modal"
@@ -122,11 +124,21 @@ $userData = $user->getUserData($user_id);
                                   <button type="button" class="btn btn-primary btn-round ms-auto custom-button" id="addbutton">
                                     Student
                                   </button>
-                                </a>
+                                </a> 
                                 <!-- Button for Staff Patient -->
+                                <a href="add-faculty.php">
+                                  <button type="button" class="btn btn-primary btn-round ms-auto custom-button" id="addbutton">
+                                    Faculty
+                                  </button>
+                                </a>
                                 <a href="add-staff.php">
                                   <button type="button" class="btn btn-primary btn-round ms-auto custom-button" id="addbutton">
                                     Staff
+                                  </button>
+                                </a>
+                                <a href="add-extension.php">
+                                  <button type="button" class="btn btn-primary btn-round ms-auto custom-button" id="addbutton">
+                                    Extension
                                   </button>
                                 </a>
                               </form>
@@ -136,61 +148,89 @@ $userData = $user->getUserData($user_id);
                       </div>
 
                       <div class="table-responsive">
-                        <table id="add-patient" class="table table-striped table-hover">
-                          <thead>
-                            <tr>
-                              <th>Name</th>
-                              <th>Patient ID</th>
-                              <th>Phone Number</th>
-                              <th>Last Visited Date</th>
-                              <th>Clinic Staff</th>
-                              <th>Reason</th>
-                              <th style="width: 10%">Action</th>
-                            </tr>
-                          </thead>
-                          <tfoot>
-                            <tr>
-                              <th>Name</th>
-                              <th>Patient ID</th>
-                              <th>Phone Number</th>
-                              <th>Last Visited Date</th>
-                              <th>Clinic Staff</th>
-                              <th>Reason</th>
-                              <th>Action</th>
-                            </tr>
-                          </tfoot>
-                          <tbody>
+                      <table id="add-patient" class="table table-striped table-hover">
+                        <thead>
                           <tr>
-                            <td>Jackilyn M. Furog</td>
-                            <td>2022-00473</td>
-                            <td>09756066512</td>
-                            <td>06/28/2024</td>
-                            <td>Nurse Tweet</td>
-                            <td>Stomach Ache</td>
-                            <td>
-                              <div class="form-button-action">
-                                <button
-                                  id="viewButton"
-                                  type="button"
-                                  data-bs-toggle="tooltip"
-                                  title=""
-                                  class="btn btn-link btn-primary btn-lg"
-                                >
-                                  <i class="fa fa-eye"></i>
-                                </button>
-                              </div>
-                            </td>
+                            <th>No.</th>
+                            <th>ID Number</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Sex</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th style="width: 10%">Action</th>
                           </tr>
-                        </tbody>
-                        </table>
-                      </div>
+                        </thead>
+                        <tfoot>
+                          <tr>
+                            <th>No.</th>
+                            <th>ID Number</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Sex</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                          </tr>
+                        </tfoot>
+                        <tbody>
+                        <?php
+                        // Assuming you have called getAllPatientsTable() somewhere in your code
+                        $nodes = $patient->getAllPatientsTable();
+                        $index = 0; // Initialize the index outside the loop
+
+                        foreach ($nodes as $node) {
+                            // Check for patient_status property
+                            $disableStatus = isset($node->status) && $node->status == 'Inactive' ? 'Disabled' : 'Enabled';
+                            $statusColor = isset($node->status) && $node->status == 'Inactive' ? '#ff6961' : '#77dd77';
+
+                            // Increment index for each node
+                            $index++;
+
+                            echo "<tr data-id='{$node->idnum}' 
+                                        data-name='{$node->name}' 
+                                        data-email='{$node->email}' 
+                                        data-sex='{$node->sex}' 
+                                        data-type='{$node->type}' 
+                                        data-status='{$node->status}' class='patient-row'>
+                                  <td>{$index}</td> <!-- For No. column -->
+                                  <td>{$node->idnum}</td>
+                                  <td>{$node->name}</td>
+                                  <td>{$node->email}</td>
+                                  <td>{$node->sex}</td>
+                                  <td>{$node->type}</td>
+                                  <td>
+                                      <span style='
+                                          display: inline-block;
+                                          padding: 5px 10px;
+                                          border-radius: 50px;
+                                          background-color: {$statusColor}; /* Determine color based on status if needed */
+                                          color: white; 
+                                          text-align: center;
+                                          min-width: 60px;'>
+                                          {$node->status}
+                                      </span>
+                                  </td>
+                                  <td>
+                                      <div class='form-button-action'>
+                                          <button type='button' class='btn btn-link btn-primary btn-lg viewButton' 
+                                                  data-id='{$node->idnum}' data-type='{$node->type}'>
+                                              <i class='fa fa-eye'></i>
+                                          </button>
+                                      </div>
+                                  </td>
+                              </tr>";
+                        }
+                        ?>
+                      </tbody>
+                      </table>
+                    </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <footer class="footer">
         </div>
       </div>
 
@@ -214,6 +254,85 @@ $userData = $user->getUserData($user_id);
         $(document).ready(function() {
         $('#add-patient').DataTable({
             responsive: true
+        });
+    });
+    </script>
+    <script>
+      $(document).ready(function() {
+          $('#dynamic-table').DataTable();
+          loadDefaultTable(); 
+      });
+      function loadDefaultTable() {
+        $("#tablechange").load("studentstable.php", function(response, status, xhr) {
+            if (status === "error") {
+                console.log("Error loading studentstable: " + xhr.status + " " + xhr.statusText);
+            }
+        });
+      }
+
+        // Function to dynamically load content into the tablechange div based on the selected type
+        function changeTableContent(type) {
+            let data = [];
+
+            // Load different tables based on the type selected
+            if (type === 'students') {
+                $("#tablechange").load("studentstable.php", function(response, status, xhr) {
+                    if (status === "error") {
+                        console.log("Error loading studentstable: " + xhr.status + " " + xhr.statusText);
+                    }
+                });
+            } else if (type === 'faculties') {
+                $("#tablechange").load("faculty.php", function(response, status, xhr) {
+                    if (status === "error") {
+                        console.log("Error loading faculty table: " + xhr.status + " " + xhr.statusText);
+                    }
+                });
+            } else if (type === 'staffs') {
+                $("#tablechange").load("stafftable.php", function(response, status, xhr) {
+                    if (status === "error") {
+                        console.log("Error loading staff table: " + xhr.status + " " + xhr.statusText);
+                    }
+                });
+            }
+
+            // Optionally populate the table with empty data for default behavior
+            populateTable(data);
+        }
+    </script>
+      
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Add event listener for view buttons
+        document.querySelectorAll('.viewButton').forEach(function (button) {
+            button.addEventListener('click', function () {
+                // Retrieve the data-id and data-type from the button
+                const patientId = this.getAttribute('data-id');
+                const patientType = this.getAttribute('data-type');
+
+                // Determine the file to redirect to based on the patient type
+                let fileName = '';
+                switch (patientType.toLowerCase()) {
+                    case 'student':
+                        fileName = 'patient-studprofile.php';
+                        break;
+                    case 'faculty':
+                        fileName = 'patient-facultyprofile.php';
+                        break;
+                    case 'staff':
+                        fileName = 'patient-staffprofile.php';
+                        break;
+                    case 'extension':
+                        fileName = 'patient-extensionprofile.php';
+                        break;
+                    default:
+                        fileName = 'patient-record.php'; // Optional: Handle unknown types
+                        break;
+                }
+
+                // Redirect to the appropriate page, passing the patient ID as a query parameter
+                const url = `${fileName}?id=${patientId}`;
+                window.location.href = url;
+            });
         });
     });
 

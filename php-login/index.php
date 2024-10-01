@@ -21,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
     $doctor = "Campus Physician";
     
     $userData = $user->userExists($email, $password);
-    
-    if ($userData) { 
+      
+    if ($userData) {  
         session_regenerate_id(true);
         $_SESSION['logged_in'] = true;
         $_SESSION['user_id'] = $userData->user_id;  
@@ -32,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
 
         $user_position = $_SESSION['user_position'];
         $user_role = $_SESSION['user_role'];
-        $status = $_SESSION['user_status']; 
-
+        $status = $_SESSION['user_status'];  
+ 
         if($userData->user_status === 'Active'){
 
             if($user_position == $defaultadmin){
@@ -106,7 +106,7 @@ unset($_SESSION['error_message']);
                         <label for="password" class="form-label">Password:</label>
                         <img src="../assets/img/password.png" alt="password icon">
                         <input type="password" name="password" id="password" class="form-input" placeholder="Enter your Password" required>
-                        <input type="checkbox" id="show-password"> 
+                      <input type="checkbox" id="show-password"> 
                     </div>
 
                     <div class="forgotpassword">
@@ -114,7 +114,7 @@ unset($_SESSION['error_message']);
                         <span id="click"><a href="forgotpassword.php">Click Here.</a></span>
                     </div>
                 </div>
-
+ 
                 <button id="loginbtn" type="submit">Login</button>
             </form>
         </div>
@@ -125,7 +125,7 @@ unset($_SESSION['error_message']);
             if (this.checked) {
                 passwordField.type = 'text';
             } else {
-                passwordField.type = 'password';
+                passwordField.type = 'password'; 
             }
             });
     </script>

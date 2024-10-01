@@ -5,7 +5,7 @@ include('../php/user.php');
 include('../php/medicine.php');
 
 $db = new Database();
-$conn = $db->getConnection(); 
+$conn = $db->getConnection();  
 
 $medicine = new MedicineManager($conn); 
 
@@ -27,7 +27,7 @@ $userData = $user->getUserData($user_id);
       href="../assets/img/ClinicaLog.ico"
       type="image/x-icon"
     />
-
+ 
     <!-- Fonts and icons --> 
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
     <script>
@@ -111,7 +111,7 @@ $userData = $user->getUserData($user_id);
                         data-bs-target="#addMedModal"
                       >
                         <i class="fa fa-plus"></i>
-                        Add Medicine
+                        Add Medicine 
                       </button>
                     </div>
                   </div>
@@ -353,7 +353,6 @@ $userData = $user->getUserData($user_id);
                               $disableStatus = $node->medstock_disabled == 1 ? 'Disabled' : 'Enabled';
                               $statusColor = $node->medstock_disabled == 1 ? '#ff6961' : '#77dd77';
 
-                              // Set background color and status message based on quantity
                               if ($node->medstock_qty == 0) {
                                   $statusqtyMessage = "Out of Stock";
                                   $qtycolor = "#ff6961"; // Pastel red for out of stock
@@ -408,14 +407,10 @@ $userData = $user->getUserData($user_id);
                         </tbody>
                     </table>
                     </div>
-
-
                   </div>
                 </div>
               </div>
             </div>
-
-
           </div>
         </div>
 
@@ -471,20 +466,18 @@ $userData = $user->getUserData($user_id);
         var dosage = row.data('dosage');
         var dateadded = row.data('dateadded');
         var expirationdt = row.data('expirationdt');
-        var disable = row.data('disable'); // Assuming you have this in the data attributes
+        var disable = row.data('disable'); 
 
-        // Fill modal inputs with the row data
         $("#editid").val(id); 
-        $("#editname").val(name); // Pre-select the medicine name in the dropdown
+        $("#editname").val(name); 
         $("#editquantity").val(qty);
         $("#editDS").val(dosage);
-        $("#editdatetimeadded").text(dateadded); // Date added is set into the input field
+        $("#editdatetimeadded").text(dateadded);
         $("#editED").val(expirationdt);
-        $("#editDisable").val(disable); // Set disable value (0 or 1) in the select dropdown
+        $("#editDisable").val(disable); 
 
-        // Select the correct medicine in the dropdown by value (medicine_id)
         $("#editname option").filter(function() {
-            return $(this).text() == name; // Compare the text to match the medicine name
+            return $(this).text() == name; 
         }).prop('selected', true);
 
         // Show the modal

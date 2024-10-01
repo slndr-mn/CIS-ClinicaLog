@@ -49,7 +49,7 @@
             color: #fff; 
         }
 
-        .nav-item.active i {
+        .nav-item.active i { 
             color: #fff;
         }
 

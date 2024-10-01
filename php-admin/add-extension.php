@@ -1,6 +1,7 @@
 <?php
 session_start();
 ?>
+
 <!DOCTYPE html> 
 <html lang="en">
 <head>
@@ -27,7 +28,7 @@ session_start();
           ],
           urls: ["../css/fonts.min.css"], 
         },
-        active: function () {
+        active: function () { 
           sessionStorage.fonts = true;
         },
       });
@@ -65,7 +66,7 @@ session_start();
       <div class="page-inner">
         <div class="row">
           <div class="col-md-12">
-            <h2>Add Student Patient</h2>
+            <h2>Add Extension Patient</h2>
             <div class="card">
               <div class="card-header">
                 <div class="d-flex align-items-center">
@@ -75,7 +76,7 @@ session_start();
               <div class="card-body" id="InputInfo">
                 <!-- Form Starts Here -->
                 <form action="patientcontrol.php" method="POST" enctype="multipart/form-data">                  <!-- Name Fields -->
-                  <div class="row">
+                <div class="row">
                   <div class="col-md-3 mb-3">
                         <label for="Profile" class="form-label">Profile Upload</label>
                         <input id="addprofile" name="addprofile" type="file" class="form-control" accept=".png, .jpg, .jpeg" /> 
@@ -109,54 +110,16 @@ session_start();
                     </div>
                   </div>
 
-                  <!-- ID and Academic Info -->
+                  <!-- ID and Work Info -->
                   <div class="row">
-                    <div class="col-md-2 mb-3">
-                      <label for="studentID" class="form-label">ID Number</label>
-                      <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Enter ID number" required />
-                    </div>
-
-                    <!-- Program Dropdown -->
                     <div class="col-md-4 mb-3">
-                      <label for="program" class="form-label">Program</label>
-                      <select class="form-select  form-control" id="program" name="program" required onchange="updateMajorOptions()">
-                        <option selected disabled>Select Program</option>
-                        <option value="Bachelor of Science in Secondary Education">Bachelor of Science in Secondary Education</option>
-                        <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
-                        <option value="Bachelor of Science in Agricultural and Biosystems Engineering">Bachelor of Science in Agricultural and Biosystems Engineering</option>
-                        <option value="Bachelor of Technical-Vocational Education">Bachelor of Technical-Vocational Education</option>
-                        <option value="Bachelor of Special Needs Education">Bachelor of Special Needs Education</option>
-                        <option value="Bachelor of Early Childhood Education">Bachelor of Early Childhood Education</option>
-                        <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
-                        <!-- Add more programs as needed -->
-                      </select>
-                    </div>
-
-                    <!-- Major Dropdown -->
-                    <div class="col-md-2 mb-3">
-                      <label for="major" class="form-label">Major</label>
-                      <select class="form-select  form-control" id="major" name="major" required>
-                        <option selected disabled>Select Major</option>
-                        <!-- Major options will be dynamically populated based on the Program -->
-                      </select>
-                    </div>
-
-                    <!-- Section Dropdown -->
-                     
-                    <div class="col-md-2 mb-3">
-                        <label for="year" class="form-label">Year</label>
-                        <select class="form-select  form-control" id="year" name="year" required>
-                            <option selected disabled>Select Year</option>
-                            <option value="1">1st Year</option>
-                            <option value="2">2nd Year</option>
-                            <option value="3">3rd Year</option>
-                            <option value="4">4th Year</option>
-                        </select>
+                      <label for="extentID" class="form-label">ID Number</label>
+                      <input type="text" class="form-control" id="extentID" name="extentID" placeholder="Enter ID number" required />
                     </div>
 
                     <div class="col-md-2 mb-3">
-                      <label for="section" class="form-label">Section</label>
-                      <input type="text" class="form-control" id="section" name="section" placeholder="e.g., 3A" required />
+                      <label for="role" class="form-label">Role</label>
+                      <input type="text" class="form-control" id="role" name="role" placeholder="Enter Role" required />
                     </div>
                   </div>
 
@@ -166,7 +129,7 @@ session_start();
                     <!-- Region Dropdown -->
                     <div class="col-md-2 mb-3">
                       <label for="region" class="form-label">Region</label>
-                      <select class="form-select  form-control" id="region" name="region" required>
+                      <select class="form-select form-control" id="region" name="region" required>
                         <option selected disabled>Select Region</option>
                         <!-- Options for Region will go here -->
                       </select>
@@ -175,7 +138,7 @@ session_start();
                     <!-- Province Dropdown -->
                     <div class="col-md-3 mb-3">
                       <label for="province" class="form-label">Province</label>
-                      <select class="form-select  form-control" id="province" name="province" required>
+                      <select class="form-select form-control" id="province" name="province" required>
                         <option selected disabled>Select Province</option>
                         <!-- Options for Province will go here -->
                       </select>
@@ -184,7 +147,7 @@ session_start();
                     <!-- Municipality Dropdown -->
                     <div class="col-md-3 mb-3">
                       <label for="municipality" class="form-label">Municipality</label>
-                      <select class="form-select  form-control" id="municipality" name="municipality" required>
+                      <select class="form-select form-control" id="municipality" name="municipality" required>
                         <option selected disabled>Select Municipality</option>
                         <!-- Options for Municipality will go here -->
                       </select>
@@ -193,7 +156,7 @@ session_start();
                     <!-- Barangay Dropdown -->
                     <div class="col-md-2 mb-3">
                       <label for="barangay" class="form-label">Barangay</label>
-                      <select class="form-select  form-control" id="barangay" name="barangay" required>
+                      <select class="form-select form-control" id="barangay" name="barangay" required>
                         <option selected disabled>Select Barangay</option>
                         <!-- Options for Barangay will go here -->
                       </select>
@@ -202,10 +165,9 @@ session_start();
                     <!-- Street Input (Text Field) -->
                     <div class="col-md-2 mb-3">
                       <label for="street" class="form-label">Purok/Block No./Street</label>
-                      <input type="text" class="form-control" id="street" name="street" placeholder="Enter street address"/>
+                      <input type="text" class="form-control form-control" id="street" name="street" placeholder="Enter street address" required />
                     </div>
                   </div>
-
 
                   <!-- Contact Information -->
                   <div class="row">
@@ -224,21 +186,21 @@ session_start();
                   <div class="row">
                     <div class="col-md-6 mb-3">
                       <label for="emergencyContactName" class="form-label">Emergency Contact Name</label>
-                      <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Enter emergency contact name"  />
+                      <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Enter emergency contact name" required />
                     </div>
                     <div class="col-md-3 mb-3">
                       <label for="relationship" class="form-label">Relationship</label>
-                      <input type="text" class="form-control" id="relationship" name="relationship" placeholder="Enter relationship"/>
+                      <input type="text" class="form-control" id="relationship" name="relationship" placeholder="Enter relationship" required />
                     </div>
                     <div class="col-md-3 mb-3">
                       <label for="emergencyContactNumber" class="form-label">Emergency Contact Number</label>
-                      <input type="tel" class="form-control" id="emergencyContactNumber" name="emergencyContactNumber" placeholder="Enter emergency contact number" />
+                      <input type="tel" class="form-control" id="emergencyContactNumber" name="emergencyContactNumber" placeholder="Enter emergency contact number" required />
                     </div>
                   </div>
 
                   <div class="row">
                     <div class="col-md-12 text-center">
-                      <button type="submit" class="btn btn-primary" id="addstudentpatient" name="addstudentpatient">
+                      <button type="button" class="btn btn-primary" id="addextensionpatient" name="addextensionpatient">
                         Submit
                       </button>
                       
@@ -251,14 +213,13 @@ session_start();
                 <!-- End of Form -->
               </div>
             </div>
-
-            
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
 
 <?php
   if (isset($_SESSION['message'])) {
@@ -327,150 +288,143 @@ session_start();
     </script>
 
 <script>
-  function updateMajorOptions() {
-    const program = document.getElementById("program").value;
-    const major = document.getElementById("major");
+  $(document).ready(function () {
+    $("#addpatient").click(function (e) {
+      e.preventDefault(); // Prevent default form submission
 
-    // Clear existing major options
-    major.innerHTML = "<option selected disabled>Select Major</option>";
-
-    // Define majors based on program selection
-    const majorOptions = {
-      "Bachelor of Science in Secondary Education": ["Filipino", "English", "Mathematics"],
-      "Bachelor of Science in Information Technology": ["Information Security"],
-      "Bachelor of Science in Agricultural and Biosystems Engineering": ["None"],
-      "Bachelor of Technical-Vocational Education": ["Agricultural Crop Production", "Animal Production"],
-      "Bachelor of Special Needs Education": ["None"],
-      "Bachelor of Early Childhood Education": ["None"],
-      "Bachelor of Elementary Education": ["None"],
-    };
-
-    // Get the relevant majors for the selected program
-    if (majorOptions[program]) {
-      majorOptions[program].forEach(function (majorName) {
-        const option = document.createElement("option");
-        option.value = majorName;
-        option.textContent = majorName;
-        major.appendChild(option);
+      // Check if all required fields are filled
+      let isValid = true;
+      $("form [required]").each(function () {
+        if (!$(this).val()) {
+          isValid = false;
+          $(this).addClass("is-invalid"); // Optionally add a class for styling
+        } else {
+          $(this).removeClass("is-invalid"); // Remove the invalid class if filled
+        }
       });
-    }
-  }
+
+      if (isValid) {
+        // Show SweetAlert
+        swal({
+          title: "Success!",
+          text: "Patient added successfully!",
+          icon: "success",
+          buttons: false, 
+          timer: 2000,
+        }).then(() => {
+          // Submit the form after the alert
+          $("form").submit();
+        });
+      } else {
+        // Optionally, show an alert or message if not valid
+        swal({
+          title: "Error!",
+          text: "Please fill out all required fields.",
+          icon: "error",
+          buttons: true,
+        });
+      }
+    });
+  });
+
+  $("#canceladdpatient").click(function (e) {
+    swal({
+        title: "Are you sure?",
+        text: "Do you really want to cancel adding this patient? Unsaved information will be lost.",
+        icon: "warning",
+        buttons: {
+            confirm: {
+                text: "Yes, cancel it!",
+                className: "btn btn-success",
+            },
+            cancel: {
+                visible: true,
+                className: "btn btn-danger",
+            },
+        },
+    }).then((willCancel) => {
+        if (willCancel) {
+            // Redirect to patient-record.php
+            window.location.href = "patient-record.php";
+        } else {
+            swal.close();
+        }
+    });
+  });
 </script>
 
-<script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
-<!-- Ensure you include these in your HTML -->
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- SweetAlert -->
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
-        $(document).ready(function () {
-            // Confirmation before canceling the addition of a patient
-            $("#canceladdpatient").click(function (e) {
-                swal({
-                    title: "Are you sure?",
-                    text: "Do you really want to cancel adding this patient? Unsaved information will be lost.",
-                    icon: "warning",
-                    buttons: {
-                        confirm: {
-                            text: "Yes, cancel it!",
-                            className: "btn btn-success",
-                        },
-                        cancel: {
-                            visible: true,
-                            className: "btn btn-danger",
-                        },
-                    },
-                }).then((willCancel) => {
-                    if (willCancel) {
-                        // Redirect to patient-record.php
-                        window.location.href = "patient-record.php";
-                    } else {
-                        swal.close();
-                    }
-                });
-            });
+  const addressData = {
+  regions: {
+    "Region XI": {
+      provinces: {
+        "Davao del Norte": {
+          municipalities: ["Tagum City", "Sto. Tomas"],
+          barangays: {
+            "Tagum City": ["Apokon", "Pagsabangan"],
+            "Sto. Tomas": ["Kinamayan", "Poblacion"]
+          }
+        },
+        "Davao de Oro": {
+          municipalities: ["Pantukan", "Nabunturan"],
+          barangays: {
+            "Pantukan": ["Kingking", "Magnaga"],
+            "Nabunturan": ["Anislagan", "Poblacion"]
+          }
+        }
+      }
+    },
+    "Region XII": {
+      provinces: {
+        "Cotabato": {
+          municipalities: ["Alamada", "Carmen"],
+          barangays: {
+            "Alamada": ["Camansi", "Macabasa"],
+            "Carmen": ["Bentangan", "General Luna"]
+          }
+        }
+      }
+    }
+  }
+};
 
-            // Address Data Logic
-            const addressData = {
-                regions: {
-                    "Region XI": {
-                        provinces: {
-                            "Davao del Norte": {
-                                municipalities: ["Tagum City", "Sto. Tomas"],
-                                barangays: {
-                                    "Tagum City": ["Apokon", "Pagsabangan"],
-                                    "Sto. Tomas": ["Kinamayan", "Poblacion"]
-                                }
-                            },
-                            "Davao de Oro": {
-                                municipalities: ["Pantukan", "Nabunturan"],
-                                barangays: {
-                                    "Pantukan": ["Kingking", "Magnaga"],
-                                    "Nabunturan": ["Anislagan", "Poblacion"]
-                                }
-                            }
-                        }
-                    },
-                    "Region XII": {
-                        provinces: {
-                            "Cotabato": {
-                                municipalities: ["Alamada", "Carmen"],
-                                barangays: {
-                                    "Alamada": ["Camansi", "Macabasa"],
-                                    "Carmen": ["Bentangan", "General Luna"]
-                                }
-                            }
-                        }
-                    }
-                }
-            };
+function populateDropdown(dropdown, options) {
+  dropdown.innerHTML = '<option selected disabled>Select</option>';
+  options.forEach(option => {
+    const opt = document.createElement("option");
+    opt.value = option;
+    opt.textContent = option;
+    dropdown.appendChild(opt);
+  });
+}
 
-            // Function to populate dropdowns
-            function populateDropdown(dropdown, options) {
-                dropdown.innerHTML = '<option selected disabled>Select</option>';
-                options.forEach(option => {
-                    const opt = document.createElement("option");
-                    opt.value = option;
-                    opt.textContent = option;
-                    dropdown.appendChild(opt);
-                });
-            }
+// Populate Regions
+const regionSelect = document.getElementById("region");
+populateDropdown(regionSelect, Object.keys(addressData.regions));
 
-            // Populate Regions dropdown
-            const regionSelect = document.getElementById("region");
-            populateDropdown(regionSelect, Object.keys(addressData.regions));
+// Handle region change
+regionSelect.addEventListener("change", function() {
+  const selectedRegion = this.value;
+  const provinces = Object.keys(addressData.regions[selectedRegion].provinces);
+  populateDropdown(document.getElementById("province"), provinces);
+});
 
-            // Handle region change
-            regionSelect.addEventListener("change", function () {
-                const selectedRegion = this.value;
-                const provinces = Object.keys(addressData.regions[selectedRegion].provinces);
-                populateDropdown(document.getElementById("province"), provinces);
-            });
+// Handle province change
+document.getElementById("province").addEventListener("change", function() {
+  const selectedRegion = regionSelect.value;
+  const selectedProvince = this.value;
+  const municipalities = addressData.regions[selectedRegion].provinces[selectedProvince].municipalities;
+  populateDropdown(document.getElementById("municipality"), municipalities);
+});
 
-            // Handle province change
-            document.getElementById("province").addEventListener("change", function () {
-                const selectedRegion = regionSelect.value;
-                const selectedProvince = this.value;
-                const municipalities = addressData.regions[selectedRegion].provinces[selectedProvince].municipalities;
-                populateDropdown(document.getElementById("municipality"), municipalities);
-            });
-
-            // Handle municipality change
-            document.getElementById("municipality").addEventListener("change", function () {
-                const selectedRegion = regionSelect.value;
-                const selectedProvince = document.getElementById("province").value;
-                const selectedMunicipality = this.value;
-                const barangays = addressData.regions[selectedRegion].provinces[selectedProvince].barangays[selectedMunicipality];
-                populateDropdown(document.getElementById("barangay"), barangays);
-            });
-        });
-    </script>
-
-
-
+// Handle municipality change
+document.getElementById("municipality").addEventListener("change", function() {
+  const selectedRegion = regionSelect.value;
+  const selectedProvince = document.getElementById("province").value;
+  const selectedMunicipality = this.value;
+  const barangays = addressData.regions[selectedRegion].provinces[selectedProvince].barangays[selectedMunicipality];
+  populateDropdown(document.getElementById("barangay"), barangays);
+});
+</script>
 </body>
 </html>

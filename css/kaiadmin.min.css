@@ -2134,7 +2134,7 @@ body[data-background-color=dark] .border-top {
 }
 
 .logo-header[data-background-color=dark] {
-   background: #1a2035 !important
+   background: #DB6079 !important
 }
 
 .logo-header[data-background-color=dark2] {
@@ -6302,7 +6302,7 @@ label.error {
 
 .btn-primary {
    background: #1572e8 !important;
-   border-color: #1572e8 !important
+   border-color: #1572e8 !important;
 }
 
 .btn-primary:disabled,
@@ -10731,3 +10731,56 @@ body[data-background-color=dark] .jvm-zoom-btn {
 #gradient-sidebar{
    background: linear-gradient(176deg, #DB6079 -16.99%, #DA6F65 58.3%, #E29AB4 130.63%);
 }
+
+#viewButton .fa-eye{
+   font-size: 22px;
+   color: #DB6079;
+}
+
+#addbutton{
+   background-color: #DB6079 !important;
+   border-color: #DB6079 !important;
+}
+
+.modal-body a{
+   margin-right: 10px;
+}
+
+.modalButton {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   min-height: 200px;
+ }
+ 
+ .modalButton a {
+   margin: 10px 0; /* Adds spacing between the buttons */
+ }
+
+ .custom-button {
+   font-size: 1.5rem; /* Increases the text size */
+   padding: 15px 30px; /* Increases the button size */
+   width: 200px; /* Sets a fixed width for the buttons */
+   margin: 10px 0; /* Adds space between buttons */
+ }
+ 
+ .modalButton {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+ }
+
+ #InputInfo input,select{
+   border-color: #DA6F65 !important;
+ }
+
+ #InputInfo button{
+   background-color: #DB6079 !important;
+   border-color: #DB6079 !important;
+ }
+
+.row #canceladdpatient{
+   background-color: rebeccapurple !important;
+   border-color: rebeccapurple !important;
+ }

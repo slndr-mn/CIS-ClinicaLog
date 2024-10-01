@@ -26,9 +26,21 @@ class Database {
     public function getConnection() {
         return $this->pdo;
     }
-}
 
-// Create a new Database instance and assign it to $pdo
-$database = new Database();
-$pdo = $database->getConnection();
+    // Method to execute a query and return results
+    public function query($sql, $params = []) {
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt;
+    }
+
+    // Method to fetch all results as an associative array
+    public function fetchAll($sql, $params = []) {
+        $stmt = $this->query($sql, $params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function prepare($query) {
+        return $this->pdo->prepare($query);
+    }
+}
 ?>

@@ -4,7 +4,7 @@ class ListNode {
     public $user_id;
     public $user_fname;
     public $user_lname;
-    public $user_mname;
+    public $user_mname; 
     public $user_email;
     public $user_position;
     public $user_role;
@@ -21,7 +21,7 @@ class ListNode {
         $this->user_lname = $user_lname;
         $this->user_mname = $user_mname;
         $this->user_email = $user_email;
-        $this->user_position = $user_position;
+        $this->user_position = $user_position; 
         $this->user_role = $user_role;
         $this->user_status = $user_status;
         $this->user_dateadded = $user_dateadded;
@@ -242,7 +242,7 @@ class User {
         $stmt = $this->conn->prepare($query);
 
         if ($stmt) {
-            $stmt->bindValue(1, $user_id);
+            $stmt->bindValue(1, $user_id); 
             $stmt->bindValue(2, $user_fname);
             $stmt->bindValue(3, $user_lname);
             $stmt->bindValue(4, $user_mname);
@@ -253,13 +253,15 @@ class User {
             $stmt->bindValue(9, $user_dateadded); 
             $stmt->bindValue(10, $user_profile);
             $stmt->bindValue(11, $hashedpassword); 
-            $stmt->bindValue(12, $code);
+            $stmt->bindValue(12, $code); 
 
             if ($stmt->execute()) {
                 $this->linkedList->addNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $hashedpassword, $code);
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = 'User registered successfully!';
+                header('Location: staffuser.php');
                 exit();
+                
             } else {
                 $errorInfo = $stmt->errorInfo();
                 $_SESSION['status'] = 'error';
@@ -378,19 +380,19 @@ class User {
                     $node->user_status = $new_status;
                 }
     
-                // Set success session message
+                
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = 'User updated successfully!';
                 return true;
             } else {
-                // Handle database update error
+                
                 $_SESSION['status'] = 'error';
                 $_SESSION['message'] = 'Error updating user in the database: ' . $stmt->errorInfo()[2];
                 error_log("Error updating user in the database: " . $stmt->errorInfo()[2]);
                 return false;
             }
         } else {
-            // Handle error preparing the statement
+            
             $_SESSION['status'] = 'error';
             $_SESSION['message'] = 'Error preparing update statement: ' . $this->conn->errorInfo()[2];
             error_log("Error preparing update statement: " . $this->conn->errorInfo()[2]);

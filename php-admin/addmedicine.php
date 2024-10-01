@@ -29,7 +29,7 @@ $medicine = new MedicineManager($conn);
             flex-grow: 1;
         }
 
-        /* Equalize the height of both cards */
+        /* Equalize the height of both cards */ 
         .row {
             display: flex;
         }

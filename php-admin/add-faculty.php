@@ -60,12 +60,12 @@ session_start();
   <div class="main-panel">
     <!-- Header -->
     <div class="main-header" id="header"></div>
-    <!-- Main Content -->
+    <!-- Main Content --> 
     <div class="container" id="content">
       <div class="page-inner">
         <div class="row">
           <div class="col-md-12">
-            <h2>Add Student Patient</h2>
+            <h2>Add Faculty Patient</h2>
             <div class="card">
               <div class="card-header">
                 <div class="d-flex align-items-center">
@@ -112,51 +112,34 @@ session_start();
                   <!-- ID and Academic Info -->
                   <div class="row">
                     <div class="col-md-2 mb-3">
-                      <label for="studentID" class="form-label">ID Number</label>
-                      <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Enter ID number" required />
+                      <label for="facultyID" class="form-label">ID Number</label>
+                      <input type="text" class="form-control" id="facultyID" name="facultyID" placeholder="Enter ID number" required />
                     </div>
 
                     <!-- Program Dropdown -->
                     <div class="col-md-4 mb-3">
-                      <label for="program" class="form-label">Program</label>
-                      <select class="form-select  form-control" id="program" name="program" required onchange="updateMajorOptions()">
-                        <option selected disabled>Select Program</option>
-                        <option value="Bachelor of Science in Secondary Education">Bachelor of Science in Secondary Education</option>
-                        <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
-                        <option value="Bachelor of Science in Agricultural and Biosystems Engineering">Bachelor of Science in Agricultural and Biosystems Engineering</option>
-                        <option value="Bachelor of Technical-Vocational Education">Bachelor of Technical-Vocational Education</option>
-                        <option value="Bachelor of Special Needs Education">Bachelor of Special Needs Education</option>
-                        <option value="Bachelor of Early Childhood Education">Bachelor of Early Childhood Education</option>
-                        <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
+                      <label for="program" class="form-label">College</label>
+                      <select class="form-select  form-control" id="college" name="college" required onchange="updateDepartmentOptions()">
+                        <option selected disabled>Select College</option>
+                        <option value="College of Teacher Education and Technology">College of Teacher Education and Technology</option>
+                        <option value="College of Engineering">College of Engineering</option>
+                        <option value="School of Medicine">School of Medicine</option>
                         <!-- Add more programs as needed -->
                       </select>
                     </div>
 
-                    <!-- Major Dropdown -->
+                    <!-- department Dropdown -->
                     <div class="col-md-2 mb-3">
-                      <label for="major" class="form-label">Major</label>
-                      <select class="form-select  form-control" id="major" name="major" required>
-                        <option selected disabled>Select Major</option>
-                        <!-- Major options will be dynamically populated based on the Program -->
+                      <label for="department" class="form-label">department</label>
+                      <select class="form-select  form-control" id="department" name="department" required>
+                        <option selected disabled>Select Department</option>
+                        <!-- department options will be dynamically populated based on the Program -->
                       </select>
                     </div>
 
-                    <!-- Section Dropdown -->
-                     
                     <div class="col-md-2 mb-3">
-                        <label for="year" class="form-label">Year</label>
-                        <select class="form-select  form-control" id="year" name="year" required>
-                            <option selected disabled>Select Year</option>
-                            <option value="1">1st Year</option>
-                            <option value="2">2nd Year</option>
-                            <option value="3">3rd Year</option>
-                            <option value="4">4th Year</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2 mb-3">
-                      <label for="section" class="form-label">Section</label>
-                      <input type="text" class="form-control" id="section" name="section" placeholder="e.g., 3A" required />
+                      <label for="role" class="form-label">Role</label>
+                      <input type="text" class="form-control" id="role" name="role" placeholder="Enter Role" required />
                     </div>
                   </div>
 
@@ -238,7 +221,7 @@ session_start();
 
                   <div class="row">
                     <div class="col-md-12 text-center">
-                      <button type="submit" class="btn btn-primary" id="addstudentpatient" name="addstudentpatient">
+                      <button type="submit" class="btn btn-primary" id="addstudentpatient" name="addfacultypatient">
                         Submit
                       </button>
                       
@@ -251,8 +234,6 @@ session_start();
                 <!-- End of Form -->
               </div>
             </div>
-
-            
           </div>
         </div>
       </div>
@@ -327,31 +308,30 @@ session_start();
     </script>
 
 <script>
-  function updateMajorOptions() {
-    const program = document.getElementById("program").value;
-    const major = document.getElementById("major");
+  function updateDepartmentOptions() {
+    const program = document.getElementById("college").value;
+    const department = document.getElementById("department");
 
-    // Clear existing major options
-    major.innerHTML = "<option selected disabled>Select Major</option>";
+    // Clear existing department options
+    department.innerHTML = "<option selected disabled>Select department</option>";
 
-    // Define majors based on program selection
-    const majorOptions = {
-      "Bachelor of Science in Secondary Education": ["Filipino", "English", "Mathematics"],
-      "Bachelor of Science in Information Technology": ["Information Security"],
-      "Bachelor of Science in Agricultural and Biosystems Engineering": ["None"],
-      "Bachelor of Technical-Vocational Education": ["Agricultural Crop Production", "Animal Production"],
-      "Bachelor of Special Needs Education": ["None"],
-      "Bachelor of Early Childhood Education": ["None"],
-      "Bachelor of Elementary Education": ["None"],
+    // Define departments based on program selection
+    const departmentOptions = {
+      "College of Teacher Education and Technology": 
+      ["Department of Elementary Education", "Department of Special Needs Education", "Department of Early Childhood Education",
+        "Department of Secondary Education", "Department of Science in Information Technology", "Department of Technical-Vocational Teacher Education", 
+      ],
+      "College of Engineering": ["Department of Science in Agricultural and Biosystems Engineering"],
+      "School of Medicine": ["Doctor of Medicine"],
     };
 
-    // Get the relevant majors for the selected program
-    if (majorOptions[program]) {
-      majorOptions[program].forEach(function (majorName) {
+    // Get the relevant departments for the selected program
+    if (departmentOptions[program]) {
+      departmentOptions[program].forEach(function (departmentName) {
         const option = document.createElement("option");
-        option.value = majorName;
-        option.textContent = majorName;
-        major.appendChild(option);
+        option.value = departmentName;
+        option.textContent = departmentName;
+        department.appendChild(option);
       });
     }
   }
