@@ -32,7 +32,6 @@
     <button id="removeItem">Remove Specific Item</button>
 
     <script>
-        // Function to display stored name and email if they exist
         function displayStoredData() {
             const storedName = sessionStorage.getItem('username');
             const storedEmail = sessionStorage.getItem('useremail');

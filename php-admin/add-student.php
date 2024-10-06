@@ -5,13 +5,15 @@ session_start();
 <html lang="en">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Sample Index</title> 
+    <title>Add Student Patient</title> 
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 
     <!-- Fonts and icons -->
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
@@ -74,7 +76,7 @@ session_start();
               </div>
               <div class="card-body" id="InputInfo">
                 <!-- Form Starts Here -->
-                <form action="patientcontrol.php" method="POST" enctype="multipart/form-data">                  <!-- Name Fields -->
+                <form id="studentForm" action="patientcontrol.php" method="POST" enctype="multipart/form-data">                  <!-- Name Fields -->
                   <div class="row">
                   <div class="col-md-3 mb-3">
                         <label for="Profile" class="form-label">Profile Upload</label>
@@ -101,7 +103,7 @@ session_start();
                     </div>
                     <div class="col-md-2 mb-3">
                       <label for="sex" class="form-label">Sex</label>
-                      <select class="form-select form-control" id="sex" name="sex">
+                      <select class="form-select form-control" id="sex" name="sex" required>
                       <option selected disabled>Select Sex</option>
                       <option value="Female">Female</option>
                       <option value="Male">Male</option>
@@ -119,15 +121,8 @@ session_start();
                     <!-- Program Dropdown -->
                     <div class="col-md-4 mb-3">
                       <label for="program" class="form-label">Program</label>
-                      <select class="form-select  form-control" id="program" name="program" required onchange="updateMajorOptions()">
-                        <option selected disabled>Select Program</option>
-                        <option value="Bachelor of Science in Secondary Education">Bachelor of Science in Secondary Education</option>
-                        <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
-                        <option value="Bachelor of Science in Agricultural and Biosystems Engineering">Bachelor of Science in Agricultural and Biosystems Engineering</option>
-                        <option value="Bachelor of Technical-Vocational Education">Bachelor of Technical-Vocational Education</option>
-                        <option value="Bachelor of Special Needs Education">Bachelor of Special Needs Education</option>
-                        <option value="Bachelor of Early Childhood Education">Bachelor of Early Childhood Education</option>
-                        <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
+                      <select class="form-select  form-control" id="program" name="program" required>
+                        <option value="">Select or add a program</option>
                         <!-- Add more programs as needed -->
                       </select>
                     </div>
@@ -136,8 +131,8 @@ session_start();
                     <div class="col-md-2 mb-3">
                       <label for="major" class="form-label">Major</label>
                       <select class="form-select  form-control" id="major" name="major" required>
-                        <option selected disabled>Select Major</option>
-                        <!-- Major options will be dynamically populated based on the Program -->
+                          <option value="">Select or add a major</option>
+                      <!-- Major options will be dynamically populated based on the Program -->
                       </select>
                     </div>
 
@@ -243,7 +238,7 @@ session_start();
                       </button>
                       
                       <button type="button" class="btn btn-primary ms-3" id="canceladdpatient">
-                        Cancel
+                        Back
                       </button>
                     </div>
                   </div>
@@ -251,228 +246,336 @@ session_start();
                 <!-- End of Form -->
               </div>
             </div>
-
-            
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-<?php
-if (isset($_SESSION['message'])) {
-    echo "<script>
-            swal({
-                title: 'Message',
-                text: '" . htmlspecialchars($_SESSION['message'], ENT_QUOTES) . "',
-                icon: '" . ($_SESSION['status'] === 'success' ? 'success' : 'error') . "',
-                button: 'OK'
-            }).then((value) => {
-                if ('" . $_SESSION['status'] . "' === 'success') {
-                    // On success, reload the page (reset form)
-                    window.location.href = window.location.href;
-                }
-                // On error, the modal closes, and form data stays
-            });
-          </script>";
-
-    unset($_SESSION['message']);
-    unset($_SESSION['status']);
-}
-?>
-
-    <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
-    <script src="../assets/js/core/popper.min.js"></script>
-    <script src="../assets/js/core/bootstrap.min.js"></script>
-
-    <!-- jQuery Scrollbar -->
-    <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
-
-    <!-- Chart JS -->
-    <script src="../assets/js/plugin/chart.js/chart.min.js"></script>
-
-    <!-- jQuery Sparkline -->
-    <script src="../assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
-
-    <!-- Chart Circle -->
-    <script src="../assets/js/plugin/chart-circle/circles.min.js"></script>
-
-    <!-- Datatables -->
-    <script src="../assets/js/plugin/datatables/datatables.min.js"></script>
-
-    <!-- Bootstrap Notify -->
-    <script src="../assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
-
-    <!-- jQuery Vector Maps -->
-    <script src="../assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
-    <script src="../assets/js/plugin/jsvectormap/world.js"></script>
-
-    <!-- Sweet Alert -->
-    <script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
-
-    <!-- Kaiadmin JS -->
-    <script src="../assets/js/kaiadmin.min.js"></script>
-    
-    <script>
-        $(document).ready(function() {
-            // Dynamically load the sidebar
-            $("#sidebar").load("sidebar.php", function(response, status, xhr) {
-                if (status == "error") {
-                    console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
-                }
-            });
-
-            $("#header").load("header.php", function(response, status, xhr) {
-                if (status == "error") {
-                    console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
-                }
-            });
-        });
-    </script>
-
-<script>
-  function updateMajorOptions() {
-    const program = document.getElementById("program").value;
-    const major = document.getElementById("major");
-
-    major.innerHTML = "<option selected disabled>Select Major</option>";
-
-    const majorOptions = {
-      "Bachelor of Science in Secondary Education": ["Filipino", "English", "Mathematics"],
-      "Bachelor of Science in Information Technology": ["Information Security"],
-      "Bachelor of Science in Agricultural and Biosystems Engineering": ["None"],
-      "Bachelor of Technical-Vocational Education": ["Agricultural Crop Production", "Animal Production"],
-      "Bachelor of Special Needs Education": ["None"],
-      "Bachelor of Early Childhood Education": ["None"],
-      "Bachelor of Elementary Education": ["None"],
-    };
-
-    if (majorOptions[program]) {
-      majorOptions[program].forEach(function (majorName) {
-        const option = document.createElement("option");
-        option.value = majorName;
-        option.textContent = majorName;
-        major.appendChild(option); 
-      });
-    }
-  }
-</script>
-
-<script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
-<!-- Ensure you include these in your HTML -->
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Select2 -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- Core JS -->
+<script src="../assets/js/core/popper.min.js"></script>
+<script src="../assets/js/core/bootstrap.min.js"></script>
+
+<!-- Kaiadmin JS -->
+<script src="../assets/js/kaiadmin.min.js"></script>
+
+<!-- Plugins -->
+<script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+<script src="../assets/js/plugin/chart.js/chart.min.js"></script>
+<script src="../assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+<script src="../assets/js/plugin/chart-circle/circles.min.js"></script>
+<script src="../assets/js/plugin/datatables/datatables.min.js"></script>
+<script src="../assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+<script src="../assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+<script src="../assets/js/plugin/jsvectormap/world.js"></script>
+
 
 <script>
-        $(document).ready(function () {
-            // Confirmation before canceling the addition of a patient
-            $("#canceladdpatient").click(function (e) {
-                swal({
-                    title: "Are you sure?",
-                    text: "Do you really want to cancel adding this patient? Unsaved information will be lost.",
-                    icon: "warning",
-                    buttons: {
-                        confirm: {
-                            text: "Yes, cancel it!",
-                            className: "btn btn-success",
-                        },
-                        cancel: {
-                            visible: true,
-                            className: "btn btn-danger",
-                        },
-                    },
-                }).then((willCancel) => {
-                    if (willCancel) {
-                        // Redirect to patient-record.php
-                        window.location.href = "patient-record.php";
-                    } else {
-                        swal.close();
-                    }
-                });
-            });
 
-            // Address Data Logic
-            const addressData = {
-                regions: {
-                    "Region XI": {
-                        provinces: {
-                            "Davao del Norte": {
-                                municipalities: ["Tagum City", "Sto. Tomas"],
-                                barangays: {
-                                    "Tagum City": ["Apokon", "Pagsabangan"],
-                                    "Sto. Tomas": ["Kinamayan", "Poblacion"]
-                                }
-                            },
-                            "Davao de Oro": {
-                                municipalities: ["Pantukan", "Nabunturan"],
-                                barangays: {
-                                    "Pantukan": ["Kingking", "Magnaga"],
-                                    "Nabunturan": ["Anislagan", "Poblacion"]
-                                }
-                            }
+$(document).ready(function() {
+    $("#sidebar").load("sidebar.php", handleLoadError);
+    $("#header").load("header.php", handleLoadError);
+
+    <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
+        var status = '<?php echo $_SESSION['status']; ?>';
+        var message = '<?php echo htmlspecialchars($_SESSION['message'], ENT_QUOTES); ?>';
+        Swal.fire({
+            title: status === 'success' ? "Success!" : "Error!",
+            text: message,
+            icon: status,
+            confirmButtonText: "OK",
+            confirmButtonColor: status === 'success' ? "#77dd77" : "#ff6961"
+        }).then(() => {
+            if (status === 'success') {
+              sessionStorage.clear();
+                window.location.href = "add-student.php";
+            }
+            <?php unset($_SESSION['status'], $_SESSION['message']); ?>
+        });
+    <?php endif; ?>
+
+    initializeSelect2WithSession();
+    initializeAddressDataWithSession();
+    restoreFormFields();
+    confirmCancelPatient();
+
+
+});
+
+function handleLoadError(response, status, xhr) {
+    if (status == "error") {
+        console.log("Error loading file: " + xhr.status + " " + xhr.statusText);
+    }
+}
+
+function initializeSelect2WithSession() {
+  $('#program').select2({
+    tags: true,
+    placeholder: "Select or add a Program",
+    allowClear: true
+  });
+
+  $('#major').select2({
+    tags: true,
+    placeholder: "Select or add a major",
+    allowClear: true
+  });
+
+  const programMajor = {
+    "Bachelor of Science in Secondary Education": ["Filipino", "English", "Mathematics"],
+    "Bachelor of Science in Information Technology": ["Information Security"],
+    "Bachelor of Science in Agricultural and Biosystems Engineering": ["None"],
+    "Bachelor of Technical-Vocational Education": ["Agricultural Crop Production", "Animal Production"],
+    "Bachelor of Special Needs Education": ["None"],
+    "Bachelor of Early Childhood Education": ["None"],
+    "Bachelor of Elementary Education": ["None"],
+  };
+
+  // Populate the 'program' select options
+  Object.keys(programMajor).forEach(program => {
+    $('#program').append(new Option(program, program, false, false));
+  });
+
+  // Fetch stored values from sessionStorage
+  const savedProgram = sessionStorage.getItem('selectedprogram'); // Use consistent variable name
+  const savedMajor = sessionStorage.getItem('selectedmajor'); // Same for major
+
+  // If a program was saved, set it as the selected value
+  if (savedProgram) {
+    $('#program').val(savedProgram).trigger('change');
+  }
+
+  // Handle program change
+  $('#program').change(function () {
+    const selectedProgram = $(this).val();
+
+    // Clear and populate the 'major' select options based on the selected program
+    $('#major').empty().append('<option value="" disabled selected>Select or add a major</option>');
+    const majors = programMajor[selectedProgram] || [];
+    majors.forEach(major => {
+      $('#major').append(new Option(major, major, false, false));
+    });
+
+    // If the saved program and major match, preselect the major
+    if (selectedProgram === savedProgram && savedMajor) {
+      $('#major').val(savedMajor).trigger('change');
+    }
+
+    // Store the selected program in sessionStorage
+    sessionStorage.setItem('selectedprogram', selectedProgram);
+  });
+
+  // Handle major change
+  $('#major').on('change', function () {
+    const selectedMajor = $(this).val();
+    console.log('Selected major: ', selectedMajor);
+
+    // Store the selected major in sessionStorage
+    sessionStorage.setItem('selectedmajor', selectedMajor);
+  });
+
+  // If a saved program exists, prepopulate the 'major' select options
+  if (savedProgram) {
+    const majors = programMajor[savedProgram] || [];
+    majors.forEach(major => {
+      $('#major').append(new Option(major, major, false, false));
+    });
+
+    // If a saved major exists, preselect it
+    if (savedMajor) {
+      $('#major').val(savedMajor).trigger('change');
+    }
+  }
+}
+
+
+// Function to initialize address data
+function initializeAddressDataWithSession() {
+    // Address Data Logic
+    const addressData = {
+        regions: {
+            "Region XI": {
+                provinces: {
+                    "Davao del Norte": {
+                        municipalities: ["Tagum City", "Sto. Tomas"],
+                        barangays: {
+                            "Tagum City": ["Apokon", "Pagsabangan"],
+                            "Sto. Tomas": ["Kinamayan", "Poblacion"]
                         }
                     },
-                    "Region XII": {
-                        provinces: {
-                            "Cotabato": {
-                                municipalities: ["Alamada", "Carmen"],
-                                barangays: {
-                                    "Alamada": ["Camansi", "Macabasa"],
-                                    "Carmen": ["Bentangan", "General Luna"]
-                                }
-                            }
+                    "Davao de Oro": {
+                        municipalities: ["Pantukan", "Nabunturan"],
+                        barangays: {
+                            "Pantukan": ["Kingking", "Magnaga"],
+                            "Nabunturan": ["Anislagan", "Poblacion"]
                         }
                     }
                 }
-            };
-
-            // Function to populate dropdowns
-            function populateDropdown(dropdown, options) {
-                dropdown.innerHTML = '<option selected disabled>Select</option>';
-                options.forEach(option => {
-                    const opt = document.createElement("option");
-                    opt.value = option;
-                    opt.textContent = option;
-                    dropdown.appendChild(opt);
-                });
+            },
+            "Region XII": {
+                provinces: {
+                    "Cotabato": {
+                        municipalities: ["Alamada", "Carmen"],
+                        barangays: {
+                            "Alamada": ["Camansi", "Macabasa"],
+                            "Carmen": ["Bentangan", "General Luna"]
+                        }
+                    }
+                }
             }
+        }
+    };
 
-            // Populate Regions dropdown
-            const regionSelect = document.getElementById("region");
-            populateDropdown(regionSelect, Object.keys(addressData.regions));
-
-            // Handle region change
-            regionSelect.addEventListener("change", function () {
-                const selectedRegion = this.value;
-                const provinces = Object.keys(addressData.regions[selectedRegion].provinces);
-                populateDropdown(document.getElementById("province"), provinces);
-            });
-
-            // Handle province change
-            document.getElementById("province").addEventListener("change", function () {
-                const selectedRegion = regionSelect.value;
-                const selectedProvince = this.value;
-                const municipalities = addressData.regions[selectedRegion].provinces[selectedProvince].municipalities;
-                populateDropdown(document.getElementById("municipality"), municipalities);
-            });
-
-            // Handle municipality change
-            document.getElementById("municipality").addEventListener("change", function () {
-                const selectedRegion = regionSelect.value;
-                const selectedProvince = document.getElementById("province").value;
-                const selectedMunicipality = this.value;
-                const barangays = addressData.regions[selectedRegion].provinces[selectedProvince].barangays[selectedMunicipality];
-                populateDropdown(document.getElementById("barangay"), barangays);
-            });
+    // Function to populate dropdowns
+    function populateDropdown(dropdown, options) {
+        dropdown.innerHTML = '<option selected disabled>Select</option>';
+        options.forEach(option => {
+            const opt = document.createElement("option");
+            opt.value = option;
+            opt.textContent = option;
+            dropdown.appendChild(opt);
         });
-    </script>
+    }
 
+    // Populate Regions dropdown
+    const regionSelect = document.getElementById("region");
+    populateDropdown(regionSelect, Object.keys(addressData.regions));
 
+    // Handle region change
+    regionSelect.addEventListener("change", function () {
+        const selectedRegion = this.value;
+        const provinces = Object.keys(addressData.regions[selectedRegion].provinces);
+        const provinceSelect = document.getElementById("province");
+        populateDropdown(provinceSelect, provinces);
+        provinceSelect.dispatchEvent(new Event('change')); // Trigger change to update municipalities
+    });
 
+    // Handle province change
+    document.getElementById("province").addEventListener("change", function () {
+        const selectedRegion = regionSelect.value;
+        const selectedProvince = this.value;
+        const municipalities = addressData.regions[selectedRegion].provinces[selectedProvince].municipalities;
+        const municipalitySelect = document.getElementById("municipality");
+        populateDropdown(municipalitySelect, municipalities);
+        municipalitySelect.dispatchEvent(new Event('change')); // Trigger change to update barangays
+    });
+
+    // Handle municipality change
+    document.getElementById("municipality").addEventListener("change", function () {
+        const selectedRegion = regionSelect.value;
+        const selectedProvince = document.getElementById("province").value;
+        const selectedMunicipality = this.value;
+        const barangays = addressData.regions[selectedRegion].provinces[selectedProvince].barangays[selectedMunicipality];
+        const barangaySelect = document.getElementById("barangay");
+        populateDropdown(barangaySelect, barangays);
+    });
+
+    // Check for previously selected values in sessionStorage
+    if (sessionStorage.getItem('selectedRegion')) {
+        regionSelect.value = sessionStorage.getItem('selectedRegion');
+        regionSelect.dispatchEvent(new Event('change'));
+    }
+    if (sessionStorage.getItem('selectedProvince')) {
+        const provinceSelect = document.getElementById("province");
+        provinceSelect.value = sessionStorage.getItem('selectedProvince');
+        provinceSelect.dispatchEvent(new Event('change'));
+    }
+    if (sessionStorage.getItem('selectedMunicipality')) {
+        const municipalitySelect = document.getElementById("municipality");
+        municipalitySelect.value = sessionStorage.getItem('selectedMunicipality');
+        municipalitySelect.dispatchEvent(new Event('change'));
+    }
+    if (sessionStorage.getItem('selectedBarangay')) {
+        const barangaySelect = document.getElementById("barangay");
+        barangaySelect.value = sessionStorage.getItem('selectedBarangay');
+    }
+
+    // Event handlers for dropdown changes
+    regionSelect.addEventListener('change', function() {
+        const region = this.value;
+        sessionStorage.setItem('selectedRegion', region);
+    });
+
+    document.getElementById("province").addEventListener('change', function() {
+        const province = this.value;
+        sessionStorage.setItem('selectedProvince', province);
+    });
+
+    document.getElementById("municipality").addEventListener('change', function() {
+        const municipality = this.value;
+        sessionStorage.setItem('selectedMunicipality', municipality);
+    });
+
+    document.getElementById("barangay").addEventListener('change', function() {
+        const barangay = this.value;
+        sessionStorage.setItem('selectedBarangay', barangay); // Store barangay in sessionStorage
+    });
+}
+
+// Function to restore form fields from sessionStorage
+function restoreFormFields() {
+    const formFields = ['lastName', 'firstName', 'middleName', 'dob', 'sex', 'studentID', 'program', 'major', 'year', 'section', 'region', 'province', 'municipality', 'barangay', 'street', 'email', 'contactNumber', 'emergencyContactName', 'relationship', 'emergencyContactNumber'];
+
+    formFields.forEach(function(field) {
+        if (sessionStorage.getItem(field)) {
+            $('#' + field).val(sessionStorage.getItem(field));
+        }
+    });
+
+    formFields.forEach(function(field) {
+        $('#' + field).on('input', function() {
+            sessionStorage.setItem(field, $(this).val());
+        });
+    });
+}
+
+// Function to confirm cancel action
+function confirmCancelPatient() {
+    $('#canceladdpatient').click(function(event) {
+        event.preventDefault();
+
+        let isFormFilled = false;
+
+        $('#studentForm input, studentForm select, studentForm textarea').each(function() {
+            if ($(this).val() !== '') {
+                isFormFilled = true; // Mark as filled if any field contains a value
+                return false; // Exit loop as we found a filled field
+            }
+        });
+
+        // If form is filled, show the confirmation dialog
+        if (isFormFilled) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you really want to cancel adding this patient? Unsaved information will be lost.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, cancel it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sessionStorage.clear();
+                    window.location.href = "patient-record.php";
+                }
+            });
+        } else {
+            // If no fields are filled, go back without confirmation
+            window.location.href = "patient-record.php";
+        }
+    });
+}
+
+</script>
 </body>
 </html>

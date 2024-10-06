@@ -19,8 +19,7 @@ $patientDetails = $patient->getExtensionData($patientId);
 
 // Print the patient_id
 if ($patientDetails) {
-    // Optional: You could log this or handle it differently.
-    // echo "Patient ID: " . $patientDetails['patient_id']; // Debugging line, uncomment if needed
+
 } else {
     echo "No patient details found.";
     exit; // Stop execution if no patient details are found
@@ -302,9 +301,8 @@ if ($patientDetails) {
             document.getElementById('middleName').value = patientData.patient.patient_mname || '';
             document.getElementById('dob').value = patientData.patient.patient_dob || '';
             document.getElementById('sex').value = patientData.patient.patient_sex || 'Male';
-            document.getElementById('extenID').value = patientData.exten.exten_idnum || '';
-
-            document.getElementById('role').value = patientData.exten.exten_role || '';
+            document.getElementById('extenID').value = patientData.extension.exten_idnum || '';
+            document.getElementById('role').value = patientData.extension.exten_role || '';
             document.getElementById('region').value = patientData.address.address_region || '';
             document.getElementById('province').value = patientData.address.address_province || '';
             document.getElementById('municipality').value = patientData.address.address_municipality || '';

@@ -504,9 +504,7 @@ class PatientManager{
     
     public function insertExtension($idnum, $patientid, $role) {
         if ($this->extensions->ExtensionExists($idnum)) {
-            $_SESSION['status'] = 'error';
-            $_SESSION['message'] = 'Extension already exists.';
-            return false;
+            return ['status' => 'error', 'message' => 'Extension already exists.'];
         }
     
         $insertSql = "INSERT INTO patextensions (exten_patientid, exten_idnum, exten_role)
@@ -515,16 +513,13 @@ class PatientManager{
         
         try {
             $stmt->execute([$patientid, $idnum,  $role]);
-            $_SESSION['status'] = 'success';
-            $_SESSION['message'] = 'Extension inserted successfully.';
-    
-            return true;
+            $extension_id = $this->db->lastInsertId();
+            $extension = new Extension($extension_id, $patientid, $idnum, $role);
+            $this->extensions->add($extension);
+            return ['status' => 'success', 'message' => 'Extension inserted successfully.', 'staff_id' => $extension_id];
         } catch (PDOException $e) {
-            error_log("Error inserting extension: " . $e->getMessage());
-            $_SESSION['status'] = 'error';
-            $_SESSION['message'] = 'Error inserting extension. Please try again later.';
-    
-            return false;
+            error_log("Error inserting staff: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error inserting extension. Please try again later.'];
         }
     }
     
@@ -703,7 +698,7 @@ class PatientManager{
         $insertEmergencyContactResponse = $this->insertEmergencyContact($patientid, $conname, $relationship, $emergency_connum);
         if ($insertEmergencyContactResponse['status'] !== 'success') {
             return $insertEmergencyContactResponse; 
-
+        }
         return [
             'status' => 'success',
             'message' => 'Extension patient added successfully.',
@@ -712,7 +707,7 @@ class PatientManager{
             'address_id' => $insertAddressResponse['address_id'],
             'contact_id' => $insertEmergencyContactResponse['contact_id']
         ];
-    }
+    
 }
     public function getAllPatients() {
         return $this->patients->getAllNodes();

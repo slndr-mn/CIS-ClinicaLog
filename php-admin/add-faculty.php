@@ -75,7 +75,7 @@ session_start();
               </div>
               <div class="card-body" id="InputInfo">
                 <!-- Form Starts Here -->
-                <form id="staffForm" action="patientcontrol.php" method="POST" enctype="multipart/form-data">                  <!-- Name Fields -->
+                <form id="facultyForm" action="patientcontrol.php" method="POST" enctype="multipart/form-data">                  <!-- Name Fields -->
                   <div class="row">
                   <div class="col-md-3 mb-3">
                         <label for="Profile" class="form-label">Profile Upload</label>
@@ -102,7 +102,7 @@ session_start();
                     </div>
                     <div class="col-md-2 mb-3">
                       <label for="sex" class="form-label">Sex</label>
-                      <select class="form-select form-control" id="sex" name="sex">
+                      <select class="form-select form-control" id="sex" name="sex" required>
                       <option selected disabled>Select Sex</option>
                       <option value="Female">Female</option>
                       <option value="Male">Male</option>
@@ -164,7 +164,7 @@ session_start();
                     <div class="col-md-3 mb-3">
                       <label for="municipality" class="form-label">Municipality</label>
                       <select class="form-select  form-control" id="municipality" name="municipality" required>
-                          <option value="" disabled selected>Select Municipality</option>                        <!-- Options for Municipality will go here -->
+                          <option value="" disabled selected>Select Municipality</option>                        
                       </select>
                     </div>
 
@@ -172,14 +172,14 @@ session_start();
                     <div class="col-md-2 mb-3">
                       <label for="barangay" class="form-label">Barangay</label>
                       <select class="form-select  form-control" id="barangay" name="barangay" required>
-                        <option value="" disabled selected>Select Barangay</option>                        <!-- Options for Barangay will go here -->
+                        <option value="" disabled selected>Select Barangay</option>                        
                       </select>
                     </div>
 
                     <!-- Street Input (Text Field) -->
                     <div class="col-md-2 mb-3">
                       <label for="street" class="form-label">Purok/Block No./Street</label>
-                      <input type="text" class="form-control" id="street" name="street" placeholder="Enter street address"/>
+                      <input type="text" class="form-control" id="street" name="street" placeholder="Enter street address" required/>
                     </div>
                   </div>
 
@@ -201,7 +201,7 @@ session_start();
                   <div class="row">
                     <div class="col-md-6 mb-3">
                       <label for="emergencyContactName" class="form-label">Emergency Contact Name</label>
-                      <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Enter emergency contact name"  />
+                      <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Enter emergency contact name" />
                     </div>
                     <div class="col-md-3 mb-3">
                       <label for="relationship" class="form-label">Relationship</label>
@@ -220,7 +220,7 @@ session_start();
                       </button>
                       
                       <button type="button" class="btn btn-primary ms-3" id="canceladdpatient">
-                        Cancel
+                        Back
                       </button>
                     </div>
                   </div>
@@ -260,13 +260,15 @@ session_start();
 <script src="../assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
 <script src="../assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
 <script src="../assets/js/plugin/jsvectormap/world.js"></script>
+
+
+
+
 <script>
 $(document).ready(function() {
-    // Load sidebar and header
     $("#sidebar").load("sidebar.php", handleLoadError);
     $("#header").load("header.php", handleLoadError);
 
-    // SweetAlert initialization and session handling
     <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
         var status = '<?php echo $_SESSION['status']; ?>';
         var message = '<?php echo htmlspecialchars($_SESSION['message'], ENT_QUOTES); ?>';
@@ -285,7 +287,6 @@ $(document).ready(function() {
         });
     <?php endif; ?>
 
-    // Initialize Select2 and address data
     initializeSelect2WithSession();
     initializeAddressDataWithSession();
     restoreFormFields();
@@ -294,7 +295,6 @@ $(document).ready(function() {
 
 });
 
-// Function to handle load error
 function handleLoadError(response, status, xhr) {
     if (status == "error") {
         console.log("Error loading file: " + xhr.status + " " + xhr.statusText);
@@ -335,64 +335,52 @@ const collegeDepartments = {
     ]
 };
 
-// Populate college dropdown with initial values
 Object.keys(collegeDepartments).forEach(college => {
     $('#college').append(new Option(college, college, false, false));
 });
 
-// Check if college and department were stored in session storage
 const savedCollege = sessionStorage.getItem('selectedCollege');
 const savedDepartment = sessionStorage.getItem('selectedDepartment');
 
-// If college was stored, set it as selected and trigger the change event
 if (savedCollege) {
     $('#college').val(savedCollege).trigger('change');
 }
 
-// Populate department dropdown based on the selected college
 $('#college').change(function() {
     const selectedCollege = $(this).val();
 
-    // Populate department dropdown with existing departments
     $('#department').empty().append('<option value="" disabled selected>Select or add a department</option>');
     const departments = collegeDepartments[selectedCollege] || [];
     departments.forEach(department => {
         $('#department').append(new Option(department, department, false, false));
     });
 
-    // Restore selected department if stored
     if (selectedCollege === savedCollege && savedDepartment) {
         $('#department').val(savedDepartment).trigger('change');
     }
 
-    // Store selected college in session storage
     sessionStorage.setItem('selectedCollege', selectedCollege);
 });
 
-// Log selected department and store it in session storage
 $('#department').on('change', function() {
     const selectedDepartment = $(this).val();
     console.log('Selected department: ', selectedDepartment);
 
-    // Store selected department in session storage
     sessionStorage.setItem('selectedDepartment', selectedDepartment);
 });
 
-// If college was selected previously, restore departments after college is set
 if (savedCollege) {
     const departments = collegeDepartments[savedCollege] || [];
     departments.forEach(department => {
         $('#department').append(new Option(department, department, false, false));
     });
 
-    // Restore the department if it was saved
     if (savedDepartment) {
         $('#department').val(savedDepartment).trigger('change');
     }
 }
 }
 
-// Function to initialize address data
 function initializeAddressDataWithSession() {
     // Address Data Logic
     const addressData = {
@@ -534,24 +522,40 @@ function restoreFormFields() {
 }
 
 // Function to confirm cancel action
+// Function to confirm cancel action
 function confirmCancelPatient() {
     $('#canceladdpatient').click(function(event) {
         event.preventDefault();
-        Swal.fire({
-            title: "Are you sure?",
-            text: "Do you really want to cancel adding this patient? Unsaved information will be lost.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, cancel it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-              sessionStorage.clear();
 
-              window.location.href = "patient-record.php";            
+        let isFormFilled = false;
+
+        $('#facultyForm input, facultyForm select, facultyForm textarea').each(function() {
+            if ($(this).val() !== '') {
+                isFormFilled = true; // Mark as filled if any field contains a value
+                return false; // Exit loop as we found a filled field
             }
         });
+
+        // If form is filled, show the confirmation dialog
+        if (isFormFilled) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you really want to cancel adding this patient? Unsaved information will be lost.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, cancel it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sessionStorage.clear();
+                    window.location.href = "patient-record.php";
+                }
+            });
+        } else {
+            // If no fields are filled, go back without confirmation
+            window.location.href = "patient-record.php";
+        }
     });
 }
 
