@@ -19,12 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
     $password = $_POST['password'];  
     $defaultadmin = "Administrator";
     $doctor = "Campus Physician";
-    
+     
     $userData = $user->userExists($email, $password);
       
     if ($userData) {  
         session_regenerate_id(true);
-        $_SESSION['logged_in'] = true;
+        $_SESSION['logged_in'] = true; 
         $_SESSION['user_id'] = $userData->user_id;  
         $_SESSION['user_status'] = $userData->user_status;
         $_SESSION['user_position'] = $userData->user_position;
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
                 header('Location: ../php-admin/superadindex.php'); 
                 exit;
             }
-            if($user_role == 'Admin'){
+            if($user_role == 'Admin'){ 
                 header('Location: ../php-admin/adminindex.php'); 
                 exit;
             }
@@ -89,7 +89,7 @@ unset($_SESSION['error_message']);
                 <p id="welcome">Welcome Admin!</p>
                 <p id="login2">Login to Continue</p>
                 
-                <?php if ($error_message): ?>
+                <?php if ($error_message): ?> 
                     <p id="error-message" style="color: red; text-align: center;">
                         <?= $error_message; ?>
                     </p>

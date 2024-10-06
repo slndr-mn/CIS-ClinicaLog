@@ -281,13 +281,12 @@ class PatientManager{
         $this->loadEmergencyContacts();
         $this->loadAddresses();
     }
-
+ 
     private function loadPatients() {
         $sql = "SELECT * FROM patients"; // Adjust the SQL as needed
         $stmt = $this->db->query($sql); // Prepare the SQL query
         
        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-            // Assuming Patient is a class that represents a patient
             $patient = new Patient(
                 $row['patient_id'], $row['patient_lname'], $row['patient_fname'], 
                 $row['patient_mname'], $row['patient_dob'], $row['patient_email'], 
@@ -295,7 +294,7 @@ class PatientManager{
                 $row['patient_patienttype'], $row['patient_dateadded'], $row['patient_password'], 
                 $row['patient_status'], $row['patient_code']
             );        
-            $this->patients->add($patient); // Insert the patient into the linked list
+            $this->patients->add($patient); 
         }
     }
     
@@ -376,7 +375,6 @@ class PatientManager{
 
     public function insertPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code) {
         try {
-            // Check if patient already exists by email
             if ($this->patients->patientExists($email)) {
                 return ['status' => 'error', 'message' => 'Patient already exists.'];
             }
@@ -416,13 +414,12 @@ class PatientManager{
             return ['status' => 'success', 'message' => 'Patient inserted successfully.', 'patient_id' => $patient_id];
     
         } catch (PDOException $e) {
-            // Log the actual error message for debugging purposes (for development, avoid exposing these to the user)
             error_log("Error inserting patient: " . $e->getMessage());
             
             // Show sanitized error response
             return [
                 'status' => 'error',
-                'message' => 'Error inserting patient. Please try again later.',
+                'message' => 'Error inserting patient: ' . $e->getMessage(),  // Include SQL error message
                 'details' => [
                     'sqlState' => $e->getCode(),  // SQL State for reference
                     'params' => json_encode($params)  // Log the parameters passed for debugging
@@ -430,6 +427,7 @@ class PatientManager{
             ];
         }
     }
+    
     
     
     public function insertStudent($idnum, $patientid, $program, $major, $year, $section) {
@@ -453,39 +451,45 @@ class PatientManager{
     }
     
     
-    public function insertFaculty($idnum, $patientid, $college, $depart, $role) {
+    public function insertFaculty($patientid, $idnum, $college, $depart, $role) {    
         if ($this->faculties->facultyExists($idnum)) {
             return ['status' => 'error', 'message' => 'Faculty already exists.'];
         }
     
-        $sql = "INSERT INTO patfaculties (faculty_idnum, faculty_patientid, faculty_college, faculty_depart, faculty_role)
+        $sql = "INSERT INTO patfaculties (faculty_patientid, faculty_idnum, faculty_college, faculty_depart, faculty_role)
                 VALUES (?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
-        
+    
         try {
-            $stmt->execute([$idnum, $patientid, $college, $depart, $role]);
+            $stmt->execute([$patientid, $idnum, $college, $depart, $role]);
             $faculty_id = $this->db->lastInsertId();
-            $faculty = new Faculty($faculty_id, $patientid, $idnum, $college, $depart, $role);
-            $this->faculties->add($faculty);
-
-            return ['status' => 'success', 'message' => 'Faculty inserted successfully.', 'faculty_id' => $faculty_id];
+        
+            return [
+                'status' => 'success', 
+                'message' => 'Faculty inserted successfully. Faculty ID: ' . $faculty_id // Include Faculty ID in message
+            ];
         } catch (PDOException $e) {
-            error_log("Error inserting faculty: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error inserting faculty. Please try again later.'];
+            $errorMessage = "Error inserting faculty: " . $e->getMessage();
+            echo $errorMessage . "<br>";
+            return [
+                'status' => 'error', 
+                'message' => 'Error inserting faculty. Please try again later. SQL Error: ' . $errorMessage // Include SQL error in message
+            ];
         }
     }
     
-    public function insertStaff($idnum, $patientid, $office, $role) {
+    
+    public function insertStaff($patientid, $idnum, $office, $role) {
         if ($this->staffs->staffExists($idnum)) {
             return ['status' => 'error', 'message' => 'Staff already exists.'];
         }
     
-        $sql = "INSERT INTO patstaffs (staff_idnum, staff_patientid, staff_office, staff_role)
+        $sql = "INSERT INTO patstaffs (staff_patientid, staff_idnum, staff_office, staff_role)
                 VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
         
         try {
-            $stmt->execute([$idnum, $patientid, $office, $role]);
+            $stmt->execute([$patientid, $idnum, $office, $role]);
             $staff_id = $this->db->lastInsertId();
             $staff = new Staff($staff_id, $patientid, $idnum, $office, $role);
             $this->staffs->add($staff);
@@ -505,12 +509,12 @@ class PatientManager{
             return false;
         }
     
-        $insertSql = "INSERT INTO patextensions (exten_idnum, exten_patientid, exten_role)
+        $insertSql = "INSERT INTO patextensions (exten_patientid, exten_idnum, exten_role)
                       VALUES (?, ?, ?)";
         $stmt = $this->db->prepare($insertSql);
         
         try {
-            $stmt->execute([$idnum, $patientid, $role]);
+            $stmt->execute([$patientid, $idnum,  $role]);
             $_SESSION['status'] = 'success';
             $_SESSION['message'] = 'Extension inserted successfully.';
     
@@ -542,7 +546,7 @@ class PatientManager{
     
     
     public function insertEmergencyContact($patientid, $conname, $relationship, $emergency_connum) {
-        $sql = "INSERT INTO emergency_contacts (contact_patientid, contact_name, contact_relationship, contact_number)
+        $sql = "INSERT INTO patemergencycontacts (emcon_patientid, emcon_conname, emcon_relationship, emcon_connum)
                 VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
     
@@ -558,35 +562,30 @@ class PatientManager{
     }
     
     public function addStudentPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code, $idnum, $program, $major, $year, $section, $region, $province, $municipality, $barangay, $prkstrtadd, $conname, $relationship, $emergency_connum) {
-        // Insert Patient
         $insertPatientResponse = $this->insertPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
         
-        // Check if patient insertion was successful
         if ($insertPatientResponse['status'] !== 'success') {
-            return $insertPatientResponse; // Return the error message if patient insertion failed
+            return $insertPatientResponse; 
         }
         
-        $patientid = $insertPatientResponse['patient_id']; // Get the inserted patient ID
+        $patientid = $insertPatientResponse['patient_id']; 
     
-        // Insert Student
         $insertStudentResponse = $this->insertStudent($idnum, $patientid, $program, $major, $year, $section);
         if ($insertStudentResponse['status'] !== 'success') {
-            return $insertStudentResponse; // Return the error message if student insertion failed
+            return $insertStudentResponse; 
         }
     
-        // Insert Address
         $insertAddressResponse = $this->insertAddress($patientid, $region, $province, $municipality, $barangay, $prkstrtadd);
         if ($insertAddressResponse['status'] !== 'success') {
-            return $insertAddressResponse; // Return the error message if address insertion failed
+            return $insertAddressResponse; 
         }
     
-        // Insert Emergency Contact
         $insertEmergencyContactResponse = $this->insertEmergencyContact($patientid, $conname, $relationship, $emergency_connum);
         if ($insertEmergencyContactResponse['status'] !== 'success') {
-            return $insertEmergencyContactResponse; // Return the error message if emergency contact insertion failed
+            return $insertEmergencyContactResponse; 
         }
     
-        // Return success message if all insertions were successful
+       
         return [
             'status' => 'success',
             'message' => 'Student patient added successfully.',
@@ -602,35 +601,32 @@ class PatientManager{
         $password, $status, $code, $idnum, $college, $depart, $role,
         $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
         $relationship, $emergency_connum
-    ) {// Insert Patient
+    ) {
         $insertPatientResponse = $this->insertPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
         
-        // Check if patient insertion was successful
+       
         if ($insertPatientResponse['status'] !== 'success') {
-            return $insertPatientResponse; // Return the error message if patient insertion failed
+            return $insertPatientResponse; 
         }
         
-        $patientid = $insertPatientResponse['patient_id']; // Get the inserted patient ID
+        $patientid = $insertPatientResponse['patient_id']; 
 
-        // Insert Faculty
-        $insertFacultyResponse = $this->insertFaculty($idnum, $patientid, $college, $depart, $role);
+      
+        $insertFacultyResponse = $this->insertFaculty($patientid, $idnum, $college, $depart, $role);
         if ($insertFacultyResponse['status'] !== 'success') {
-            return $insertFacultyResponse; // Return the error message if faculty insertion failed
+            return $insertFacultyResponse; 
         }
 
-        // Insert Address
         $insertAddressResponse = $this->insertAddress($patientid, $region, $province, $municipality, $barangay, $prkstrtadd);
         if ($insertAddressResponse['status'] !== 'success') {
-            return $insertAddressResponse; // Return the error message if address insertion failed
+            return $insertAddressResponse; 
         }
 
-        // Insert Emergency Contact
         $insertEmergencyContactResponse = $this->insertEmergencyContact($patientid, $conname, $relationship, $emergency_connum);
         if ($insertEmergencyContactResponse['status'] !== 'success') {
-            return $insertEmergencyContactResponse; // Return the error message if emergency contact insertion failed
+            return $insertEmergencyContactResponse; 
         }
 
-        // Return success message if all insertions were successful
         return [
             'status' => 'success',
             'message' => 'Faculty patient added successfully.',
@@ -649,32 +645,27 @@ class PatientManager{
     ) {
         $insertPatientResponse = $this->insertPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
         
-        // Check if patient insertion was successful
         if ($insertPatientResponse['status'] !== 'success') {
-            return $insertPatientResponse; // Return the error message if patient insertion failed
+            return $insertPatientResponse; 
         }
         
-        $patientid = $insertPatientResponse['patient_id']; // Get the inserted patient ID
+        $patientid = $insertPatientResponse['patient_id']; 
 
-        // Insert Faculty
-        $insertStaffResponse = $this->insertStaff($idnum, $patientid, $office, $role);
+        $insertStaffResponse = $this->insertStaff($patientid, $idnum, $office, $role);
         if ($insertStaffResponse['status'] !== 'success') {
-            return $insertStaffResponse; // Return the error message if faculty insertion failed
+            return $insertStaffResponse; 
         }
 
-        // Insert Address
         $insertAddressResponse = $this->insertAddress($patientid, $region, $province, $municipality, $barangay, $prkstrtadd);
         if ($insertAddressResponse['status'] !== 'success') {
-            return $insertAddressResponse; // Return the error message if address insertion failed
+            return $insertAddressResponse; 
         }
 
-        // Insert Emergency Contact
         $insertEmergencyContactResponse = $this->insertEmergencyContact($patientid, $conname, $relationship, $emergency_connum);
         if ($insertEmergencyContactResponse['status'] !== 'success') {
-            return $insertEmergencyContactResponse; // Return the error message if emergency contact insertion failed
+            return $insertEmergencyContactResponse;
         }
 
-        // Return success message if all insertions were successful
         return [
             'status' => 'success',
             'message' => 'Staff patient added successfully.',
@@ -693,32 +684,26 @@ class PatientManager{
     ) {
         $insertPatientResponse = $this->insertPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
         
-        // Check if patient insertion was successful
         if ($insertPatientResponse['status'] !== 'success') {
-            return $insertPatientResponse; // Return the error message if patient insertion failed
+            return $insertPatientResponse; 
         }
         
-        $patientid = $insertPatientResponse['patient_id']; // Get the inserted patient ID
+        $patientid = $insertPatientResponse['patient_id']; 
 
-        // Insert Faculty
         $insertExtenResponse = $this->insertExtension($idnum, $patientid, $role);
         if ($insertExtenResponse['status'] !== 'success') {
-            return $insertExtenResponse; // Return the error message if faculty insertion failed
+            return $insertExtenResponse; 
         }
 
-        // Insert Address
         $insertAddressResponse = $this->insertAddress($patientid, $region, $province, $municipality, $barangay, $prkstrtadd);
         if ($insertAddressResponse['status'] !== 'success') {
-            return $insertAddressResponse; // Return the error message if address insertion failed
+            return $insertAddressResponse; 
         }
 
-        // Insert Emergency Contact
         $insertEmergencyContactResponse = $this->insertEmergencyContact($patientid, $conname, $relationship, $emergency_connum);
         if ($insertEmergencyContactResponse['status'] !== 'success') {
-            return $insertEmergencyContactResponse; // Return the error message if emergency contact insertion failed
-        }
+            return $insertEmergencyContactResponse; 
 
-        // Return success message if all insertions were successful
         return [
             'status' => 'success',
             'message' => 'Extension patient added successfully.',
@@ -728,8 +713,7 @@ class PatientManager{
             'contact_id' => $insertEmergencyContactResponse['contact_id']
         ];
     }
-    
-    
+}
     public function getAllPatients() {
         return $this->patients->getAllNodes();
     }
@@ -759,53 +743,49 @@ class PatientManager{
     }
 
     public function getAllPatientsTable() {
-        // Get all data from the respective linked lists
         $patients = $this->patients->getAllNodes();
         $students = $this->students->getAllNodes();
         $faculties = $this->faculties->getAllNodes();
         $staffs = $this->staffs->getAllNodes();
         $extensions = $this->extensions->getAllNodes();
     
-        // Initialize an array to store the combined data
         $combinedData = [];
     
-        // Define a helper function to combine rows from each linked list by patient_id
         $combineRows = function($personType, $dataArray) use (&$combinedData) {
             foreach ($dataArray as $entry) {
-                // Check if necessary properties exist
                 if (isset($entry->patient_id, $entry->patient_lname, $entry->patient_fname, $entry->patient_email, $entry->patient_sex, $entry->patient_status)) {
-                    // Prepare combined entry with only the required fields
+                    
                     $combinedEntry = (object) [
-                        'idnum' => $entry->patient_id, // ID Number or Patient ID
-                        'name' => $entry->patient_lname . ' ' . $entry->patient_fname, // Full Name
-                        'email' => $entry->patient_email, // Email
-                        'sex' => $entry->patient_sex, // Sex
-                        'type' => $entry->patient_patienttype, // Type (Patient, Student, Faculty, etc.)
-                        'status' => $entry->patient_status // Status (Active, Inactive, etc.)
+                        'idnum' => $entry->patient_id, 
+                        'name' => $entry->patient_lname . ' ' . $entry->patient_fname, 
+                        'email' => $entry->patient_email, 
+                        'sex' => $entry->patient_sex, 
+                        'type' => $entry->patient_patienttype, 
+                        'status' => $entry->patient_status 
                     ];
     
-                    // Add the combined entry to the final array
+                    
                     $combinedData[] = $combinedEntry;
                 } else {
-                    // Optionally log or handle the error for the entry
+                    
                     error_log("Missing required fields in entry: " . json_encode($entry));
                 }
             }
         };
     
-        // Combine rows for each type of person
+       
         $combineRows('Patient', $patients);
         $combineRows('Student', $students);
         $combineRows('Faculty', $faculties);
         $combineRows('Staff', $staffs);
         $combineRows('Extension Worker', $extensions);
     
-        // Return the combined data as an array of objects
+        
         return $combinedData;
     }
     
     public function getPatientDetails($searchPatientId) {
-        // Initialize arrays to store the found data
+        
         $patientDetails = [];
         $studentDetails = [];
         $facultyDetails = [];
@@ -814,9 +794,9 @@ class PatientManager{
         $addressDetails = []; 
         $emergencyContactDetails = [];
     
-        // Helper function to find patient in the linked list
+
         $findPatientInList = function ($list) use ($searchPatientId) {
-            $current = $list->head; // Assuming you have a head property for each list
+            $current = $list->head; 
             while ($current != null) {
                 if ($current->patient_id == $searchPatientId) {
                     return $current;
@@ -826,7 +806,6 @@ class PatientManager{
             return null;
         };
     
-        // Search the patient's basic details
         $patient = $findPatientInList($this->patients);
         if ($patient !== null) {
             $patientDetails = (object)[
@@ -844,7 +823,6 @@ class PatientManager{
             ];
         }
     
-        // Search student details
         $student = $findPatientInList($this->students);
         if ($student !== null) {
             $studentDetails = (object)[
@@ -855,7 +833,6 @@ class PatientManager{
             ];
         }
     
-        // Search faculty details
         $faculty = $findPatientInList($this->faculties);
         if ($faculty !== null) {
             $facultyDetails = (object)[
@@ -865,7 +842,6 @@ class PatientManager{
             ];
         }
     
-        // Search staff details
         $staff = $findPatientInList($this->staffs);
         if ($staff !== null) {
             $staffDetails = (object)[
@@ -874,7 +850,6 @@ class PatientManager{
             ];
         }
     
-        // Search extension worker details
         $extension = $findPatientInList($this->extensions);
         if ($extension !== null) {
             $extensionDetails = (object)[
@@ -882,7 +857,6 @@ class PatientManager{
             ];
         }
     
-        // Search address details
         $address = $findPatientInList($this->addresses);
         if ($address !== null) {
             $addressDetails = (object)[
@@ -894,7 +868,6 @@ class PatientManager{
             ];
         }
     
-        // Search emergency contact details
         $emergencyContact = $findPatientInList($this->emergencycon);
         if ($emergencyContact !== null) {
             $emergencyContactDetails = (object)[
@@ -904,7 +877,6 @@ class PatientManager{
             ];
         }
     
-        // Combine all the found data into a final array
         return (object)[
             'patient' => $patientDetails,
             'student' => $studentDetails,
@@ -916,7 +888,6 @@ class PatientManager{
         ];
     }
     
-    // This part is in your PatientManager class
 public function getStudentData($patient_id) {
     $query = "
         SELECT 
@@ -951,7 +922,6 @@ public function getStudentData($patient_id) {
     $stmt->bindParam(':patient_id', $patient_id);
     $stmt->execute();
 
-    // Fetch the data and return it in a structured array
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
     
     return [
@@ -1010,7 +980,6 @@ public function getFacultyData($patient_id) {
     $stmt->bindParam(':patient_id', $patient_id);
     $stmt->execute();
 
-    // Fetch the data and return it in a structured array
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
     
     return [
@@ -1054,7 +1023,7 @@ public function getStaffData($patient_id) {
         FROM 
             patients p
         LEFT JOIN 
-            patstaff s ON p.patient_id = s.staff_patientid
+            patstaffs s ON p.patient_id = s.staff_patientid
         LEFT JOIN 
             pataddresses a ON p.patient_id = a.address_patientid
         LEFT JOIN 
@@ -1068,7 +1037,6 @@ public function getStaffData($patient_id) {
     $stmt->bindParam(':patient_id', $patient_id);
     $stmt->execute();
 
-    // Fetch the data and return it in a structured array
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
     
     return [
@@ -1128,10 +1096,10 @@ public function getExtensionData($patient_id) {
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
     
     return [
-        'patient' => $data, // Patient data
-        'extension' => [ // Changed from 'staff' to 'extension'
-            'exten_idnum' => $data['exten_idnum'], // Changed staff_idnum to exten_idnum
-            'exten_role' => $data['exten_role'],   // Changed staff_role to exten_role
+        'patient' => $data, 
+        'extension' => [ 
+            'exten_idnum' => $data['exten_idnum'], 
+            'exten_role' => $data['exten_role'],   
         ],
         'address' => [
             'address_region' => $data['address_region'],

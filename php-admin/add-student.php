@@ -261,21 +261,26 @@ session_start();
 </div>
 
 <?php
-  if (isset($_SESSION['message'])) {
+if (isset($_SESSION['message'])) {
     echo "<script>
             swal({
                 title: 'Message',
                 text: '" . htmlspecialchars($_SESSION['message'], ENT_QUOTES) . "',
                 icon: '" . ($_SESSION['status'] === 'success' ? 'success' : 'error') . "',
-                button: 'OK',
+                button: 'OK'
+            }).then((value) => {
+                if ('" . $_SESSION['status'] . "' === 'success') {
+                    // On success, reload the page (reset form)
+                    window.location.href = window.location.href;
+                }
+                // On error, the modal closes, and form data stays
             });
           </script>";
 
     unset($_SESSION['message']);
     unset($_SESSION['status']);
-
-    }
-    ?>
+}
+?>
 
     <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/core/popper.min.js"></script>
@@ -331,10 +336,8 @@ session_start();
     const program = document.getElementById("program").value;
     const major = document.getElementById("major");
 
-    // Clear existing major options
     major.innerHTML = "<option selected disabled>Select Major</option>";
 
-    // Define majors based on program selection
     const majorOptions = {
       "Bachelor of Science in Secondary Education": ["Filipino", "English", "Mathematics"],
       "Bachelor of Science in Information Technology": ["Information Security"],
@@ -345,13 +348,12 @@ session_start();
       "Bachelor of Elementary Education": ["None"],
     };
 
-    // Get the relevant majors for the selected program
     if (majorOptions[program]) {
       majorOptions[program].forEach(function (majorName) {
         const option = document.createElement("option");
         option.value = majorName;
         option.textContent = majorName;
-        major.appendChild(option);
+        major.appendChild(option); 
       });
     }
   }

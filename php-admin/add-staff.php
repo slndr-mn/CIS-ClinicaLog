@@ -223,7 +223,7 @@ session_start();
 
                   <div class="row">
                     <div class="col-md-12 text-center">
-                      <button type="button" class="btn btn-primary" id="addstaffpatient" name="addstaffpatient">
+                      <button type="submit" class="btn btn-primary" id="addstaffpatient" name="addstaffpatient">
                         Submit
                       </button>
                       

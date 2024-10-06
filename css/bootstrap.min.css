@@ -2433,6 +2433,26 @@ progress {
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out
 }
 
+.suggestions {
+    border: 1px solid #ccc;
+    display: none; /* Hide by default */
+    position: absolute;
+    background-color: white;
+    z-index: 1000;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+
 @media (prefers-reduced-motion:reduce) {
     .form-control {
         transition: none

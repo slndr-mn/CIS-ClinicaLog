@@ -172,8 +172,8 @@ if ($patientDetails) {
 
         <!--  Office Input -->
         <div class="col-md-2 mb-3">
-            <label for=" Office" class="form-label"> Office</label>
-            <input type="text" class="form-control" id=" Office" name=" Office" placeholder=" Office" readonly />
+            <label for="Office" class="form-label"> Office</label>
+            <input type="text" class="form-control" id="Office" name="Office" placeholder="Office" readonly />
         </div>
 
         <div class="col-md-2 mb-3">
@@ -266,7 +266,7 @@ if ($patientDetails) {
                   </div>
 
 </form>
-
+ 
                 <!-- End of Form -->
               </div>
             </div>
@@ -310,7 +310,7 @@ if ($patientDetails) {
             document.getElementById('sex').value = patientData.patient.patient_sex || 'Male';
             document.getElementById('staffID').value = patientData.staff.staff_idnum || '';
 
-            document.getElementById('Office').value = patientData.staff.staff_depart || '';
+            document.getElementById('Office').value = patientData.staff.staff_office || '';
             document.getElementById('role').value = patientData.staff.staff_role || '';
             document.getElementById('region').value = patientData.address.address_region || '';
             document.getElementById('province').value = patientData.address.address_province || '';

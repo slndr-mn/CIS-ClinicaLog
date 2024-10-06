@@ -5,17 +5,18 @@ session_start();
 <html lang="en">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Sample Index</title> 
+    <title>Add Patient Faculty</title> 
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <!-- Fonts and icons -->
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
-    <script>
+    <script> 
       WebFont.load({ 
         google: { families: ["Public Sans:300,400,500,600,700"] },
         custom: {
@@ -74,7 +75,7 @@ session_start();
               </div>
               <div class="card-body" id="InputInfo">
                 <!-- Form Starts Here -->
-                <form action="patientcontrol.php" method="POST" enctype="multipart/form-data">                  <!-- Name Fields -->
+                <form id="staffForm" action="patientcontrol.php" method="POST" enctype="multipart/form-data">                  <!-- Name Fields -->
                   <div class="row">
                   <div class="col-md-3 mb-3">
                         <label for="Profile" class="form-label">Profile Upload</label>
@@ -116,25 +117,20 @@ session_start();
                       <input type="text" class="form-control" id="facultyID" name="facultyID" placeholder="Enter ID number" required />
                     </div>
 
+
                     <!-- Program Dropdown -->
                     <div class="col-md-4 mb-3">
-                      <label for="program" class="form-label">College</label>
-                      <select class="form-select  form-control" id="college" name="college" required onchange="updateDepartmentOptions()">
-                        <option selected disabled>Select College</option>
-                        <option value="College of Teacher Education and Technology">College of Teacher Education and Technology</option>
-                        <option value="College of Engineering">College of Engineering</option>
-                        <option value="School of Medicine">School of Medicine</option>
-                        <!-- Add more programs as needed -->
-                      </select>
+                        <label for="college" class="form-label">College</label>
+                        <select class="form-select form-control" id="college" name="college" required>
+                        </select>
                     </div>
 
                     <!-- department Dropdown -->
-                    <div class="col-md-2 mb-3">
-                      <label for="department" class="form-label">department</label>
-                      <select class="form-select  form-control" id="department" name="department" required>
-                        <option selected disabled>Select Department</option>
-                        <!-- department options will be dynamically populated based on the Program -->
-                      </select>
+                    <div class="col-md-4 mb-3">
+                        <label for="department" class="form-label">Department</label>
+                        <select class="form-select form-control" id="department" name="department" required>
+                            <option value="">Select or add a department</option>
+                        </select>
                     </div>
 
                     <div class="col-md-2 mb-3">
@@ -150,7 +146,7 @@ session_start();
                     <div class="col-md-2 mb-3">
                       <label for="region" class="form-label">Region</label>
                       <select class="form-select  form-control" id="region" name="region" required>
-                        <option selected disabled>Select Region</option>
+                        <option value="" disabled selected>Select Region</option>
                         <!-- Options for Region will go here -->
                       </select>
                     </div>
@@ -159,7 +155,7 @@ session_start();
                     <div class="col-md-3 mb-3">
                       <label for="province" class="form-label">Province</label>
                       <select class="form-select  form-control" id="province" name="province" required>
-                        <option selected disabled>Select Province</option>
+                        <option value="" disabled selected >Select Province</option>
                         <!-- Options for Province will go here -->
                       </select>
                     </div>
@@ -168,8 +164,7 @@ session_start();
                     <div class="col-md-3 mb-3">
                       <label for="municipality" class="form-label">Municipality</label>
                       <select class="form-select  form-control" id="municipality" name="municipality" required>
-                        <option selected disabled>Select Municipality</option>
-                        <!-- Options for Municipality will go here -->
+                          <option value="" disabled selected>Select Municipality</option>                        <!-- Options for Municipality will go here -->
                       </select>
                     </div>
 
@@ -177,8 +172,7 @@ session_start();
                     <div class="col-md-2 mb-3">
                       <label for="barangay" class="form-label">Barangay</label>
                       <select class="form-select  form-control" id="barangay" name="barangay" required>
-                        <option selected disabled>Select Barangay</option>
-                        <!-- Options for Barangay will go here -->
+                        <option value="" disabled selected>Select Barangay</option>                        <!-- Options for Barangay will go here -->
                       </select>
                     </div>
 
@@ -201,7 +195,7 @@ session_start();
                       <input type="tel" class="form-control" id="contactNumber" name="contactNumber" placeholder="Enter contact number" required />
                     </div>
                   </div>
-
+ 
                   <!-- Emergency Contact Information -->
                   <h5>Emergency Contact Information</h5>
                   <div class="row">
@@ -221,7 +215,7 @@ session_start();
 
                   <div class="row">
                     <div class="col-md-12 text-center">
-                      <button type="submit" class="btn btn-primary" id="addstudentpatient" name="addfacultypatient">
+                      <button type="submit" class="btn btn-primary" id="addfacultypatient" name="addfacultypatient">
                         Submit
                       </button>
                       
@@ -240,216 +234,329 @@ session_start();
     </div>
   </div>
 </div>
-
-<?php
-  if (isset($_SESSION['message'])) {
-    echo "<script>
-            swal({
-                title: 'Message',
-                text: '" . htmlspecialchars($_SESSION['message'], ENT_QUOTES) . "',
-                icon: '" . ($_SESSION['status'] === 'success' ? 'success' : 'error') . "',
-                button: 'OK',
-            });
-          </script>";
-
-    unset($_SESSION['message']);
-    unset($_SESSION['status']);
-
-    }
-    ?>
-
-    <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
-    <script src="../assets/js/core/popper.min.js"></script>
-    <script src="../assets/js/core/bootstrap.min.js"></script>
-
-    <!-- jQuery Scrollbar -->
-    <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
-
-    <!-- Chart JS -->
-    <script src="../assets/js/plugin/chart.js/chart.min.js"></script>
-
-    <!-- jQuery Sparkline -->
-    <script src="../assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
-
-    <!-- Chart Circle -->
-    <script src="../assets/js/plugin/chart-circle/circles.min.js"></script>
-
-    <!-- Datatables -->
-    <script src="../assets/js/plugin/datatables/datatables.min.js"></script>
-
-    <!-- Bootstrap Notify -->
-    <script src="../assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
-
-    <!-- jQuery Vector Maps -->
-    <script src="../assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
-    <script src="../assets/js/plugin/jsvectormap/world.js"></script>
-
-    <!-- Sweet Alert -->
-    <script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
-
-    <!-- Kaiadmin JS -->
-    <script src="../assets/js/kaiadmin.min.js"></script>
-    
-    <script>
-        $(document).ready(function() {
-            // Dynamically load the sidebar
-            $("#sidebar").load("sidebar.php", function(response, status, xhr) {
-                if (status == "error") {
-                    console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
-                }
-            });
-
-            $("#header").load("header.php", function(response, status, xhr) {
-                if (status == "error") {
-                    console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
-                }
-            });
-        });
-    </script>
-
-<script>
-  function updateDepartmentOptions() {
-    const program = document.getElementById("college").value;
-    const department = document.getElementById("department");
-
-    // Clear existing department options
-    department.innerHTML = "<option selected disabled>Select department</option>";
-
-    // Define departments based on program selection
-    const departmentOptions = {
-      "College of Teacher Education and Technology": 
-      ["Department of Elementary Education", "Department of Special Needs Education", "Department of Early Childhood Education",
-        "Department of Secondary Education", "Department of Science in Information Technology", "Department of Technical-Vocational Teacher Education", 
-      ],
-      "College of Engineering": ["Department of Science in Agricultural and Biosystems Engineering"],
-      "School of Medicine": ["Doctor of Medicine"],
-    };
-
-    // Get the relevant departments for the selected program
-    if (departmentOptions[program]) {
-      departmentOptions[program].forEach(function (departmentName) {
-        const option = document.createElement("option");
-        option.value = departmentName;
-        option.textContent = departmentName;
-        department.appendChild(option);
-      });
-    }
-  }
-</script>
-
-<script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
-<!-- Ensure you include these in your HTML -->
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Select2 -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+<!-- Core JS -->
+<script src="../assets/js/core/popper.min.js"></script>
+<script src="../assets/js/core/bootstrap.min.js"></script>
+
+<!-- Kaiadmin JS -->
+<script src="../assets/js/kaiadmin.min.js"></script>
+
+<!-- Plugins -->
+<script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+<script src="../assets/js/plugin/chart.js/chart.min.js"></script>
+<script src="../assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+<script src="../assets/js/plugin/chart-circle/circles.min.js"></script>
+<script src="../assets/js/plugin/datatables/datatables.min.js"></script>
+<script src="../assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+<script src="../assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+<script src="../assets/js/plugin/jsvectormap/world.js"></script>
 <script>
-        $(document).ready(function () {
-            // Confirmation before canceling the addition of a patient
-            $("#canceladdpatient").click(function (e) {
-                swal({
-                    title: "Are you sure?",
-                    text: "Do you really want to cancel adding this patient? Unsaved information will be lost.",
-                    icon: "warning",
-                    buttons: {
-                        confirm: {
-                            text: "Yes, cancel it!",
-                            className: "btn btn-success",
-                        },
-                        cancel: {
-                            visible: true,
-                            className: "btn btn-danger",
-                        },
-                    },
-                }).then((willCancel) => {
-                    if (willCancel) {
-                        // Redirect to patient-record.php
-                        window.location.href = "patient-record.php";
-                    } else {
-                        swal.close();
-                    }
-                });
-            });
+$(document).ready(function() {
+    // Load sidebar and header
+    $("#sidebar").load("sidebar.php", handleLoadError);
+    $("#header").load("header.php", handleLoadError);
 
-            // Address Data Logic
-            const addressData = {
-                regions: {
-                    "Region XI": {
-                        provinces: {
-                            "Davao del Norte": {
-                                municipalities: ["Tagum City", "Sto. Tomas"],
-                                barangays: {
-                                    "Tagum City": ["Apokon", "Pagsabangan"],
-                                    "Sto. Tomas": ["Kinamayan", "Poblacion"]
-                                }
-                            },
-                            "Davao de Oro": {
-                                municipalities: ["Pantukan", "Nabunturan"],
-                                barangays: {
-                                    "Pantukan": ["Kingking", "Magnaga"],
-                                    "Nabunturan": ["Anislagan", "Poblacion"]
-                                }
-                            }
+    // SweetAlert initialization and session handling
+    <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
+        var status = '<?php echo $_SESSION['status']; ?>';
+        var message = '<?php echo htmlspecialchars($_SESSION['message'], ENT_QUOTES); ?>';
+        Swal.fire({
+            title: status === 'success' ? "Success!" : "Error!",
+            text: message,
+            icon: status,
+            confirmButtonText: "OK",
+            confirmButtonColor: status === 'success' ? "#77dd77" : "#ff6961"
+        }).then(() => {
+            if (status === 'success') {
+              sessionStorage.clear();
+                window.location.href = "add-faculty.php";
+            }
+            <?php unset($_SESSION['status'], $_SESSION['message']); ?>
+        });
+    <?php endif; ?>
+
+    // Initialize Select2 and address data
+    initializeSelect2WithSession();
+    initializeAddressDataWithSession();
+    restoreFormFields();
+    confirmCancelPatient();
+
+
+});
+
+// Function to handle load error
+function handleLoadError(response, status, xhr) {
+    if (status == "error") {
+        console.log("Error loading file: " + xhr.status + " " + xhr.statusText);
+    }
+}
+
+ // Function to initialize Select2 with session storage support
+ function initializeSelect2WithSession() {
+
+// Initialize Select2 for both dropdowns
+$('#college').select2({
+    tags: true, // Enable adding new colleges
+    placeholder: "Select or add a college",
+    allowClear: true
+});
+
+$('#department').select2({
+    tags: true, // Enable adding new departments
+    placeholder: "Select or add a department",
+    allowClear: true
+});
+
+// Object to map colleges to their departments
+const collegeDepartments = {
+    "College of Teacher Education and Technology": [
+        "Department of Elementary Education",
+        "Department of Special Needs Education",
+        "Department of Early Childhood Education",
+        "Department of Secondary Education",
+        "Department of Science in Information Technology",
+        "Department of Technical-Vocational Teacher Education"
+    ],
+    "College of Engineering": [
+        "Department of Science in Agricultural and Biosystems Engineering"
+    ],
+    "School of Medicine": [
+        "Doctor of Medicine"
+    ]
+};
+
+// Populate college dropdown with initial values
+Object.keys(collegeDepartments).forEach(college => {
+    $('#college').append(new Option(college, college, false, false));
+});
+
+// Check if college and department were stored in session storage
+const savedCollege = sessionStorage.getItem('selectedCollege');
+const savedDepartment = sessionStorage.getItem('selectedDepartment');
+
+// If college was stored, set it as selected and trigger the change event
+if (savedCollege) {
+    $('#college').val(savedCollege).trigger('change');
+}
+
+// Populate department dropdown based on the selected college
+$('#college').change(function() {
+    const selectedCollege = $(this).val();
+
+    // Populate department dropdown with existing departments
+    $('#department').empty().append('<option value="" disabled selected>Select or add a department</option>');
+    const departments = collegeDepartments[selectedCollege] || [];
+    departments.forEach(department => {
+        $('#department').append(new Option(department, department, false, false));
+    });
+
+    // Restore selected department if stored
+    if (selectedCollege === savedCollege && savedDepartment) {
+        $('#department').val(savedDepartment).trigger('change');
+    }
+
+    // Store selected college in session storage
+    sessionStorage.setItem('selectedCollege', selectedCollege);
+});
+
+// Log selected department and store it in session storage
+$('#department').on('change', function() {
+    const selectedDepartment = $(this).val();
+    console.log('Selected department: ', selectedDepartment);
+
+    // Store selected department in session storage
+    sessionStorage.setItem('selectedDepartment', selectedDepartment);
+});
+
+// If college was selected previously, restore departments after college is set
+if (savedCollege) {
+    const departments = collegeDepartments[savedCollege] || [];
+    departments.forEach(department => {
+        $('#department').append(new Option(department, department, false, false));
+    });
+
+    // Restore the department if it was saved
+    if (savedDepartment) {
+        $('#department').val(savedDepartment).trigger('change');
+    }
+}
+}
+
+// Function to initialize address data
+function initializeAddressDataWithSession() {
+    // Address Data Logic
+    const addressData = {
+        regions: {
+            "Region XI": {
+                provinces: {
+                    "Davao del Norte": {
+                        municipalities: ["Tagum City", "Sto. Tomas"],
+                        barangays: {
+                            "Tagum City": ["Apokon", "Pagsabangan"],
+                            "Sto. Tomas": ["Kinamayan", "Poblacion"]
                         }
                     },
-                    "Region XII": {
-                        provinces: {
-                            "Cotabato": {
-                                municipalities: ["Alamada", "Carmen"],
-                                barangays: {
-                                    "Alamada": ["Camansi", "Macabasa"],
-                                    "Carmen": ["Bentangan", "General Luna"]
-                                }
-                            }
+                    "Davao de Oro": {
+                        municipalities: ["Pantukan", "Nabunturan"],
+                        barangays: {
+                            "Pantukan": ["Kingking", "Magnaga"],
+                            "Nabunturan": ["Anislagan", "Poblacion"]
                         }
                     }
                 }
-            };
-
-            // Function to populate dropdowns
-            function populateDropdown(dropdown, options) {
-                dropdown.innerHTML = '<option selected disabled>Select</option>';
-                options.forEach(option => {
-                    const opt = document.createElement("option");
-                    opt.value = option;
-                    opt.textContent = option;
-                    dropdown.appendChild(opt);
-                });
+            },
+            "Region XII": {
+                provinces: {
+                    "Cotabato": {
+                        municipalities: ["Alamada", "Carmen"],
+                        barangays: {
+                            "Alamada": ["Camansi", "Macabasa"],
+                            "Carmen": ["Bentangan", "General Luna"]
+                        }
+                    }
+                }
             }
+        }
+    };
 
-            // Populate Regions dropdown
-            const regionSelect = document.getElementById("region");
-            populateDropdown(regionSelect, Object.keys(addressData.regions));
-
-            // Handle region change
-            regionSelect.addEventListener("change", function () {
-                const selectedRegion = this.value;
-                const provinces = Object.keys(addressData.regions[selectedRegion].provinces);
-                populateDropdown(document.getElementById("province"), provinces);
-            });
-
-            // Handle province change
-            document.getElementById("province").addEventListener("change", function () {
-                const selectedRegion = regionSelect.value;
-                const selectedProvince = this.value;
-                const municipalities = addressData.regions[selectedRegion].provinces[selectedProvince].municipalities;
-                populateDropdown(document.getElementById("municipality"), municipalities);
-            });
-
-            // Handle municipality change
-            document.getElementById("municipality").addEventListener("change", function () {
-                const selectedRegion = regionSelect.value;
-                const selectedProvince = document.getElementById("province").value;
-                const selectedMunicipality = this.value;
-                const barangays = addressData.regions[selectedRegion].provinces[selectedProvince].barangays[selectedMunicipality];
-                populateDropdown(document.getElementById("barangay"), barangays);
-            });
+    // Function to populate dropdowns
+    function populateDropdown(dropdown, options) {
+        dropdown.innerHTML = '<option selected disabled>Select</option>';
+        options.forEach(option => {
+            const opt = document.createElement("option");
+            opt.value = option;
+            opt.textContent = option;
+            dropdown.appendChild(opt);
         });
-    </script>
+    }
 
+    // Populate Regions dropdown
+    const regionSelect = document.getElementById("region");
+    populateDropdown(regionSelect, Object.keys(addressData.regions));
+
+    // Handle region change
+    regionSelect.addEventListener("change", function () {
+        const selectedRegion = this.value;
+        const provinces = Object.keys(addressData.regions[selectedRegion].provinces);
+        const provinceSelect = document.getElementById("province");
+        populateDropdown(provinceSelect, provinces);
+        provinceSelect.dispatchEvent(new Event('change')); // Trigger change to update municipalities
+    });
+
+    // Handle province change
+    document.getElementById("province").addEventListener("change", function () {
+        const selectedRegion = regionSelect.value;
+        const selectedProvince = this.value;
+        const municipalities = addressData.regions[selectedRegion].provinces[selectedProvince].municipalities;
+        const municipalitySelect = document.getElementById("municipality");
+        populateDropdown(municipalitySelect, municipalities);
+        municipalitySelect.dispatchEvent(new Event('change')); // Trigger change to update barangays
+    });
+
+    // Handle municipality change
+    document.getElementById("municipality").addEventListener("change", function () {
+        const selectedRegion = regionSelect.value;
+        const selectedProvince = document.getElementById("province").value;
+        const selectedMunicipality = this.value;
+        const barangays = addressData.regions[selectedRegion].provinces[selectedProvince].barangays[selectedMunicipality];
+        const barangaySelect = document.getElementById("barangay");
+        populateDropdown(barangaySelect, barangays);
+    });
+
+    // Check for previously selected values in sessionStorage
+    if (sessionStorage.getItem('selectedRegion')) {
+        regionSelect.value = sessionStorage.getItem('selectedRegion');
+        regionSelect.dispatchEvent(new Event('change'));
+    }
+    if (sessionStorage.getItem('selectedProvince')) {
+        const provinceSelect = document.getElementById("province");
+        provinceSelect.value = sessionStorage.getItem('selectedProvince');
+        provinceSelect.dispatchEvent(new Event('change'));
+    }
+    if (sessionStorage.getItem('selectedMunicipality')) {
+        const municipalitySelect = document.getElementById("municipality");
+        municipalitySelect.value = sessionStorage.getItem('selectedMunicipality');
+        municipalitySelect.dispatchEvent(new Event('change'));
+    }
+    if (sessionStorage.getItem('selectedBarangay')) {
+        const barangaySelect = document.getElementById("barangay");
+        barangaySelect.value = sessionStorage.getItem('selectedBarangay');
+    }
+
+    // Event handlers for dropdown changes
+    regionSelect.addEventListener('change', function() {
+        const region = this.value;
+        sessionStorage.setItem('selectedRegion', region);
+    });
+
+    document.getElementById("province").addEventListener('change', function() {
+        const province = this.value;
+        sessionStorage.setItem('selectedProvince', province);
+    });
+
+    document.getElementById("municipality").addEventListener('change', function() {
+        const municipality = this.value;
+        sessionStorage.setItem('selectedMunicipality', municipality);
+    });
+
+    document.getElementById("barangay").addEventListener('change', function() {
+        const barangay = this.value;
+        sessionStorage.setItem('selectedBarangay', barangay); // Store barangay in sessionStorage
+    });
+}
+
+
+// Function to restore form fields from sessionStorage
+function restoreFormFields() {
+    const formFields = ['lastName', 'firstName', 'middleName', 'dob', 'sex', 'facultyID', 'college', 'department', 'role', 'region', 'province', 'municipality', 'barangay', 'street', 'email', 'contactNumber', 'emergencyContactName', 'relationship', 'emergencyContactNumber'];
+
+    formFields.forEach(function(field) {
+        if (sessionStorage.getItem(field)) {
+            $('#' + field).val(sessionStorage.getItem(field));
+        }
+    });
+
+    formFields.forEach(function(field) {
+        $('#' + field).on('input', function() {
+            sessionStorage.setItem(field, $(this).val());
+        });
+    });
+}
+
+// Function to confirm cancel action
+function confirmCancelPatient() {
+    $('#canceladdpatient').click(function(event) {
+        event.preventDefault();
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you really want to cancel adding this patient? Unsaved information will be lost.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, cancel it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+              sessionStorage.clear();
+
+              window.location.href = "patient-record.php";            
+            }
+        });
+    });
+}
+
+
+</script>
 
 
 </body>

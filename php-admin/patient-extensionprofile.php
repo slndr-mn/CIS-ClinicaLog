@@ -166,8 +166,8 @@ if ($patientDetails) {
     <!-- ID and Academic Info -->
     <div class="row">
         <div class="col-md-2 mb-3">
-            <label for="staffID" class="form-label">ID Number</label>
-            <input type="text" class="form-control" id="staffID" name="staffID" placeholder="ID number" readonly />
+            <label for="extenID" class="form-label">ID Number</label>
+            <input type="text" class="form-control" id="extenID" name="extenID" placeholder="ID number" readonly />
         </div>
 
         <div class="col-md-2 mb-3">
@@ -302,9 +302,9 @@ if ($patientDetails) {
             document.getElementById('middleName').value = patientData.patient.patient_mname || '';
             document.getElementById('dob').value = patientData.patient.patient_dob || '';
             document.getElementById('sex').value = patientData.patient.patient_sex || 'Male';
-            document.getElementById('staffID').value = patientData.staff.staff_idnum || '';
+            document.getElementById('extenID').value = patientData.exten.exten_idnum || '';
 
-            document.getElementById('role').value = patientData.staff.staff_role || '';
+            document.getElementById('role').value = patientData.exten.exten_role || '';
             document.getElementById('region').value = patientData.address.address_region || '';
             document.getElementById('province').value = patientData.address.address_province || '';
             document.getElementById('municipality').value = patientData.address.address_municipality || '';

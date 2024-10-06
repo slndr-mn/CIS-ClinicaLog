@@ -26,7 +26,7 @@ if ($patientDetails) {
     exit; // Stop execution if no patient details are found
 }
 ?>
-
+ 
 <!DOCTYPE html> 
 <html lang="en">
 <head>

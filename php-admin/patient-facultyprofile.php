@@ -139,15 +139,15 @@ if ($patientDetails) {
     <div class="row">
         <div class="col-md-3 mb-3">
             <label for="lastName" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="  last name" readonly />
+            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="last name" readonly />
         </div>
         <div class="col-md-3 mb-3">
             <label for="firstName" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="  first name" readonly />
+            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="first name" readonly />
         </div>
         <div class="col-md-2 mb-3">
             <label for="middleName" class="form-label">Middle Name</label>
-            <input type="text" class="form-control" id="middleName" name="middleName" placeholder="  middle name" readonly/>
+            <input type="text" class="form-control" id="middleName" name="middleName" placeholder="middle name" readonly/>
         </div>
         <div class="col-md-2 mb-3">
             <label for="dob" class="form-label">Date of Birth</label>
@@ -168,7 +168,7 @@ if ($patientDetails) {
         <div class="col-md-2 mb-3">
             <label for="facultyID" class="form-label">ID Number</label>
             <input type="text" class="form-control" id="facultyID" name="facultyID" placeholder="ID number" readonly />
-        </div>
+        </div> 
 
         <!-- college Input -->
         <div class="col-md-4 mb-3">
@@ -203,7 +203,7 @@ if ($patientDetails) {
             <input type="text" class="form-control" id="province" name="province" placeholder="Province" readonly />
         </div>
 
-        <!-- Municipality Input -->
+        <!-- Municipality Input --> 
         <div class="col-md-3 mb-3">
             <label for="municipality" class="form-label">Municipality</label>
             <input type="text" class="form-control" id="municipality" name="municipality" placeholder="Municipality" readonly />
@@ -291,14 +291,17 @@ if ($patientDetails) {
                 text: '" . htmlspecialchars($_SESSION['message'], ENT_QUOTES) . "',
                 icon: '" . ($_SESSION['status'] === 'success' ? 'success' : 'error') . "',
                 button: 'OK',
+            }).then((value) => {
+                // SweetAlert will automatically close when the button is clicked
             });
           </script>";
 
+    // Clear the session variables after showing the alert
     unset($_SESSION['message']);
     unset($_SESSION['status']);
+  }
+?>
 
-    }
-    ?>
 
     
 <script>

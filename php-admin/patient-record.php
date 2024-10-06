@@ -77,6 +77,31 @@ $userData = $user->getUserData($user_id);
             <div class="page-inner">
               <div class="row">
                 <div class="col-md-12">
+                  <div>
+
+                  <ul class="nav nav-pills nav-secondary nav-pills-no-bd" id="pills-tab-without-border" role="tablist">
+                    <li>
+                      <a class="nav-link active" href="" role="tab">All</a>
+                    </li>
+                    <li>
+                      <a class="nav-link" href="" role="tab">Student</a>
+                    </li>
+                    <li>
+                      <a class="nav-link" href="" role="tab">Faculty</a>
+                    </li>
+                    <li>
+                      <a class="nav-link" href="" role="tab">Staff</a>
+                    </li>
+                    <li>
+                      <a class="nav-link" href="" role="tab">Extension</a>
+                    </li>
+                  </ul>
+
+                    </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
                   <div class="card">
                     <div class="card-header">
                       <div class="d-flex align-items-center">

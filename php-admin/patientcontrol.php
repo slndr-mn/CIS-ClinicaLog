@@ -152,9 +152,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             // Call the addStudentPatient method and store the response
             $response = $patient->addFacultyPatient(
-                $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'Faculty', 
-                date('Y-m-d H:i:s'), password_hash($idnum, PASSWORD_DEFAULT), 'Active', 0, 
-                $idnum, $college, $depart, $role,
+                $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'faculty', 
+                date('Y-m-d'), password_hash($idnum, PASSWORD_DEFAULT), 'Active', 0, 
+                $idnum, $college, $department, $role,
                 $region, $province, $municipality, $barangay, 
                 $prkstrtadd, $conname, $relationship, $emergency_connum
             );
@@ -227,11 +227,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             finfo_close($finfo);
         }
 
-        // Validate email and proceed with insertion
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            // Call the addStudentPatient method and store the response
             $response = $patient->addStaffPatient(
-                $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'Faculty', 
+                $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'Staff', 
                 date('Y-m-d H:i:s'), password_hash($idnum, PASSWORD_DEFAULT), 'Active', 0, 
                 $idnum, $office, $role,
                 $region, $province, $municipality, $barangay, 
@@ -308,7 +306,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             // Call the addStudentPatient method and store the response
             $response = $patient->addExtenPatient(
-                $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'Faculty', 
+                $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'Extension', 
                 date('Y-m-d H:i:s'), password_hash($idnum, PASSWORD_DEFAULT), 'Active', 0, 
                 $idnum, $role,
                 $region, $province, $municipality, $barangay, 

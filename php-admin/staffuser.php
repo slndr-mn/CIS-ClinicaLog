@@ -33,7 +33,7 @@ $userData = $user->getUserData($user_id);
           families: [
             "Font Awesome 5 Solid",
             "Font Awesome 5 Regular",
-            "Font Awesome 5 Brands",
+            "Font Awesome 5 Brands", 
             "simple-line-icons",
           ],
           urls: ["../css/fonts.min.css"], 
@@ -588,7 +588,6 @@ $userData = $user->getUserData($user_id);
                     title: status.charAt(0).toUpperCase() + status.slice(1) + '!',
                     text: message
                 }).then(() => {
-                    // Clear the session messages after displaying
                     <?php 
                     unset($_SESSION['status']);
                     unset($_SESSION['message']);
