@@ -233,6 +233,29 @@
         echo "Error creating table 'emergency_contacts': " . mysqli_error($conn) . "<br>";
     }
 
+    $sql_consultations = "CREATE TABLE consultations (
+        consultation_id INT AUTO_INCREMENT PRIMARY KEY,
+        patient_idnum INT NOT NULL, 
+        diagnosis VARCHAR(255) NOT NULL,
+        medstock_id INT NOT NULL,
+        treatment_medqty INT NOT NULL,
+        treatment_notes VARCHAR(255) NOT NULL,
+        remark VARCHAR(255) NOT NULL,
+        consult_date DATE,
+        time_in VARCHAR(255),
+        time_out VARCHAR(255),
+        time_spent VARCHAR(255),
+        FOREIGN KEY (patient_idnum) REFERENCES patients(patient_id),
+        FOREIGN KEY (medstock_id) REFERENCES medstock(medstock_id)
+    )";
+    
+    if (mysqli_query($conn, $sql_consultations)) {
+        echo "Table 'consultations' created successfully<br>";
+    } else {
+        echo "Error creating table 'consultations': " . mysqli_error($conn) . "<br>";
+    }
+    
+
 // Close the database connection
 mysqli_close($conn);
 ?>

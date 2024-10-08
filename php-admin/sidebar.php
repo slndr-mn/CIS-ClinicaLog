@@ -108,6 +108,12 @@
                   <p>Patient Record</p>
                 </a>
               </li>
+              <li class="nav-item" id="patientrec-item">
+                <a href="addconsultation.php">
+                  <i class="fa fas fas fa-notes-medical"></i>
+                  <p>Consultations</p>
+                </a>
+              </li>
               <li class="nav-item" id="appoint-item">
                 <a href="appointments.php">
                   <i class="fas far fa-calendar-check"></i>

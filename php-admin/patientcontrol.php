@@ -298,7 +298,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['error'] = 'Invalid file type. Only JPEG and PNG files are allowed.';
                 header('Location: add-extension.php'); 
                 exit();
-            }
+            } 
             finfo_close($finfo);
         }
 

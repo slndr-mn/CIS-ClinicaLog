@@ -4802,13 +4802,13 @@ label {
 
 .form-control:disabled,
 .form-control[readonly] {
-   background: #e8e8e8 !important;
-   border-color: #e8e8e8 !important
+   background: #fff !important;
+   border-color: #fff !important
 }
 
 .form-control:disabled,
 .form-control[readonly] {
-   opacity: .6 !important
+   opacity: .9 !important
 }
 
 .input-group-text {
@@ -10763,7 +10763,7 @@ body[data-background-color=dark] .jvm-zoom-btn {
    padding: 15px 30px; /* Increases the button size */
    width: 200px; /* Sets a fixed width for the buttons */
    margin: 10px 0; /* Adds space between buttons */
- }
+ } 
  
  .modalButton {
    display: flex;
@@ -10774,6 +10774,16 @@ body[data-background-color=dark] .jvm-zoom-btn {
  #InputInfo input,select{
    border-color: #DA6F65 !important;
  }
+
+ #InputInfo input[disabled], 
+#InputInfo select[disabled] {
+    border-color: gray !important; /* Gray border color */
+    border-width: 1px; /* Thin border */
+    background-color: #f8f9fa; /* Light background color for readonly fields */
+    color: #6c757d; /* Text color for readonly fields */
+    cursor: not-allowed; /* Cursor style to indicate read-only */
+}
+
 
  #InputInfo button{
    background-color: #DB6079 !important;

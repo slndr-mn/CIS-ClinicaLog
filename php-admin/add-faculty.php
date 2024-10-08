@@ -317,7 +317,7 @@ $('#department').select2({
     allowClear: true
 });
 
-// Object to map colleges to their departments
+
 const collegeDepartments = {
     "College of Teacher Education and Technology": [
         "Department of Elementary Education",

@@ -109,7 +109,7 @@ unset($_SESSION['error_message']);
                       <input type="checkbox" id="show-password"> 
                     </div>
 
-                    <div class="forgotpassword">
+                    <div class="forgotpassword"> 
                         <span id="forgot">Forgot Password?</span>
                         <span id="click"><a href="forgotpassword.php">Click Here.</a></span>
                     </div>

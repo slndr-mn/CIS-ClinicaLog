@@ -11,7 +11,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 $db = new Database();
 $conn = $db->getConnection();
 
-$user = new User($conn); 
+$user = new User($conn);  
 $user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id);  
 ?>

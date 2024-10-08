@@ -48,7 +48,7 @@ $userData = $user->getUserData($user_id);
     <link rel="stylesheet" href="../css/plugins.min.css" />
     <link rel="stylesheet" href="../css/kaiadmin.min.css" />
 
-    <!-- ICONS -->
+    <!-- ICONS --> 
     <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 
     <style>

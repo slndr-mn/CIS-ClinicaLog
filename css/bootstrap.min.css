@@ -2452,6 +2452,24 @@ progress {
     background-color: #f0f0f0;
 }
 
+.back-nav {
+    color: #DB6079; /* Set custom color */
+    text-decoration: none;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Icon styling */
+  .back-nav i {
+    margin-right: 8px;
+    font-size: 20px; /* Adjust the arrow size */
+  }
+
+  /* Optional hover effect to maintain consistency */
+  .back-nav:hover {
+    color: #DB6079; /* Ensures color stays the same on hover */
+  }
 
 @media (prefers-reduced-motion:reduce) {
     .form-control {
