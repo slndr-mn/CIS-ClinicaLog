@@ -147,178 +147,172 @@ if ($patientDetails) {
               <div class="card-body" id="InputInfo">
                 <!-- Form Starts Here -->
                 <!-- Form Starts Here -->
-                <form action="patientcontrol.php" method="POST" enctype="multipart/form-data">   
-    
-    <!-- Name Fields -->
-    <div class="row">
-        <div class="col-md-3 mb-3">
-            <label for="lastName" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter last name" disabled />
-        </div>
-        <div class="col-md-3 mb-3">
-            <label for="firstName" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter first name" disabled />
-        </div>
-        <div class="col-md-2 mb-3">
-            <label for="middleName" class="form-label">Middle Name</label>
-            <input type="text" class="form-control" id="middleName" name="middleName" placeholder="Enter middle name" disabled/>
-        </div>
-        <div class="col-md-2 mb-3">
-            <label for="dob" class="form-label">Date of Birth</label>
-            <input type="date" class="form-control" id="dob" name="dob" disabled />
-        </div>
-        <div class="col-md-2 mb-3">
-            <label for="sex" class="form-label">Sex</label>
-            <select class="form-select form-control" id="sex" name="sex" disabled>
-                <option selected disabled>Select Sex</option>
-                <option value="Female">Female</option>
-                <option value="Male">Male</option>
-            </select>
-        </div>
-    </div>
+            <form action="patientcontrol.php" method="POST" enctype="multipart/form-data">   
+            
+            <!-- Name Fields -->
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter last name" disabled />
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter first name" disabled />
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="middleName" class="form-label">Middle Name</label>
+                    <input type="text" class="form-control" id="middleName" name="middleName" placeholder="Enter middle name" disabled/>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="dob" class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control" id="dob" name="dob" disabled />
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="sex" class="form-label">Sex</label>
+                    <select class="form-select form-control" id="sex" name="sex" disabled>
+                        <option selected disabled>Select Sex</option>
+                        <option value="Female">Female</option>
+                        <option value="Male">Male</option>
+                    </select>
+                </div>
+            </div>
 
-    <!-- ID and Academic Info -->
-    <div class="row">
-        <div class="col-md-2 mb-3">
-            <label for="studentID" class="form-label">ID Number</label>
-            <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Enter ID number" disabled />
-        </div>
+            <!-- ID and Academic Info -->
+            <div class="row">
+                <div class="col-md-2 mb-3">
+                    <label for="studentID" class="form-label">ID Number</label>
+                    <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Enter ID number" disabled />
+                </div>
 
-            <!-- Program Input -->
-        <div class="col-md-4 mb-3">
-            <label for="program" class="form-label">Program</label>
-            <select class="form-select form-control" id="program" name="program" placeholder="Enter Program" disabled>
-                <option value="">Select Program</option>
-                <option value="Bachelor of Science in Secondary Education">Bachelor of Science in Secondary Education</option>
-                <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
-                <option value="Bachelor of Science in Agricultural and Biosystems Engineering">Bachelor of Science in Agricultural and Biosystems Engineering</option>
-                <option value="Bachelor of Technical-Vocational Education">Bachelor of Technical-Vocational Education</option>
-                <option value="Bachelor of Special Needs Education">Bachelor of Special Needs Education</option>
-                <option value="Bachelor of Early Childhood Education">Bachelor of Early Childhood Education</option>
-                <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
-            </select>
-        </div>
+                    <!-- Program Input -->
+                <div class="col-md-4 mb-3">
+                    <label for="program" class="form-label">Program</label>
+                    <select class="form-select form-control" id="program" name="program" placeholder="Enter Program" disabled>
+                        <option value="">Select Program</option>
+                        <option value="Bachelor of Science in Secondary Education">Bachelor of Science in Secondary Education</option>
+                        <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
+                        <option value="Bachelor of Science in Agricultural and Biosystems Engineering">Bachelor of Science in Agricultural and Biosystems Engineering</option>
+                        <option value="Bachelor of Technical-Vocational Education">Bachelor of Technical-Vocational Education</option>
+                        <option value="Bachelor of Special Needs Education">Bachelor of Special Needs Education</option>
+                        <option value="Bachelor of Early Childhood Education">Bachelor of Early Childhood Education</option>
+                        <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
+                    </select>
+                </div>
 
-        <!-- Major Input -->
-        <div class="col-md-2 mb-3">
-            <label for="major" class="form-label">Major</label>
-            <select class="form-control form-select" id="major" name="major" placeholder="Enter Major" disabled>
-                <option value="">Select Major</option>
-            </select>
-        </div>
-
-<!-- Other elements... -->
-
-
-        <!-- Year Dropdown -->
-        <div class="col-md-2 mb-3">
-            <label for="year" class="form-label">Year</label>
-            <select class="form-select form-control" id="year" name="year" disabled>
-                <option selected disabled>Select Year</option>
-                <option value="1">1st Year</option>
-                <option value="2">2nd Year</option>
-                <option value="3">3rd Year</option>
-                <option value="4">4th Year</option>
-            </select>
-        </div>
-
-        <div class="col-md-2 mb-3">
-            <label for="section" class="form-label">Section</label>
-            <input type="text" class="form-control" id="section" name="section" placeholder="e.g., 3A" disabled />
-        </div>
-    </div>
-
-    <!-- Address Fields -->
-    <h5>Current Address</h5>
-    <div class="row">
-        <!-- Region Input -->
-        <div class="col-md-2 mb-3">
-            <label for="region" class="form-label">Region</label>
-            <select class="form-select form-control" id="region" name="region" placeholder="Enter Region" disabled>
-            <option value="">Select Region</option>
-            <option value="Region XI">Region XI</option>
-            <option value="Region XII">Region XII</option>
-            </select>
-        </div>
-        <!-- Province Input -->
-        <div class="col-md-3 mb-3">
-            <label for="province" class="form-label">Province</label>
-            <select class="form-control" id="province" name="province" placeholder="Enter Province" disabled>
-                <option value="">Select Province</option>
-            </select>
-        </div>
-
-        <!-- Municipality Input -->
-        <div class="col-md-3 mb-3">
-            <label for="municipality" class="form-label">Municipality</label>
-            <select class="form-select form-control" id="municipality" name="municipality" placeholder="Enter Municipality" disabled>
-                <option value="">Select Municipality</option>
-            </select>
-        </div>
-
-        <!-- Barangay Input -->
-        <div class="col-md-2 mb-3">
-            <label for="barangay" class="form-label">Barangay</label>
-            <select class="form-select form-control" id="barangay" name="barangay" placeholder="Enter Barangay" disabled>
-                <option value="">Select Barangay</option>
-            </select>
-        </div>
-
-
-        <!-- Street Input (Text Field) -->
-        <div class="col-md-2 mb-3">
-            <label for="street" class="form-label">Purok/Block No./Street</label>
-            <input type="text" class="form-control" id="street" name="street" placeholder="Enter street address" disabled />
-        </div>
-    </div>
-
-    <!-- Contact Information -->
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="email" class="form-label">Email Address</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" disabled />
-        </div>
-        <div class="col-md-6 mb-3">
-            <label for="contactNumber" class="form-label">Contact Number</label>
-            <input type="tel" class="form-control" id="contactNumber" name="contactNumber" placeholder="Enter contact number" disabled />
-        </div>
-    </div>
-
-    <!-- Emergency Contact Information -->
-    <h5>Emergency Contact Information</h5>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="emergencyContactName" class="form-label">Emergency Contact Name</label>
-            <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Enter emergency contact name" disabled />
-        </div>
-        <div class="col-md-3 mb-3">
-            <label for="relationship" class="form-label">Relationship</label>
-            <input type="text" class="form-control" id="relationship" name="relationship" placeholder="Enter relationship" disabled/>
-        </div>
-        <div class="col-md-3 mb-3">
-            <label for="emergencyContactNumber" class="form-label">Emergency Contact Number</label>
-            <input type="tel" class="form-control" id="emergencyContactNumber" name="emergencyContactNumber" placeholder="Enter emergency contact number" disabled />
-        </div>
-    </div>
-
-    <div class="row">
-        <h5>Patient's Account Status</h5>
-        <div class="col-md-2 mb-3">
-            <label for="Status" class="form-label">Status</label>
-            <select class="form-select form-control" id="Status" name="Status" disabled>
-                <option selected disabled>Select Status</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-            </select>
-        </div>
-    </div>
-    <div class="row">
-                    <div class="col-md-12 text-center">
+                <!-- Major Input -->
+                <div class="col-md-2 mb-3">
+                    <label for="major" class="form-label">Major</label>
+                    <select class="form-control form-select" id="major" name="major" placeholder="Enter Major" disabled>
+                        <option value="">Select Major</option>
+                    </select>
+                </div>
+            <!-- Other elements... -->
+                    <!-- Year Dropdown -->
+                    <div class="col-md-2 mb-3">
+                        <label for="year" class="form-label">Year</label>
+                        <select class="form-select form-control" id="year" name="year" disabled>
+                            <option selected disabled>Select Year</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
                     </div>
-                  </div>
 
-</form>
+                    <div class="col-md-2 mb-3">
+                        <label for="section" class="form-label">Section</label>
+                        <input type="text" class="form-control" id="section" name="section" placeholder="e.g., 3A" disabled />
+                    </div>
+                </div>
 
+                <!-- Address Fields -->
+                <h5>Current Address</h5>
+                <div class="row">
+                    <!-- Region Input -->
+                    <div class="col-md-2 mb-3">
+                        <label for="region" class="form-label">Region</label>
+                        <select class="form-select form-control" id="region" name="region" placeholder="Enter Region" disabled>
+                        <option value="">Select Region</option>
+                        <option value="Region XI">Region XI</option>
+                        <option value="Region XII">Region XII</option>
+                        </select>
+                    </div>
+                    <!-- Province Input -->
+                    <div class="col-md-3 mb-3">
+                        <label for="province" class="form-label">Province</label>
+                        <select class="form-control" id="province" name="province" placeholder="Enter Province" disabled>
+                            <option value="">Select Province</option>
+                        </select>
+                    </div>
+
+                    <!-- Municipality Input -->
+                    <div class="col-md-3 mb-3">
+                        <label for="municipality" class="form-label">Municipality</label>
+                        <select class="form-select form-control" id="municipality" name="municipality" placeholder="Enter Municipality" disabled>
+                            <option value="">Select Municipality</option>
+                        </select>
+                    </div>
+
+                    <!-- Barangay Input -->
+                    <div class="col-md-2 mb-3">
+                        <label for="barangay" class="form-label">Barangay</label>
+                        <select class="form-select form-control" id="barangay" name="barangay" placeholder="Enter Barangay" disabled>
+                            <option value="">Select Barangay</option>
+                        </select>
+                    </div>
+
+
+                    <!-- Street Input (Text Field) -->
+                    <div class="col-md-2 mb-3">
+                        <label for="street" class="form-label">Purok/Block No./Street</label>
+                        <input type="text" class="form-control" id="street" name="street" placeholder="Enter street address" disabled />
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" disabled />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="contactNumber" class="form-label">Contact Number</label>
+                        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" placeholder="Enter contact number" disabled />
+                    </div>
+                </div>
+
+                <!-- Emergency Contact Information -->
+                <h5>Emergency Contact Information</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="emergencyContactName" class="form-label">Emergency Contact Name</label>
+                        <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Enter emergency contact name" disabled />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="relationship" class="form-label">Relationship</label>
+                        <input type="text" class="form-control" id="relationship" name="relationship" placeholder="Enter relationship" disabled/>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="emergencyContactNumber" class="form-label">Emergency Contact Number</label>
+                        <input type="tel" class="form-control" id="emergencyContactNumber" name="emergencyContactNumber" placeholder="Enter emergency contact number" disabled />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <h5>Patient's Account Status</h5>
+                    <div class="col-md-2 mb-3">
+                        <label for="Status" class="form-label">Status</label>
+                        <select class="form-select form-control" id="Status" name="Status" disabled>
+                            <option selected disabled>Select Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center"></div>
+                </div>
+                </form>
                 <!-- End of Form -->
               </div>
             </div>

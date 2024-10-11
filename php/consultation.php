@@ -136,68 +136,87 @@ class ConsultationManager {
     }
 
     public function insertConsultation($patient_idnum, $diagnosis, $medstock_id, $treatment_medqty, $treatment_notes, $remark, $consult_date, $time_in, $time_out, $time_spent) {
-        // Check if the patient_idnum exists in the patients table
-        $checkPatient = $this->db->prepare("SELECT * FROM patients WHERE patient_id = ?");
-        $checkPatient->execute([$patient_idnum]);
+        try {
+            // Add time_in, time_out, and time_spent into the database
+            $sql = "INSERT INTO consultations (patient_id, diagnosis, medstock_id, treatment_medqty, treatment_notes, remark, consult_date, time_in, time_out, time_spent)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $this->db->prepare($sql);
+
+            $params = [
+                $patient_idnum, 
+                $diagnosis, 
+                $medstock_id,
+                $treatment_medqty, 
+                $treatment_notes, 
+                $remark, 
+                $consult_date, 
+                $time_in, 
+                $time_out, 
+                $time_spent
+            ];
+
+            $stmt->execute($params);
+
+            $consultation_id = $this->db->lastInsertId(); 
     
-        if ($checkPatient->rowCount() == 0) {
-            return ['status' => 'error', 'message' => 'Error: Patient does not exist. Please add the patient before recording a consultation.'];
-        }
+                // Create a new Consultation object
+                $consultation = new Consultation($consultation_id, $patient_idnum, $diagnosis, $medstock_id, $treatment_medqty, $treatment_notes, $remark, $consult_date, $time_in, $time_out, $time_spent);
     
-        // Add time_in, time_out, and time_spent into the database
-        $sql = "INSERT INTO consultations (patient_id, diagnosis, medstock_id, treatment_medqty, treatment_notes, remark, consult_date, time_in, time_out, time_spent)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $this->db->prepare($sql);
+                $this->consultations->add($consultation); // Add the consultation to the consultations collection
     
-        if ($stmt) {
-            $stmt->execute([$patient_idnum, $diagnosis, $medstock_id, $treatment_medqty, $treatment_notes, $remark, $consult_date, $time_in, $time_out, $time_spent]);
-    
-            $consultation_id = $this->db->lastInsertId(); // Get last inserted ID
-    
-            // Create a new Consultation object
-            $consultation = new Consultation($consultation_id, $patient_idnum, $diagnosis, $medstock_id, $treatment_medqty, $treatment_notes, $remark, $consult_date, $time_in, $time_out, $time_spent);
-    
-            $this->consultations->add($consultation); // Add the consultation to the consultations collection
-    
-            return ['status' => 'success', 'message' => 'Consultation added successfully.'];
-        } else {
-            return ['status' => 'error', 'message' => 'Error adding consultation: ' . $this->db->errorInfo()[2]];
+                return ['status' => 'success', 'message' => 'Consultation inserted successfully.', 'consultation_id' => $consultation_id];
+      
+        } catch (PDOException $e) {
+            // Catch and return any PDOExceptions
+            error_log("Error inserting consultation: " . $e->getMessage());
+            
+            // Show sanitized error response
+            return [
+                'status' => 'error',
+                'message' => 'Error inserting patient: ' . $e->getMessage(),  // Include SQL error message
+                'details' => [
+                    'sqlState' => $e->getCode(),  // SQL State for reference
+                    'params' => json_encode($params)  // Log the parameters passed for debugging
+                ]
+            ];
         }
     }
-
-    public function calculateTimeSpent($time_in, $time_out) {
-        $start = new DateTime($time_in);
-        $end = new DateTime($time_out);
-
-        // Calculate the time difference
-        $interval = $start->diff($end);
-
-        // Format the difference (e.g., hours and minutes)
-        return $interval->format('%H hours %I minutes');
-    }
+    
+    
 
     public function getAllConsultations() {
         return $this->consultations->getAllNodes();
     }
 
     public function getConsultations() {
-        $consultations = $this->consultations->getAllNodes();
+        $sql = "SELECT consultations.*, patients.patient_fname, patients.patient_lname 
+                FROM consultations 
+                JOIN patients ON consultations.patient_idnum = patients.patient_id";
         
-        // Create a map to count occurrences per consultation_id
-        $consultationsMap = [];
-        
-        // Count occurrences of each consultation_id in consultations
+        $consultations = $this->db->query($sql)->fetchAll();
+    
+        $consultationDetails = [];
+    
         foreach ($consultations as $consultation) {
-            if (!isset($consultationsMap[$consultation->consultation_id])) {
-                $consultationsMap[$consultation->consultation_id] = 0;
-            }
-            // Increment occurrence for each consultation entry 
-            $consultationsMap[$consultation->consultation_id]++;
+            $consultationDetails[] = [
+                'consultation_id' => $consultation['consultation_id'],
+                'name' => $consultation['patient_lname'] . ' ' . $consultation['patient_fname'],
+                'patient_idnum' => $consultation['patient_idnum'],
+                'diagnosis' => $consultation['diagnosis'],
+                'treatment_medname' => $consultation['medstock_id'],
+                'treatment_medqty' => $consultation['treatment_medqty'],
+                'remark' => $consultation['remark'],
+                'consult_date' => $consultation['consult_date'],
+                'time_in' => $consultation['time_in'],
+                'time_out' => $consultation['time_out'],
+                'time_spent' => $consultation['time_spent'],
+            ];
         }
     
-        // Return the entire consultations map with counts
-        return $consultationsMap; 
+        return $consultationDetails;
     }
+    
+    
 
     public function deleteConsultation($consultation_id) {
         // Remove from the database
@@ -222,6 +241,8 @@ class ConsultationManager {
         $stmt->execute(['%' . $query . '%', $query]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+  
     
 }
 ?>

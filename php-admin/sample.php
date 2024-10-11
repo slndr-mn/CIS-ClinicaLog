@@ -52,7 +52,7 @@
             <option value="">Select Region</option>
             <option value="Region XI">Region XI</option>
             <option value="Region XII">Region XII</option>
-        </select>
+        </select> 
         <br>
         <label>Province:</label>
         <select id="province" class="readonly" disabled>

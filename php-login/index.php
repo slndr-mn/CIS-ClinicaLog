@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
 
         $user_position = $_SESSION['user_position'];
         $user_role = $_SESSION['user_role'];
-        $status = $_SESSION['user_status'];  
+        $status = $_SESSION['user_status'];   
  
         if($userData->user_status === 'Active'){
 
@@ -97,7 +97,7 @@ unset($_SESSION['error_message']);
                 
                 <div class="form-container">
                     <div class="form-group">
-                        <label for="email" class="form-label">Email:</label>
+                        <label for="email" class="form-label">Email:</label> 
                         <img src="../assets/img/email.png" alt="email icon">
                         <input type="text" name="email" id="email" class="form-input" placeholder="Enter your Email" required>
                     </div>

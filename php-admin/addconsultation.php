@@ -56,7 +56,7 @@ if (isset($_POST['pname'])) {
     // Return results as suggestions
     if ($patients) {
         foreach ($patients as $p) {
-            echo "<div class='suggestion' data-id='{$p['idnum']}'>
+            echo "<div class='suggestion' data-id='{$p['patient_id']}'>
                     {$p['name']} ({$p['idnum']})
                   </div>";
         }
@@ -75,6 +75,12 @@ if (isset($_POST['pname'])) {
     <title>Clinic Staff User</title>
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 
     <!-- Fonts and icons -->
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
@@ -147,15 +153,13 @@ if (isset($_POST['pname'])) {
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <form id="addConsultationForm" action="consultationcontrol.php" method="POST">
-                                        <!-- <input type="hidden" id="patient_idnum" name="patient_idnum" value="<?= $patientId ?>" /> -->
-
+                                    <form action="consultationcontrol.php" method="POST">
                                         <div class="form-group mb-3">
                                             <label for="pname">Search by Name or ID:</label>
                                             <input type="text" id="pname" name="pname" class="form-control" placeholder="Search" autocomplete="off" required>
                                             <div class="form-control" id="suggestions"></div>
                                             <!-- Hidden form field to store selected patient ID -->
-                                            <input type="hidden" id="selected_patient_id" name="patient_idnum">
+                                            <input type="hidden" id="selected_patient_id" name="selected_patient_id">
                                             
                                         </div>
                                         
@@ -186,6 +190,24 @@ if (isset($_POST['pname'])) {
                                             <input type="text" id="Remarks" name="Remarks" class="form-control" placeholder="Enter Remarks" required />
                                         </div>
                                         <div class="form-group mb-3">
+                                            <label for="date">Date:</label>
+                                            <input type="date" id="date" name="date" class="form-control" />
+                                        </div>
+
+                                        <script>
+                                    
+                                        window.onload = function() {
+                                            var today = new Date();
+                                            var dd = String(today.getDate()).padStart(2, '0');
+                                            var mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+                                            var yyyy = today.getFullYear();
+
+                                            today = yyyy + '-' + mm + '-' + dd; // Format as YYYY-MM-DD
+                                            document.getElementById('date').value = today;
+                                        };
+                                    </script>
+
+                                        <div class="form-group mb-3">
                                             <label for="in">Time In:</label>
                                             <input type="time" id="in" name="in" class="form-control" />
                                         </div>
@@ -194,7 +216,7 @@ if (isset($_POST['pname'])) {
                                             <input type="time" id="out" name="out" class="form-control" />
                                         </div>
                                         <div class="modal-footer border-0 mt-auto">
-                                            <button type="submit" class="btn btn-primary" name="addcon">Submit</button>
+                                            <button type="submit" class="btn btn-primary" name="addcon" id="addcon">Submit</button>
                                             <button type="reset" class="btn btn-secondary ms-2">Clear</button>
                                         </div>
                                     </form>
@@ -212,31 +234,83 @@ if (isset($_POST['pname'])) {
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table id="add-con" class="display table table-striped table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>Diagnosis</th>
-                                                    <th>Prescribed Medicine</th>
-                                                    <th>Quantity</th>
-                                                    <th>Remarks</th>
-                                                    <th>Date</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php
-                                                $consultationsList = $consultations->getAllConsultations($consultations);
-                                                foreach ($consultationsList as $consult) {
-                                                    echo "<tr>
-                                                        <td>{$consult['diagnosis']}</td>
-                                                        <td>{$consult['medicine_name']}</td>
-                                                        <td>{$consult['quantity']}</td>
-                                                        <td>{$consult['remarks']}</td>
-                                                        <td>{$consult['date']}</td>
-                                                    </tr>";
-                                                }
-                                                ?>
-                                            </tbody>
-                                        </table>
+                                    <table id="add-con" class="display table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name:</th>
+                                    <th>Diagnosis</th>
+                                    <th>Prescribed Medicine:</th>
+                                    <th>Quantity:</th>
+                                    <th>Remark</th>
+                                    <th>Date</th>
+                                    <th>Time In</th>
+                                    <th>Time Out</th>
+                                    <th>Time Spent</th>
+                                    <th style="width: 10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th>Name:</th>
+                                    <th>Diagnosis</th>
+                                    <th>Prescribed Medicine:</th>
+                                    <th>Quantity:</th>
+                                    <th>Remark</th>
+                                    <th>Date</th>
+                                    <th>Time In</th>
+                                    <th>Time Out</th>
+                                    <th>Time Spent</th>
+                                    <th>Action</th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                            <?php
+                            var_dump($_POST); // Show all POST data to confirm what is being submitted
+$items = $consultations->getConsultations();
+// echo '<pre>';
+// var_dump($items);
+// echo '</pre>';
+foreach ($items as $item) {
+    if (is_array($item)) {
+        // Convert the time_in and time_out into DateTime objects
+        $time_in = new DateTime($item['time_in'] ?? '');  // Change 'in' to 'time_in'
+        $time_out = new DateTime($item['time_out'] ?? ''); // Change 'out' to 'time_out'
+        
+        // Calculate the difference between the two times
+        $interval = $time_in->diff($time_out);
+        
+        // Format the difference (e.g., hours and minutes)
+        $time_spent = $interval->format('%H hours %I minutes');
+        
+        // Display the data in the table
+        echo "<tr data-id='{$item['consultation_id']}' 
+                data-stock='{$item['patient_idnum']}'>
+                <td>{$item['name']}</td>
+                <td>{$item['diagnosis']}</td>
+                <td>{$item['treatment_medname']}</td>
+                <td>{$item['treatment_medqty']}</td>
+                <td>{$item['remark']}</td>
+                <td>{$item['consult_date']}</td>
+                <td>{$item['time_in']}</td>
+                <td>{$item['time_out']}</td>
+                <td>{$time_spent}</td> 
+                <td>
+                <div class='form-button-action'>
+                    <button type='button' class='btn btn-link btn-primary btn-lg editConButton'>
+                        <i class='fa fa-edit'></i>
+                    </button>
+                </div>
+            </td>
+            </tr>";
+    } else {
+        // Handle unexpected data type
+        echo "<tr><td colspan='9'>Invalid data format</td></tr>";
+    }
+}
+?>
+
+                        </tbody>
+                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -259,7 +333,7 @@ if (isset($_POST['pname'])) {
     $(document).ready(function() {
 
         $("#add-con").DataTable({
-        pageLength: 7,
+        pageLength: 10,
     });
        
     <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
@@ -305,37 +379,68 @@ if (isset($_POST['pname'])) {
         });
     });
 </script>
+
 <script>
-                                                $(document).ready(function () {
-                                                    $('#pname').on('keyup', function () {
-                                                        var query = $(this).val();
-                                                        if (query.length > 2) {
-                                                            $.ajax({
-                                                                url: 'addconsultation.php', // Send request to the same file
-                                                                method: 'POST',
-                                                                data: { pname: query },
-                                                                success: function (data) {
-                                                                    $('#suggestions').html(data);
-                                                                }
-                                                            });
-                                                        } else {
-                                                            $('#suggestions').html(''); // Clear suggestions if query is too short
-                                                        }
-                                                    });
+$(document).ready(function () {
+    // Initialize DataTable for consultations
+    $("#consultation-table").DataTable({
+        pageLength: 3, // Set the default number of rows per page
+        responsive: true, // Make the table responsive
+    });
 
-                                                    // When a suggestion is clicked, fill the input and store patient ID, and auto-submit the form
-                                                    $(document).on('click', '.suggestion', function () {
-                                                        var name = $(this).text();
-                                                        var patientId = $(this).data('id');
-                                                        $('#pname').val(name);
-                                                        $('#selected_patient_id').val(patientId);
-                                                        $('#suggestions').html(''); // Clear suggestions after selection
+    // Handle form submission to add consultation
+    $("#addConsultationForm").on("submit", function (e) {
+    e.preventDefault(); // Prevent default form submission
 
-                                                        // Automatically submit the form once a patient is selected
-                                                        //$('#consultationForm').submit();
-                                                    });
-                                                });
+    // Get form data
+    var consultationData = {
+        patientId: $("#selected_patient_id").val(), // Get the selected patient ID
+        diagnosis: $("#Diagnosis").val(),
+        medName: $("#prescribemed").val(),
+        medQty: $("#presmedqty").val(),
+        remark: $("#Remarks").val(),
+        consultDate: $("#date").val(), // Ensure you're fetching the correct date field
+        timeIn: $("#in").val(), // Ensure you're fetching the correct time in field
+        timeOut: $("#out").val(), // Ensure you're fetching the correct time out field
+    };
+
+});
+
+});
 </script>
+
+
+<script>
+$(document).ready(function () {
+    $('#pname').on('keyup', function () {
+        var query = $(this).val();
+        if (query.length > 2) {
+            $.ajax({
+                url: 'addconsultation.php', // Send request to the same file
+                method: 'POST',
+                data: { pname: query },
+                success: function (data) {
+                    $('#suggestions').html(data);
+                }
+            });
+        } else {
+            $('#suggestions').html(''); // Clear suggestions if query is too short
+        }
+    });
+
+    $(document).on('click', '.suggestion', function () {
+        var name = $(this).text().split(' (')[0]; // Extract only the name part before " ("
+        var patientId = $(this).data('id'); // Get the ID from data-id attribute
+        alert("Selected patient ID: " + patientId); // Show the fetched patient ID in an alert
+        $('#selected_patient_id').val(patientId); // Store patient ID in hidden field
+        $('#pname').val(name); // Set the patient name in the input field
+        $('#suggestions').html(''); // Clear suggestions after selection
+    });
+});
+
+</script>
+
+
 
 </body>
 </html>
