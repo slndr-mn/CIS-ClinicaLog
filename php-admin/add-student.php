@@ -284,7 +284,7 @@ session_start();
 
 $(document).ready(function() {
     $("#sidebar").load("sidebar.php", handleLoadError);
-    $("#header").load("header.php", handleLoadError);
+    $("#header").load("header.php", handleLoadError); 
 
     <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
         var status = '<?php echo $_SESSION['status']; ?>';

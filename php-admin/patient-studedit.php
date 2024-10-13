@@ -11,17 +11,14 @@ $conn = $db->getConnection();
 
 $patient = new PatientManager($db);
 $user = new User($conn);
-$user_id = $_SESSION['user_id']; 
+$user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id);
 
 if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     $patientId = $_SESSION['idnum'];
     $patientType = $_SESSION['type'];
-
+    echo "<script>console.error('Error: Patient data not found for ID: " . addslashes($patientId) . "');</script>";
     $patientDetails = $patient->getStudentData($patientId);
-
-    unset($_SESSION['idnum']);
-    unset($_SESSION['type']);
 } else {
     echo "No patient data found.";
 }
@@ -39,6 +36,8 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
     <!-- Fonts and icons -->
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
@@ -111,16 +110,16 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     <div class="container" id="content">
     <div class="page-inner">
         <div class=row>
-        <a href="javascript:history.back()" class="back-nav">
-      <i class="fas fa-arrow-left"></i> Back to Patients' Table
-    </a>
+        <h4 class="card-title">Edit Patient's Information</h4>
     </div>
-        
+    <form action="patientcontrol.php" method="POST" enctype="multipart/form-data">   
+    <input type="hidden" class="form-control" id="patientid" name="patientid" value="<?php echo $patientId; ?>" />
         <div class="row">
-        <div class="profile-image">
-            <img id="profilePic" src="default-image.jpg" alt="Profile Image" />
-            <button class="btn btn-primary" id="downloadBtn">Download Image</button>
-          </div>
+        <div class="profile-image col-md-3 text-center mx-auto d-flex flex-column align-items-center">
+            <img id="profilePic" src="default-image.jpg" alt="Profile Image" class="img-thumbnail mb-2" />
+            <label for="addprofile" class="form-label">Upload New Profile</label>
+            <input id="addprofile" name="addprofile" type="file" class="form-control" accept=".png, .jpg, .jpeg" style="border: 2px solid #DA6F65;"  />
+        </div>
         </div>
         <div class="row">
           <div class="col-md-12">
@@ -128,49 +127,30 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
               <div class="card-header">
                 <div class="d-flex align-items-center">
                   <h4 class="card-title">Personal Details</h4>
-                  <button
-                    class="btn btn-primary btn-round ms-auto"
-                    id="editbutton"
-                    >
-                    <i class="fa fa-edit"></i>
-                    Edit
-                  </button>
-                  <button
-                    class="btn btn-primary btn-round ms-auto"
-                    id="savebutton" style="display:none;"
-                    >
-                    <i class="fa fa-save"></i>
-                    save
-                  </button>
                 </div>
               </div>
               <div class="card-body" id="InputInfo">
-                <!-- Form Starts Here -->
-                <!-- Form Starts Here -->
-            <form action="patientcontrol.php" method="POST" enctype="multipart/form-data">   
-            
-            <!-- Name Fields -->
             <div class="row">
                 <div class="col-md-3 mb-3">
                     <label for="lastName" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter last name" disabled />
+                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter last name"  />
                 </div>
                 <div class="col-md-3 mb-3">
                     <label for="firstName" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter first name" disabled />
+                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter first name"  />
                 </div>
                 <div class="col-md-2 mb-3">
                     <label for="middleName" class="form-label">Middle Name</label>
-                    <input type="text" class="form-control" id="middleName" name="middleName" placeholder="Enter middle name" disabled/>
+                    <input type="text" class="form-control" id="middleName" name="middleName" placeholder="Enter middle name" />
                 </div>
                 <div class="col-md-2 mb-3">
                     <label for="dob" class="form-label">Date of Birth</label>
-                    <input type="date" class="form-control" id="dob" name="dob" disabled />
+                    <input type="date" class="form-control" id="dob" name="dob"  />
                 </div>
                 <div class="col-md-2 mb-3">
                     <label for="sex" class="form-label">Sex</label>
-                    <select class="form-select form-control" id="sex" name="sex" disabled>
-                        <option selected disabled>Select Sex</option>
+                    <select class="form-select form-control" id="sex" name="sex" >
+                        <option selected >Select Sex</option>
                         <option value="Female">Female</option>
                         <option value="Male">Male</option>
                     </select>
@@ -181,13 +161,13 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             <div class="row">
                 <div class="col-md-2 mb-3">
                     <label for="studentID" class="form-label">ID Number</label>
-                    <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Enter ID number" disabled />
+                    <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Enter ID number"  />
                 </div>
 
                     <!-- Program Input -->
                 <div class="col-md-4 mb-3">
                     <label for="program" class="form-label">Program</label>
-                    <select class="form-select form-control" id="program" name="program" placeholder="Enter Program" disabled>
+                    <select class="form-select form-control" id="program" name="program" placeholder="Enter Program" >
                         <option value="">Select Program</option>
                         <option value="Bachelor of Science in Secondary Education">Bachelor of Science in Secondary Education</option>
                         <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
@@ -202,7 +182,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                 <!-- Major Input -->
                 <div class="col-md-2 mb-3">
                     <label for="major" class="form-label">Major</label>
-                    <select class="form-control form-select" id="major" name="major" placeholder="Enter Major" disabled>
+                    <select class="form-control form-select" id="major" name="major" placeholder="Enter Major" >
                         <option value="">Select Major</option>
                     </select>
                 </div>
@@ -210,8 +190,8 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                     <!-- Year Dropdown -->
                     <div class="col-md-2 mb-3">
                         <label for="year" class="form-label">Year</label>
-                        <select class="form-select form-control" id="year" name="year" disabled>
-                            <option selected disabled>Select Year</option>
+                        <select class="form-select form-control" id="year" name="year" >
+                            <option selected >Select Year</option>
                             <option value="1">1st Year</option>
                             <option value="2">2nd Year</option>
                             <option value="3">3rd Year</option>
@@ -221,7 +201,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
 
                     <div class="col-md-2 mb-3">
                         <label for="section" class="form-label">Section</label>
-                        <input type="text" class="form-control" id="section" name="section" placeholder="e.g., 3A" disabled />
+                        <input type="text" class="form-control" id="section" name="section" placeholder="e.g., 3A"  />
                     </div>
                 </div>
 
@@ -231,7 +211,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                     <!-- Region Input -->
                     <div class="col-md-2 mb-3">
                         <label for="region" class="form-label">Region</label>
-                        <select class="form-select form-control" id="region" name="region" placeholder="Enter Region" disabled>
+                        <select class="form-select form-control" id="region" name="region" placeholder="Enter Region" >
                         <option value="">Select Region</option>
                         <option value="Region XI">Region XI</option>
                         <option value="Region XII">Region XII</option>
@@ -240,7 +220,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                     <!-- Province Input -->
                     <div class="col-md-3 mb-3">
                         <label for="province" class="form-label">Province</label>
-                        <select class="form-control" id="province" name="province" placeholder="Enter Province" disabled>
+                        <select class="form-control" id="province" name="province" placeholder="Enter Province" >
                             <option value="">Select Province</option>
                         </select>
                     </div>
@@ -248,7 +228,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                     <!-- Municipality Input -->
                     <div class="col-md-3 mb-3">
                         <label for="municipality" class="form-label">Municipality</label>
-                        <select class="form-select form-control" id="municipality" name="municipality" placeholder="Enter Municipality" disabled>
+                        <select class="form-select form-control" id="municipality" name="municipality" placeholder="Enter Municipality" >
                             <option value="">Select Municipality</option>
                         </select>
                     </div>
@@ -256,7 +236,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                     <!-- Barangay Input -->
                     <div class="col-md-2 mb-3">
                         <label for="barangay" class="form-label">Barangay</label>
-                        <select class="form-select form-control" id="barangay" name="barangay" placeholder="Enter Barangay" disabled>
+                        <select class="form-select form-control" id="barangay" name="barangay" placeholder="Enter Barangay" >
                             <option value="">Select Barangay</option>
                         </select>
                     </div>
@@ -265,7 +245,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                     <!-- Street Input (Text Field) -->
                     <div class="col-md-2 mb-3">
                         <label for="street" class="form-label">Purok/Block No./Street</label>
-                        <input type="text" class="form-control" id="street" name="street" placeholder="Enter street address" disabled />
+                        <input type="text" class="form-control" id="street" name="street" placeholder="Enter street address"  />
                     </div>
                 </div>
 
@@ -273,11 +253,11 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" disabled />
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email"  />
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="contactNumber" class="form-label">Contact Number</label>
-                        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" placeholder="Enter contact number" disabled />
+                        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" placeholder="Enter contact number"  />
                     </div>
                 </div>
 
@@ -286,15 +266,15 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="emergencyContactName" class="form-label">Emergency Contact Name</label>
-                        <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Enter emergency contact name" disabled />
+                        <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Enter emergency contact name"  />
                     </div>
                     <div class="col-md-3 mb-3">
                         <label for="relationship" class="form-label">Relationship</label>
-                        <input type="text" class="form-control" id="relationship" name="relationship" placeholder="Enter relationship" disabled/>
+                        <input type="text" class="form-control" id="relationship" name="relationship" placeholder="Enter relationship" />
                     </div>
                     <div class="col-md-3 mb-3">
                         <label for="emergencyContactNumber" class="form-label">Emergency Contact Number</label>
-                        <input type="tel" class="form-control" id="emergencyContactNumber" name="emergencyContactNumber" placeholder="Enter emergency contact number" disabled />
+                        <input type="tel" class="form-control" id="emergencyContactNumber" name="emergencyContactNumber" placeholder="Enter emergency contact number"  />
                     </div>
                 </div>
 
@@ -302,15 +282,23 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                     <h5>Patient's Account Status</h5>
                     <div class="col-md-2 mb-3">
                         <label for="Status" class="form-label">Status</label>
-                        <select class="form-select form-control" id="Status" name="Status" disabled>
-                            <option selected disabled>Select Status</option>
+                        <select class="form-select form-control" id="Status" name="Status" >
+                            <option selected >Select Status</option>
                             <option value="Active">Active</option>
                             <option value="Inactive">Inactive</option>
                         </select>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 text-center"></div>
+                    <div class="col-md-12 text-center">
+                      <button type="submit" class="btn btn-primary" id="editstudentpatient" name="editstudentpatient">
+                        Save
+                      </button>
+                      
+                      <button type="button" class="btn btn-primary ms-3" id="canceladdpatient">
+                        Back
+                      </button>
+                    </div>
                 </div>
                 </form>
                 <!-- End of Form -->
@@ -358,9 +346,12 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 <script>
     $(document).ready(function() {
-        // Dynamically load the sidebar and header
+
         $("#sidebar").load("sidebar.php", function(response, status, xhr) {
             if (status == "error") {
                 console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
@@ -372,6 +363,24 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                 console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
             }
         });
+
+        <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
+        var status = '<?php echo $_SESSION['status']; ?>';
+        var message = '<?php echo htmlspecialchars($_SESSION['message'], ENT_QUOTES); ?>';
+        Swal.fire({
+            title: status === 'success' ? "Success!" : "Error!",
+            text: message,
+            icon: status,
+            confirmButtonText: "OK",
+            confirmButtonColor: status === 'success' ? "#77dd77" : "#ff6961"
+        }).then(() => {
+            if (status === 'success') {
+              sessionStorage.clear();
+                window.location.href = "patient-studedit.php";
+            }
+            <?php unset($_SESSION['status'], $_SESSION['message']); ?>
+        });
+        <?php endif; ?>
 
         var patientData = <?php echo json_encode($patientDetails); ?>;
 
@@ -399,7 +408,6 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             $('#profilePic').attr('src', `uploads/${data.patient.patient_profile}` || 'default-image.jpg');
         }
 
-        // Download profile picture functionality
         $('#downloadBtn').on('click', function () {
             const imageSrc = $('#profilePic').attr('src');
             const link = document.createElement('a');
@@ -410,10 +418,8 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             document.body.removeChild(link);
         });
 
-        // Populate the form on document ready
         populatePatientForm(patientData);
 
-        // Address dropdown functionality
         const addressOptions = {
             regions: {
                 "Region XI": {
@@ -448,6 +454,8 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             }
         };
 
+
+
         const majorOptions = {
             "Bachelor of Science in Secondary Education": ["Filipino", "English", "Mathematics"],
             "Bachelor of Science in Information Technology": ["Information Security"],
@@ -460,7 +468,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
 
         function populateMajors(selectedProgram) {
             const majorSelect = $('#major');
-            majorSelect.empty().append('<option selected disabled>Select Major</option>');
+            majorSelect.empty().append('<option selected >Select Major</option>');
             if (majorOptions[selectedProgram]) {
                 majorOptions[selectedProgram].forEach(function(major) {
                     majorSelect.append(`<option value="${major}">${major}</option>`);
@@ -471,7 +479,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
 
         function populateProvinces(selectedRegion) {
             const provinceSelect = $('#province');
-            provinceSelect.empty().append('<option selected disabled>Select Province</option>');
+            provinceSelect.empty().append('<option selected >Select Province</option>');
             if (selectedRegion && addressOptions.regions[selectedRegion]) {
                 Object.keys(addressOptions.regions[selectedRegion].provinces).forEach(function(province) {
                     provinceSelect.append(`<option value="${province}">${province}</option>`);
@@ -482,7 +490,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
 
         function populateMunicipalities(selectedRegion, selectedProvince) {
             const municipalitySelect = $('#municipality');
-            municipalitySelect.empty().append('<option selected disabled>Select Municipality</option>');
+            municipalitySelect.empty().append('<option selected >Select Municipality</option>');
             if (selectedProvince && addressOptions.regions[selectedRegion].provinces[selectedProvince]) {
                 const municipalities = addressOptions.regions[selectedRegion].provinces[selectedProvince].municipalities;
                 municipalities.forEach(function(municipality) {
@@ -494,7 +502,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
 
         function populateBarangays(selectedRegion, selectedProvince, selectedMunicipality) {
             const barangaySelect = $('#barangay');
-            barangaySelect.empty().append('<option selected disabled>Select Barangay</option>');
+            barangaySelect.empty().append('<option selected >Select Barangay</option>');
             if (selectedMunicipality && addressOptions.regions[selectedRegion].provinces[selectedProvince]) {
                 const barangays = addressOptions.regions[selectedRegion].provinces[selectedProvince].barangays[selectedMunicipality];
                 barangays.forEach(function(barangay) {
@@ -504,6 +512,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             barangaySelect.val(patientData.address.address_barangay).trigger('change'); // Set the selected barangay
         }
 
+        
         // Event handlers for cascading dropdowns
         $('#program').on('change', function() {
             populateMajors($(this).val());
@@ -521,23 +530,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             populateBarangays($('#region').val(), $('#province').val(), $(this).val());
         });
 
-        // Edit button functionality
-        $('#editButton').on('click', function() {
-            $('#patientForm input, #patientForm select').removeClass('readonly').prop('disabled', false);
-            $(this).hide();
-            $('#saveButton').show();
-        });
 
-        // Save button functionality
-        $('#saveButton').on('click', function() {
-            // Add your save logic here
-            alert('Patient information saved!');
-            $('#patientForm input, #patientForm select').addClass('readonly').prop('disabled', true);
-            $(this).hide();
-            $('#editButton').show();
-        });
-
-        // Initial population of fields based on existing data
         if (patientData.student.student_program) {
             $('#program').val(patientData.student.student_program).trigger('change');
         }
@@ -557,13 +550,21 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
         if (patientData.address.address_barangay) {
             $('#barangay').val(patientData.address.address_barangay);
         }
+
+        $('#program').select2({
+            tags: true,
+            placeholder: "Select or add a Program",
+            allowClear: true
+        });
+
+        $('#major').select2({
+            tags: true,
+            placeholder: "Select or add a major",
+            allowClear: true
+        });
+
+        $('#major').val(patientData.student.student_major).trigger('change');
     });
 </script>
-
-
-
-
-
-
 </body>
 </html>

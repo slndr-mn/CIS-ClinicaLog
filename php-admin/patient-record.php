@@ -14,7 +14,65 @@ $patient = new PatientManager($db);
 $user = new User($conn); 
 $user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id); 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (isset($_POST['idnum'], $_POST['type'], $_POST['action'])) {
+      $idnum = $_POST['idnum'];
+      $type = $_POST['type'];
+      $action = $_POST['action']; 
+
+      $_SESSION['idnum'] = $idnum;
+      $_SESSION['type'] = $type;
+      $_SESSION['action'] = $action;
+
+      if ($action === 'view') {
+          switch ($type) {
+              case 'Student':
+                  $redirectUrl = 'patient-studprofile.php';
+                  break;
+              case 'Faculty':
+                  $redirectUrl = 'patient-facultyprofile.php';
+                  break;
+              case 'Staff':
+                  $redirectUrl = 'patient-staffprofile.php';
+                  break;
+              case 'Extension':
+                  $redirectUrl = 'patient-extensionprofile.php';
+                  break;
+              default:
+                  $redirectUrl = 'patient-record.php';
+                  break;
+          }
+          echo json_encode(['status' => 'success', 'redirect' => $redirectUrl]);
+      } elseif ($action === 'edit') {
+          switch ($type) {
+            case 'Student':
+                $redirectUrl = 'patient-studedit.php';
+                break;
+            case 'Faculty':
+                $redirectUrl = 'patient-facultyprofile.php';
+                break;
+            case 'Staff':
+                $redirectUrl = 'patient-staffprofile.php';
+                break;
+            case 'Extension':
+                $redirectUrl = 'patient-extensionprofile.php';
+                break;
+            default:
+                $redirectUrl = 'patient-record.php';
+                break;
+        }
+        echo json_encode(['status' => 'success', 'redirect' => $redirectUrl]);
+      } else {
+          echo json_encode(['status' => 'error', 'message' => 'patient-record.php']);
+      }
+  } else {
+      echo json_encode(['status' => 'error', 'message' => 'Required parameters are missing']);
+  }
+  exit;
+}
 ?>
+
 <!DOCTYPE html> 
 <html lang="en">
 <head>
@@ -198,18 +256,16 @@ $userData = $user->getUserData($user_id);
                             <th>Action</th>
                           </tr>
                         </tfoot>
-                        <tbody>
+                        <tbody> 
                         <?php
-                        // Assuming you have called getAllPatientsTable() somewhere in your code
                         $nodes = $patient->getAllPatientsTable();
-                        $index = 0; // Initialize the index outside the loop
+                        $index = 0; 
 
                         foreach ($nodes as $node) {
-                            // Check for patient_status property
+                            
                             $disableStatus = isset($node->status) && $node->status == 'Inactive' ? 'Disabled' : 'Enabled';
                             $statusColor = isset($node->status) && $node->status == 'Inactive' ? '#ff6961' : '#77dd77';
 
-                            // Increment index for each node
                             $index++;
 
                             echo "<tr data-id='{$node->idnum}' 
@@ -238,9 +294,14 @@ $userData = $user->getUserData($user_id);
                                   </td>
                                   <td>
                                       <div class='form-button-action'>
-                                          <button type='button' class='btn btn-link btn-primary btn-lg viewButton' 
+                                      
+                                          <button type='submit' class='btn btn-link btn-primary btn-lg viewButton' 
                                                   data-id='{$node->idnum}' data-type='{$node->type}'>
                                               <i class='fa fa-eye'></i>
+                                          </button>
+                                          <button type='submit' class='btn btn-link btn-primary btn-lg editButton'
+                                                  data-id='{$node->idnum}' data-type='{$node->type}'>
+                                                <i class='fa fa-edit'></i>
                                           </button>
                                       </div>
                                   </td>
@@ -295,18 +356,16 @@ $userData = $user->getUserData($user_id);
         });
       }
 
-        // Function to dynamically load content into the tablechange div based on the selected type
         function changeTableContent(type) {
             let data = [];
 
-            // Load different tables based on the type selected
             if (type === 'students') {
                 $("#tablechange").load("studentstable.php", function(response, status, xhr) {
                     if (status === "error") {
                         console.log("Error loading studentstable: " + xhr.status + " " + xhr.statusText);
                     }
                 });
-            } else if (type === 'faculties') {
+            } else if (type === 'faculties') { 
                 $("#tablechange").load("faculty.php", function(response, status, xhr) {
                     if (status === "error") {
                         console.log("Error loading faculty table: " + xhr.status + " " + xhr.statusText);
@@ -320,48 +379,53 @@ $userData = $user->getUserData($user_id);
                 });
             }
 
-            // Optionally populate the table with empty data for default behavior
             populateTable(data);
         }
     </script>
       
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        // Add event listener for view buttons
-        document.querySelectorAll('.viewButton').forEach(function (button) {
-            button.addEventListener('click', function () {
-                // Retrieve the data-id and data-type from the button
-                const patientId = this.getAttribute('data-id');
-                const patientType = this.getAttribute('data-type');
+      <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function handleButtonClick(buttonClass) {
+            document.querySelectorAll(buttonClass).forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const idnum = this.getAttribute('data-id');
+                    const type = this.getAttribute('data-type');
+                    const action = this.classList.contains('viewButton') ? 'view' : 'edit';
 
-                // Determine the file to redirect to based on the patient type
-                let fileName = '';
-                switch (patientType.toLowerCase()) {
-                    case 'student':
-                        fileName = 'patient-studprofile.php';
-                        break;
-                    case 'faculty':
-                        fileName = 'patient-facultyprofile.php';
-                        break;
-                    case 'staff':
-                        fileName = 'patient-staffprofile.php';
-                        break;
-                    case 'extension':
-                        fileName = 'patient-extensionprofile.php';
-                        break;
-                    default:
-                        fileName = 'patient-record.php'; // Optional: Handle unknown types
-                        break;
-                }
-
-                // Redirect to the appropriate page, passing the patient ID as a query parameter
-                const url = `${fileName}?id=${patientId}`;
-                window.location.href = url;
+                    // Create the AJAX request
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '', true); // POST to the same page
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            try {
+                                const response = JSON.parse(xhr.responseText); // Parse JSON response
+                                if (response.status === 'success') {
+                                    // Redirect based on the server response
+                                    window.location.href = response.redirect;
+                                } else if (response.status === 'error') {
+                                    console.error(response.message); // Handle error messages
+                                }
+                            } catch (e) {
+                                console.error('Invalid JSON response', e);
+                            }
+                        }
+                    };
+                    xhr.send(`idnum=${encodeURIComponent(idnum)}&type=${encodeURIComponent(type)}&action=${encodeURIComponent(action)}`);
+                });
             });
-        });
-    });
+        }
 
-    </script>
+        // Bind click events to both button classes
+        handleButtonClick('.viewButton');
+        handleButtonClick('.editButton');
+    });
+</script>
+
+
+
+
+
     <script>
     $(document).ready(function() {
        
@@ -389,6 +453,6 @@ $userData = $user->getUserData($user_id);
             }
         });
     });
-</script>
+</script> 
 </body>
 </html>

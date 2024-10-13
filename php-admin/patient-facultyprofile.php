@@ -14,16 +14,16 @@ $user = new User($conn);
 $user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id);
 
-$patientId = isset($_GET['id']) ? $_GET['id'] : null;
-$patientDetails = $patient->getFacultyData($patientId);
+if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
+    $patientId = $_SESSION['idnum'];
+    $patientType = $_SESSION['type'];
 
-// Print the patient_id
-if ($patientDetails) {
-    // Optional: You could log this or handle it differently.
-    // echo "Patient ID: " . $patientDetails['patient_id']; // Debugging line, uncomment if needed
+    $patientDetails = $patient->getFacultyData($patientId);
+
+    unset($_SESSION['idnum']);
+    unset($_SESSION['type']);
 } else {
-    echo "No patient details found.";
-    exit; // Stop execution if no patient details are found
+    echo "No patient data found.";
 }
 ?>
 

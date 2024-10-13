@@ -14,16 +14,13 @@ $user = new User($conn);
 $user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id);
 
-$patientId = isset($_GET['id']) ? $_GET['id'] : null;
-$patientDetails = $patient->getStaffData($patientId);
-
-// Print the patient_id
-if ($patientDetails) {
-    // Optional: You could log this or handle it differently.
-    // echo "Patient ID: " . $patientDetails['patient_id']; // Debugging line, uncomment if needed
+if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
+    $patientId = $_SESSION['idnum'];
+    $patientType = $_SESSION['type'];
+    echo "<script>console.error('Error: Patient data not found for ID: " . addslashes($patientId) . "');</script>";
+    $patientDetails = $patient->getStaffData($patientId);
 } else {
-    echo "No patient details found.";
-    exit; // Stop execution if no patient details are found
+    echo "No patient data found.";
 }
 ?>
 
@@ -242,7 +239,7 @@ if ($patientDetails) {
         <div class="col-md-3 mb-3">
             <label for="emergencyContactNumber" class="form-label">Emergency Contact Number</label>
             <input type="tel" class="form-control" id="emergencyContactNumber" name="emergencyContactNumber" placeholder="Emergency contact number" readonly />
-        </div>
+        </div> 
     </div>
 
     <div class="row">
@@ -293,16 +290,13 @@ if ($patientDetails) {
 
     }
     ?>
-
+ 
     
 <script>
-    // Passing PHP data to JavaScript
     var patientData = <?php echo json_encode($patientDetails); ?>;
 
-    // Function to populate form inputs with patient data
     function populatePatientForm(patientData) {
-        // Populate patient details
-       // Populate patient details
+
        document.getElementById('lastName').value = patientData.patient.patient_lname || '';
             document.getElementById('firstName').value = patientData.patient.patient_fname || '';
             document.getElementById('middleName').value = patientData.patient.patient_mname || '';
@@ -325,35 +319,29 @@ if ($patientDetails) {
             document.getElementById('Status').value = patientData.patient.patient_status || '';
             document.getElementById('profilePic').src = `uploads/${patientData.patient.patient_profile}` || 'default-image.jpg';
 
-        // Populate other fields as needed
     }
 
-    // Populate the form when the page loads
     document.addEventListener("DOMContentLoaded", function() {
         populatePatientForm(patientData);
     });
-    </script>
+</script>
 
 <script>
-// Function to download the image
 document.getElementById('downloadBtn').addEventListener('click', function () {
-    // Get the source of the image
+
     const imageSrc = document.getElementById('profilePic').src;
 
-    // Create a temporary link element
     const link = document.createElement('a');
-    link.href = imageSrc;  // Set the link's href to the image's source
-    link.download = 'profile-image.jpg';  // Set a default filename for the download
+    link.href = imageSrc;  
+    link.download = 'profile-image.jpg';  
 
-    // Append the link to the body (required for Firefox)
     document.body.appendChild(link);
 
-    // Trigger the download by simulating a click
     link.click();
 
-    // Remove the link from the document
     document.body.removeChild(link);
 });
+
 </script>
 
     <script src="../assets/js/core/jquery-3.7.1.min.js"></script>

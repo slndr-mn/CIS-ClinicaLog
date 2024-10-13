@@ -515,7 +515,7 @@ class PatientManager{
             $stmt->execute([$patientid, $idnum,  $role]);
             $extension_id = $this->db->lastInsertId();
             $extension = new Extension($extension_id, $patientid, $idnum, $role);
-            $this->extensions->add($extension);
+            $this->extensions->add($extension); 
             return ['status' => 'success', 'message' => 'Extension inserted successfully.', 'staff_id' => $extension_id];
         } catch (PDOException $e) {
             error_log("Error inserting staff: " . $e->getMessage());
@@ -708,7 +708,334 @@ class PatientManager{
             'contact_id' => $insertEmergencyContactResponse['contact_id']
         ];
     
-}
+    }
+
+    public function updatePatient($patient_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $newPassword, $status) {
+        try {
+            // Start building the SQL query
+            $sql = "UPDATE patients 
+                    SET patient_lname = ?, patient_fname = ?, patient_mname = ?, patient_dob = ?, 
+                        patient_email = ?, patient_connum = ?, patient_sex = ?, 
+                        patient_password = ?, patient_status = ?   
+                    WHERE patient_id = ?";
+            
+            $stmt = $this->db->prepare($sql);
+    
+            // Prepare the values
+            $params = [
+                $lname,
+                $fname,
+                $mname === '' ? null : $mname,  // Set to null if empty
+                $dob,
+                $email,
+                $connum,
+                $sex,
+                $newPassword, 
+                $status,
+                $patient_id
+            ];
+    
+            // Execute the prepared statement
+            $stmt->execute($params);
+    
+            return ['status' => 'success', 'message' => 'Patient updated successfully.'];
+    
+        } catch (PDOException $e) {
+            error_log("Error updating patient: " . $e->getMessage());
+            return [
+                'status' => 'error',
+                'message' => 'Error updating patient. Please try again later.'
+            ];
+        }
+    }
+    
+
+    
+    public function updateStudent($patientid, $idnum, $program, $major, $year, $section) {
+        $sql = "UPDATE patstudents 
+                SET student_program = ?, student_major = ?, student_year = ?, student_section = ?
+                WHERE student_patientid = ? AND student_idnum = ?";
+        $stmt = $this->db->prepare($sql);
+    
+        try {
+            $stmt->execute([$program === '' ? null : $program, 
+                            $major === '' ? null : $major, 
+                            $year === '' ? null : $year, 
+                            $section === '' ? null : $section,
+                            $patientid, 
+                            $idnum]);
+    
+            return ['status' => 'success', 'message' => 'Student updated successfully.'];
+    
+        } catch (PDOException $e) {
+            error_log("Error updating student: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error updating student. Please try again later.'];
+        }
+    }
+
+    public function updateFaculty($patientid, $idnum, $college, $depart, $role) {    
+        $sql = "UPDATE patfaculties 
+                SET faculty_college = ?, faculty_depart = ?, faculty_role = ?
+                WHERE faculty_patientid = ? AND faculty_idnum = ?";
+        $stmt = $this->db->prepare($sql);
+    
+        try {
+            $stmt->execute([$college, $depart, $role, $patientid, $idnum]);
+    
+            return [
+                'status' => 'success', 
+                'message' => 'Faculty updated successfully.'
+            ];
+        } catch (PDOException $e) {
+            error_log("Error updating faculty: " . $e->getMessage());
+            return [
+                'status' => 'error', 
+                'message' => 'Error updating faculty. Please try again later.'
+            ];
+        }
+    }
+
+    public function updateStaff($patientid, $idnum, $office, $role) {
+        $sql = "UPDATE patstaffs 
+                SET staff_office = ?, staff_role = ?
+                WHERE staff_patientid = ? AND staff_idnum = ?";
+        $stmt = $this->db->prepare($sql);
+    
+        try {
+            $stmt->execute([$office, $role, $patientid, $idnum]);
+            return ['status' => 'success', 'message' => 'Staff updated successfully.'];
+    
+        } catch (PDOException $e) {
+            error_log("Error updating staff: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error updating staff. Please try again later.'];
+        }
+    }
+
+    public function updateExtension($patientid, $idnum, $role) {
+        $sql = "UPDATE patextensions 
+                SET exten_role = ?
+                WHERE exten_patientid = ? AND exten_idnum = ?";
+        $stmt = $this->db->prepare($sql);
+    
+        try {
+            $stmt->execute([$role, $patientid, $idnum]);
+            return ['status' => 'success', 'message' => 'Extension updated successfully.'];
+        } catch (PDOException $e) {
+            error_log("Error updating extension: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error updating extension. Please try again later.'];
+        }
+    }
+
+    public function updateAddress($patientid, $region, $province, $municipality, $barangay, $prkstrtadd) {
+        $sql = "UPDATE pataddresses 
+                SET address_region = ?, address_province = ?, address_municipality = ?, address_barangay = ?, address_prkstrtadd = ?
+                WHERE address_patientid = ?";
+        $stmt = $this->db->prepare($sql);
+    
+        try {
+            $stmt->execute([$region, $province, $municipality, $barangay, $prkstrtadd, $patientid]);
+            return ['status' => 'success', 'message' => 'Address updated successfully.'];
+    
+        } catch (PDOException $e) {
+            error_log("Error updating address: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error updating address. Please try again later.'];
+        }
+    }
+
+    public function updateEmergencyContact($patientid, $conname, $relationship, $emergency_connum) {
+        $sql = "UPDATE patemergencycontacts 
+                SET emcon_conname = ?, emcon_relationship = ?, emcon_connum = ?
+                WHERE emcon_patientid = ?";
+        $stmt = $this->db->prepare($sql);
+    
+        try {
+            $stmt->execute([$conname, $relationship, $emergency_connum, $patientid]);
+            return ['status' => 'success', 'message' => 'Emergency contact updated successfully.'];
+    
+        } catch (PDOException $e) {
+            error_log("Error updating emergency contact: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error updating emergency contact. Please try again later.'];
+        }
+    }
+
+    public function updatePatientProfileImage($patient_id, $profile) {
+        try {
+            $sql = "UPDATE patients 
+                    SET patient_profile = ?
+                    WHERE patient_id = ?";
+            
+            $stmt = $this->db->prepare($sql);
+            
+            // Prepare the values
+            $params = [
+                $profile,
+                $patient_id
+            ];
+            
+            $stmt->execute($params);
+            
+            return ['status' => 'success', 'message' => 'Profile image updated successfully.'];
+            
+        } catch (PDOException $e) {
+            error_log("Error updating profile image: " . $e->getMessage());
+            return [
+                'status' => 'error',
+                'message' => 'Error updating profile image. Please try again later.'
+            ];
+        }
+    }
+    
+
+    public function updateStudentPatient(
+        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex,   
+        $password, $status, $idnum, $program, $major, $year, $section, 
+        $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
+        $relationship, $emergency_connum
+    ) {
+        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
+        
+        if ($updatePatientResponse['status'] !== 'success') {
+            return $updatePatientResponse; 
+        }
+    
+        $updateStudentResponse = $this->updateStudent($patientId, $idnum, $program, $major, $year, $section);
+        if ($updateStudentResponse['status'] !== 'success') {
+            return $updateStudentResponse; 
+        }
+    
+        $updateAddressResponse = $this->updateAddress($patientId, $region, $province, $municipality, $barangay, $prkstrtadd);
+        if ($updateAddressResponse['status'] !== 'success') {
+            return $updateAddressResponse; 
+        }
+    
+        $updateEmergencyContactResponse = $this->updateEmergencyContact($patientId, $conname, $relationship, $emergency_connum);
+        if ($updateEmergencyContactResponse['status'] !== 'success') {
+            return $updateEmergencyContactResponse; 
+        }
+    
+        return [
+            'status' => 'success',
+            'message' => 'Student patient updated successfully.',
+            'patient_id' => $patientId,
+            'student_id' => $updateStudentResponse['student_id'],
+            'address_id' => $updateAddressResponse['address_id'],
+            'contact_id' => $updateEmergencyContactResponse['contact_id']
+        ];
+    }
+    
+    public function updateFacultyPatient(
+        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, 
+        $dateadded, $password, $status, $code, $idnum, $college, $depart, $role,
+        $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
+        $relationship, $emergency_connum
+    ) {
+        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
+        
+        if ($updatePatientResponse['status'] !== 'success') {
+            return $updatePatientResponse; 
+        }
+    
+        $updateFacultyResponse = $this->updateFaculty($patientId, $idnum, $college, $depart, $role);
+        if ($updateFacultyResponse['status'] !== 'success') {
+            return $updateFacultyResponse; 
+        }
+    
+        $updateAddressResponse = $this->updateAddress($patientId, $region, $province, $municipality, $barangay, $prkstrtadd);
+        if ($updateAddressResponse['status'] !== 'success') {
+            return $updateAddressResponse; 
+        }
+    
+        $updateEmergencyContactResponse = $this->updateEmergencyContact($patientId, $conname, $relationship, $emergency_connum);
+        if ($updateEmergencyContactResponse['status'] !== 'success') {
+            return $updateEmergencyContactResponse; 
+        }
+    
+        return [
+            'status' => 'success',
+            'message' => 'Faculty patient updated successfully.',
+            'patient_id' => $patientId,
+            'faculty_id' => $updateFacultyResponse['faculty_id'],
+            'address_id' => $updateAddressResponse['address_id'],
+            'contact_id' => $updateEmergencyContactResponse['contact_id']
+        ];
+    }
+    
+    public function updateStaffPatient(
+        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, 
+        $dateadded, $password, $status, $code, $idnum, $office, $role,
+        $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
+        $relationship, $emergency_connum
+    ) {
+        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
+        
+        if ($updatePatientResponse['status'] !== 'success') {
+            return $updatePatientResponse; 
+        }
+    
+        $updateStaffResponse = $this->updateStaff($patientId, $idnum, $office, $role);
+        if ($updateStaffResponse['status'] !== 'success') {
+            return $updateStaffResponse; 
+        }
+    
+        $updateAddressResponse = $this->updateAddress($patientId, $region, $province, $municipality, $barangay, $prkstrtadd);
+        if ($updateAddressResponse['status'] !== 'success') {
+            return $updateAddressResponse; 
+        }
+    
+        $updateEmergencyContactResponse = $this->updateEmergencyContact($patientId, $conname, $relationship, $emergency_connum);
+        if ($updateEmergencyContactResponse['status'] !== 'success') {
+            return $updateEmergencyContactResponse; 
+        }
+    
+        return [
+            'status' => 'success',
+            'message' => 'Staff patient updated successfully.',
+            'patient_id' => $patientId,
+            'staff_id' => $updateStaffResponse['staff_id'],
+            'address_id' => $updateAddressResponse['address_id'],
+            'contact_id' => $updateEmergencyContactResponse['contact_id']
+        ];
+    }
+    
+    public function updateExtenPatient(
+        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, 
+        $dateadded, $password, $status, $code, $idnum, $role,
+        $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
+        $relationship, $emergency_connum
+    ) {
+        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
+        
+        if ($updatePatientResponse['status'] !== 'success') {
+            return $updatePatientResponse; 
+        }
+    
+        $updateExtenResponse = $this->updateExtension($patientId, $idnum, $role);
+        if ($updateExtenResponse['status'] !== 'success') {
+            return $updateExtenResponse; 
+        }
+    
+        $updateAddressResponse = $this->updateAddress($patientId, $region, $province, $municipality, $barangay, $prkstrtadd);
+        if ($updateAddressResponse['status'] !== 'success') {
+            return $updateAddressResponse; 
+        }
+    
+        $updateEmergencyContactResponse = $this->updateEmergencyContact($patientId, $conname, $relationship, $emergency_connum);
+        if ($updateEmergencyContactResponse['status'] !== 'success') {
+            return $updateEmergencyContactResponse; 
+        }
+    
+        return [
+            'status' => 'success',
+            'message' => 'Extension patient updated successfully.',
+            'patient_id' => $patientId,
+            'extension_id' => $updateExtenResponse['exten_id'],
+            'address_id' => $updateAddressResponse['address_id'],
+            'contact_id' => $updateEmergencyContactResponse['contact_id']
+        ];
+    }
+    
+
+    
     public function getAllPatients() {
         return $this->patients->getAllNodes();
     }
@@ -779,110 +1106,7 @@ class PatientManager{
         return $combinedData;
     }
     
-    public function getPatientDetails($searchPatientId) {
-        
-        $patientDetails = [];
-        $studentDetails = [];
-        $facultyDetails = [];
-        $staffDetails = [];
-        $extensionDetails = [];
-        $addressDetails = []; 
-        $emergencyContactDetails = [];
-    
-
-        $findPatientInList = function ($list) use ($searchPatientId) {
-            $current = $list->head; 
-            while ($current != null) {
-                if ($current->patient_id == $searchPatientId) {
-                    return $current;
-                }
-                $current = $current->next;
-            }
-            return null;
-        };
-    
-        $patient = $findPatientInList($this->patients);
-        if ($patient !== null) {
-            $patientDetails = (object)[
-                'id' => $patient->patient_id,
-                'lname' => $patient->patient_lname,
-                'fname' => $patient->patient_fname,
-                'mname' => $patient->patient_mname,
-                'email' => $patient->patient_email,
-                'contact' => $patient->patient_connum,
-                'sex' => $patient->patient_sex,
-                'type' => $patient->patient_patienttype,
-                'status' => $patient->patient_status,
-                'dob' => $patient->patient_dob,
-                'profile' => $patient->patient_profile
-            ];
-        }
-    
-        $student = $findPatientInList($this->students);
-        if ($student !== null) {
-            $studentDetails = (object)[
-                'program' => $student->student_program,
-                'major' => $student->student_major,
-                'year' => $student->student_year,
-                'section' => $student->student_section,
-            ];
-        }
-    
-        $faculty = $findPatientInList($this->faculties);
-        if ($faculty !== null) {
-            $facultyDetails = (object)[
-                'college' => $faculty->faculty_college,
-                'department' => $faculty->faculty_depart,
-                'role' => $faculty->faculty_role,
-            ];
-        }
-    
-        $staff = $findPatientInList($this->staffs);
-        if ($staff !== null) {
-            $staffDetails = (object)[
-                'office' => $staff->staff_office,
-                'role' => $staff->staff_role,
-            ];
-        }
-    
-        $extension = $findPatientInList($this->extensions);
-        if ($extension !== null) {
-            $extensionDetails = (object)[
-                'role' => $extension->exten_role,
-            ];
-        }
-    
-        $address = $findPatientInList($this->addresses);
-        if ($address !== null) {
-            $addressDetails = (object)[
-                'region' => $address->address_region,
-                'province' => $address->address_province,
-                'municipality' => $address->address_municipality,
-                'barangay' => $address->address_barangay,
-                'street' => $address->address_prkstrtadd,
-            ];
-        }
-    
-        $emergencyContact = $findPatientInList($this->emergencycon);
-        if ($emergencyContact !== null) {
-            $emergencyContactDetails = (object)[
-                'contactName' => $emergencyContact->emcon_conname,
-                'relationship' => $emergencyContact->emcon_relationship,
-                'contactNumber' => $emergencyContact->emcon_connum,
-            ];
-        }
-    
-        return (object)[
-            'patient' => $patientDetails,
-            'student' => $studentDetails,
-            'faculty' => $facultyDetails,
-            'staff' => $staffDetails,
-            'extension' => $extensionDetails,
-            'address' => $addressDetails,
-            'emergencyContact' => $emergencyContactDetails
-        ];
-    }
-    
+  
 public function getStudentData($patient_id) {
     $query = "
         SELECT 
@@ -942,6 +1166,7 @@ public function getStudentData($patient_id) {
         ]
     ];
 }
+
 public function getFacultyData($patient_id) {
     $query = "
         SELECT 
@@ -1009,7 +1234,7 @@ public function getStaffData($patient_id) {
             s.staff_role, 
             a.address_region, 
             a.address_province, 
-            a.address_municipality, 
+            a.address_municipality,  
             a.address_barangay, 
             a.address_prkstrtadd, 
             ec.emcon_conname, 
@@ -1035,7 +1260,7 @@ public function getStaffData($patient_id) {
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
     
     return [
-        'patient' => $data, // Patient data
+        'patient' => $data, 
         'staff' => [
             'staff_idnum' => $data['staff_idnum'],
             'staff_office' => $data['staff_office'],
@@ -1087,7 +1312,6 @@ public function getExtensionData($patient_id) {
     $stmt->bindParam(':patient_id', $patient_id);
     $stmt->execute();
 
-    // Fetch the data and return it in a structured array
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
     
     return [

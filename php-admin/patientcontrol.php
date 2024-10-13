@@ -4,6 +4,7 @@ session_start();
 include('../database/config.php');
 include('../php/patient.php');
 
+
 $db = new Database();
 $conn = $db->getConnection();
 $patient = new PatientManager($conn);
@@ -11,7 +12,6 @@ $patient = new PatientManager($conn);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['addstudentpatient'])) {
 
-        // Initialize variables from POST data
         $lname = $_POST['lastName'];
         $fname = $_POST['firstName'];
         $mname = $_POST['middleName'];
@@ -23,9 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $program = $_POST['program'];
         $major = $_POST['major'];
         $year = $_POST['year'];
-        $section = $_POST['section'];
+        $section = $_POST['section']; 
         $region = $_POST['region'];
-        $province = $_POST['province'];
+        $province = $_POST['province']; 
         $municipality = $_POST['municipality'];
         $barangay = $_POST['barangay'];
         $prkstrtadd = $_POST['street'];
@@ -178,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mname = $_POST['middleName'];
         $dob = $_POST['dob'];
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-        $connum = $_POST['contactNumber'];
+        $connum = $_POST['contactNumber']; 
         $sex = $_POST['sex'];
         $idnum = $_POST['staffID'];
         $office = $_POST['office'];
@@ -266,7 +266,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conname = $_POST['emergencyContactName'];
         $relationship = $_POST['relationship'];
         $emergency_connum = $_POST['emergencyContactNumber'];
-
+    
         $profile = ''; // Default to empty if no profile picture uploaded
 
         // Handle Profile Upload
@@ -323,6 +323,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: add-extension.php'); 
         exit();
     }
+    if (isset($_POST['editstudentpatient'])) {
+        $patientid = $_POST['patientid']; 
+
+        $lname = $_POST['lastName'];
+        $fname = $_POST['firstName'];
+        $mname = $_POST['middleName'];
+        $dob = $_POST['dob'];
+        $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+        $connum = $_POST['contactNumber'];
+        $sex = $_POST['sex'];
+        $program = $_POST['program'];
+        $major = $_POST['major'];
+        $year = $_POST['year'];
+        $section = $_POST['section']; 
+        $region = $_POST['region'];
+        $province = $_POST['province']; 
+        $municipality = $_POST['municipality'];
+        $barangay = $_POST['barangay'];
+        $prkstrtadd = $_POST['street'];
+        $conname = $_POST['emergencyContactName'];
+        $relationship = $_POST['relationship'];
+        $emergency_connum = $_POST['emergencyContactNumber'];
+        $status = $_POST['Status'];
+
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+
+            $response = $patient->updateStudentPatient(
+                $patientid, 
+                $lname, $fname, $mname, $dob, $email, $connum, $sex,
+                password_hash($idnum, PASSWORD_DEFAULT), $status, 
+                $idnum, $program, $major, $year, $section, 
+                $region, $province, $municipality, $barangay, 
+                $prkstrtadd, $conname, $relationship, $emergency_connum
+            );
+    
+            $_SESSION['message'] = $response['message'];
+            $_SESSION['status'] = $response['status'];
+
+            if (!empty($_FILES['addprofile']['name']) && $_FILES['addprofile']['error'] === UPLOAD_ERR_OK) {
+                $profile = $_FILES['addprofile'];
+                $profile_original_name = basename($profile['name']);
+                $profile_tmp = $profile['tmp_name'];
+
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mime = finfo_file($finfo, $profile_tmp);
+                $allowed_mimes = ['image/jpeg', 'image/png'];
+    
+                if (in_array($mime, $allowed_mimes)) {
+                    $profile_hash = md5(uniqid($profile_original_name, true));
+                    $profile_name = $profile_hash . '.' . strtolower(pathinfo($profile_original_name, PATHINFO_EXTENSION));
+                    $uploadDir = 'uploads/';
+                    $profile_destination = $uploadDir . $profile_name;
+
+                    if (move_uploaded_file($profile_tmp, $profile_destination)) {
+
+                        $imageResponse = $patient->updatePatientProfileImage($patientid, $profile_name);
+                        
+                        $_SESSION['message'] .= ' ' . $imageResponse['message'];
+                        $_SESSION['status'] = $imageResponse['status'];
+                    } else {
+                        $_SESSION['error'] = 'Failed to upload profile picture.';
+                    }
+                } else {
+                    $_SESSION['error'] = 'Invalid file type. Only JPEG and PNG files are allowed.';
+                }
+                finfo_close($finfo);
+            }
+        } else {
+            $_SESSION['status'] = 'error';
+            $_SESSION['message'] = 'Invalid email address.';
+        }
+    
+        header('Location: patient-studedit.php'); 
+        exit();
+    }
+    
+    
+    
+
 } else {
     $_SESSION['status'] = 'error';
     $_SESSION['message'] = 'Invalid request method.';

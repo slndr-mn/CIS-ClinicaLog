@@ -13,7 +13,7 @@ class Medicine {
 } 
 
 // Medstock class
-class Medstock {
+class Medstock { 
     public $medstock_id;
     public $medicine_id;
     public $medstock_qty;

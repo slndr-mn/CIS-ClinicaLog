@@ -22,7 +22,7 @@ $userData = $user->getUserData($user_id);
       content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
       name="viewport"
     />
-    <link
+    <link 
       rel="icon"
       href="../assets/img/ClinicaLog.ico"
       type="image/x-icon"
@@ -364,7 +364,7 @@ $userData = $user->getUserData($user_id);
                               // Check if the medicine is expired
                               $currentDate = date('Y-m-d');
                               $expirationStatus = (strtotime($node->medstock_expirationdt) < strtotime($currentDate)) ? 'Expired' : '';
-
+ 
                               echo "<tr data-id='{$node->medstock_id}' 
                                         data-name='{$node->medicine_name}' 
                                         data-qty='{$node->medstock_qty}' 

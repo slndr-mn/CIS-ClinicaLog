@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
             }
             if($user_position == $doctor){
                 header('Location: ../php-admin/index.php'); 
-                exit;
+                exit; 
             }
             if($user_role == 'Super Admin'){
                 header('Location: ../php-admin/superadindex.php'); 
@@ -101,7 +101,7 @@ unset($_SESSION['error_message']);
                         <img src="../assets/img/email.png" alt="email icon">
                         <input type="text" name="email" id="email" class="form-input" placeholder="Enter your Email" required>
                     </div>
-    
+     
                     <div class="form-group">
                         <label for="password" class="form-label">Password:</label>
                         <img src="../assets/img/password.png" alt="password icon">

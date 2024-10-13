@@ -10728,21 +10728,21 @@ body[data-background-color=dark] .jvm-zoom-btn {
    }
 }
 
-#gradient-sidebar{
+#gradient-sidebar {
    background: linear-gradient(176deg, #DB6079 -16.99%, #DA6F65 58.3%, #E29AB4 130.63%);
 }
 
-#viewButton .fa-eye{
+#viewButton .fa-eye {
    font-size: 22px;
    color: #DB6079;
 }
 
-#addbutton{
+#addbutton {
    background-color: #DB6079 !important;
    border-color: #DB6079 !important;
 }
 
-.modal-body a{
+.modal-body a {
    margin-right: 10px;
 }
 
@@ -10752,45 +10752,69 @@ body[data-background-color=dark] .jvm-zoom-btn {
    justify-content: center;
    align-items: center;
    min-height: 200px;
- }
- 
- .modalButton a {
-   margin: 10px 0; /* Adds spacing between the buttons */
- }
+}
 
- .custom-button {
-   font-size: 1.5rem; /* Increases the text size */
-   padding: 15px 30px; /* Increases the button size */
-   width: 200px; /* Sets a fixed width for the buttons */
-   margin: 10px 0; /* Adds space between buttons */
- } 
- 
- .modalButton {
+.modalButton a {
+   margin: 10px 0;
+   /* Adds spacing between the buttons */
+}
+
+.custom-button {
+   font-size: 1.5rem;
+   /* Increases the text size */
+   padding: 15px 30px;
+   /* Increases the button size */
+   width: 200px;
+   /* Sets a fixed width for the buttons */
+   margin: 10px 0;
+   /* Adds space between buttons */
+}
+
+.modalButton {
    display: flex;
    flex-direction: column;
    align-items: center;
- }
+}
 
- #InputInfo input,select{
+#InputInfo input,
+select {
    border-color: #DA6F65 !important;
- }
+}
 
- #InputInfo input[disabled], 
+#InputInfo input[disabled],
 #InputInfo select[disabled] {
-    border-color: gray !important; /* Gray border color */
-    border-width: 1px; /* Thin border */
-    background-color: #f8f9fa; /* Light background color for readonly fields */
-    color: #6c757d; /* Text color for readonly fields */
-    cursor: not-allowed; /* Cursor style to indicate read-only */
+   border-color: gray !important;
+   /* Gray border color */
+   border-width: 1px;
+   /* Thin border */
+   background-color: #f8f9fa;
+   /* Light background color for readonly fields */
+   color: #6c757d;
+   /* Text color for readonly fields */
+   cursor: not-allowed;
+   /* Cursor style to indicate read-only */
 }
 
 
- #InputInfo button{
+#InputInfo button {
    background-color: #DB6079 !important;
    border-color: #DB6079 !important;
- }
+}
 
-.row #canceladdpatient{
+.row #canceladdpatient {
    background-color: rebeccapurple !important;
    border-color: rebeccapurple !important;
- }
+}
+
+#clientpanel {
+   width: 100% !important;
+}
+
+#client_header {
+   width: 100% !important;
+   background: #DB6079;
+}
+
+#client_header i{
+   color: white;
+}
