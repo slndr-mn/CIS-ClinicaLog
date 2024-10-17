@@ -1,117 +1,180 @@
-<?php
-// Include the database configuration
-include('../database/config.php');
-$db = new Database();
-$conn = $db->getConnection();
-
-// Insert consultation function
-function insertConsultation($conn, $patient_idnum, $diagnosis, $medstock_id, $treatment_medqty, $treatment_notes, $remark, $consult_date, $time_in, $time_out, $time_spent) {
-    $params = [];
-    
-    try {
-        $sql = "INSERT INTO consultations (patient_id, diagnosis, medstock_id, treatment_medqty, treatment_notes, remark, consult_date, time_in, time_out, time_spent)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        
-        $params = [
-            $patient_idnum, 
-            $diagnosis, 
-            $medstock_id,
-            $treatment_medqty, 
-            $treatment_notes, 
-            $remark, 
-            $consult_date, 
-            $time_in, 
-            $time_out, 
-            $time_spent
-        ];
- 
-        $stmt->execute($params);
-        
-        return ['status' => 'success', 'message' => 'Consultation inserted successfully.'];
-        
-    } catch (PDOException $e) {
-        return [
-            'status' => 'error',
-            'message' => 'Error inserting consultation: ' . $e->getMessage(),
-            'details' => [
-                'sqlState' => $e->getCode(),
-                'params' => json_encode($params) // Output params used in query
-            ]
-        ];
-    }
-}
-
-// Check if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Sanitize and retrieve POST data
-    $patient_idnum = htmlspecialchars($_POST['patient_idnum']);
-    $diagnosis = htmlspecialchars($_POST['diagnosis']);
-    $medstock_id = intval($_POST['medstock_id']);
-    $treatment_medqty = intval($_POST['treatment_medqty']);
-    $treatment_notes = htmlspecialchars($_POST['treatment_notes']);
-    $remark = htmlspecialchars($_POST['remark']);
-    $consult_date = $_POST['consult_date']; // Date format YYYY-MM-DD
-    $time_in = $_POST['time_in']; // Time format HH:MM
-    $time_out = $_POST['time_out']; // Time format HH:MM
-    $time_spent = intval($_POST['time_spent']); // Time spent in minutes
-    
-    // Insert the consultation
-    $result = insertConsultation($conn, $patient_idnum, $diagnosis, $medstock_id, $treatment_medqty, $treatment_notes, $remark, $consult_date, $time_in, $time_out, $time_spent);
-    
-    // Handle result
-    if ($result['status'] === 'success') {
-        echo "<script>alert('Consultation inserted successfully!');</script>";
-    } else {
-        echo "<script>alert('Error: " . $result['message'] . "');</script>";
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consultation Form</title>
+    <title>Program and Major Selection</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        button img {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Consultation Form</h2>
+    <form id="programForm" action="sample2.php" method="POST">
+        <label for="program">Select Program:</label>
+        <select id="program" name="program">
+            <option value="Click to type...">Click to type...</option>
+            <option value="Computer Science">Computer Science</option>
+            <option value="Business Administration">Business Administration</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Biology">Biology</option>
 
-<form action="" method="POST">
-    <label for="patient_idnum">Patient ID:</label>
-    <input type="text" id="patient_idnum" name="patient_idnum" required><br><br>
+        </select>
 
-    <label for="diagnosis">Diagnosis:</label>
-    <input type="text" id="diagnosis" name="diagnosis" required><br><br>
+        <!-- Text input for custom program (hidden initially) -->
+        <div id="programInputContainer" class="hidden">
+            <input type="text" id="programInput" name="programm" placeholder="Enter your program">
+        </div>
 
-    <label for="medstock_id">Medicine Stock ID:</label>
-    <input type="number" id="medstock_id" name="medstock_id" required><br><br>
+        <label for="major">Select Major:</label>
+        <select id="major" name="major">
+        <option value="Other">Other</option>
+            <!-- Majors will be populated based on the selected program -->
+        </select>
 
-    <label for="treatment_medqty">Treatment Medicine Quantity:</label>
-    <input type="number" id="treatment_medqty" name="treatment_medqty" required><br><br>
+        <!-- Text input for custom major (hidden initially) -->
+        <div id="majorInputContainer" class="hidden">
+            <input type="text" id="majorInput" name="majorr" placeholder="Enter your major">
+        </div>
 
-    <label for="treatment_notes">Treatment Notes:</label>
-    <textarea id="treatment_notes" name="treatment_notes" required></textarea><br><br>
+        <!-- Back to dropdown icon button (hidden initially) -->
+        <button type="button" id="backToDropdown" class="hidden">
+            <img src="https://img.icons8.com/ios-glyphs/30/000000/undo.png" alt="Back to dropdown" />
+        </button>
 
-    <label for="remark">Remark:</label>
-    <input type="text" id="remark" name="remark"><br><br>
+        <button type="submit">Submit</button>
+    </form>
 
-    <label for="consult_date">Consultation Date:</label>
-    <input type="date" id="consult_date" name="consult_date" required><br><br>
+    <!-- jQuery library (optional but simplifies the scripting) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <label for="time_in">Time In:</label>
-    <input type="time" id="time_in" name="time_in" required><br><br>
+    <script>
+$(document).ready(function() {
+    // Simulate values from the database
+    const dbProgram = 'Business Administration'; // Assume value fetched from database
+    const dbMajor = 'Marketing';  // Assume value fetched from database
 
-    <label for="time_out">Time Out:</label>
-    <input type="time" id="time_out" name="time_out" required><br><br>
+    let currentField = ''; // Track the field (program or major) currently in input mode
 
-    <label for="time_spent">Time Spent (minutes):</label>
-    <input type="number" id="time_spent" name="time_spent" required><br><br>
+    // Define program-major mappings
+    const programMajors = {
+        'Click to type...': [],
+        'Computer Science': ['Click to type...', 'Software Engineering', 'Data Science', ],
+        'Business Administration': ['Click to type...', 'Marketing', 'Finance',],
+        'Engineering': ['Click to type...', 'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering', ],
+        'Biology': [ 'Click to type...', 'Genetics', 'Microbiology',],
+        
+    };
 
-    <input type="submit" value="Submit Consultation">
-</form>
+    // Function to populate the major dropdown based on selected program
+    function updateMajorDropdown(selectedProgram) {
+        const majors = programMajors[selectedProgram] || [];
+        $('#major').empty(); // Clear existing options
 
+        // Populate the major dropdown
+        $.each(majors, function(index, major) {
+            $('#major').append(`<option value="${major}">${major}</option>`);
+        });
+
+        // Add the 'Other' option if it's not in the list
+        if (!majors.includes('Click to type...')) {
+            $('#major').append('<option value="" hidden></option>');
+        }
+    }
+
+    // Function to check if the value exists in a dropdown
+    function checkIfExistsInDropdown(dropdown, value) {
+        return $(dropdown).find(`option[value='${value}']`).length > 0;
+    }
+
+    // Handle initial program value (from database)
+    if (dbProgram && !checkIfExistsInDropdown('#program', dbProgram)) {
+        // If the value is not in the dropdown, switch to text input
+        $('#program').hide();
+        $('#programInputContainer').removeClass('hidden');
+        $('#programInput').val(dbProgram); // Set the custom program from database
+        $('#backToDropdown').removeClass('hidden'); // Show the back button
+        currentField = 'program';
+    } else {
+        $('#program').val(dbProgram); // Select the program from dropdown
+        updateMajorDropdown(dbProgram); // Update the major dropdown based on the initial program
+    }
+
+    // Handle initial major value (from database)
+    if (dbMajor && !checkIfExistsInDropdown('#major', dbMajor)) {
+        // If the value is not in the dropdown, switch to text input
+        $('#major').hide();
+        $('#majorInputContainer').removeClass('hidden');
+        $('#majorInput').val(dbMajor); // Set the custom major from database
+        $('#backToDropdown').removeClass('hidden'); // Show the back button
+        currentField = 'major';
+    } else {
+        $('#major').val(dbMajor); // Select the major from dropdown
+    }
+
+    // Handle dropdown change for program
+    $('#program').on('change', function() {
+        const selectedProgram = $(this).val();
+        updateMajorDropdown(selectedProgram); // Update majors based on the selected program
+        $('#majorInputContainer').addClass('hidden'); // Hide the input container
+        $('#major').show(); // Show the dropdown
+
+        if (selectedProgram === 'Click to type...') {
+            // Hide program dropdown and show the text input for custom program
+            $('#program').hide();
+            $('#programInputContainer').removeClass('hidden');
+            $('#backToDropdown').removeClass('hidden');
+            currentField = 'program';
+
+            // Automatically switch major dropdown to input as well
+            $('#major').hide();
+            $('#majorInputContainer').removeClass('hidden');
+            currentField = 'major';
+        } else {
+            $('#majorInputContainer').addClass('hidden'); // Ensure major input is hidden if not 'Other'
+        }
+    });
+
+    // Handle major dropdown change
+    $('#major').on('change', function() {
+        if ($(this).val() === 'Click to type...') {
+            // Hide major dropdown and show the text input for custom major
+            $('#major').hide();
+            $('#majorInputContainer').removeClass('hidden');
+            $('#backToDropdown').removeClass('hidden');
+            currentField = 'major';
+        }
+    });
+
+    $('#backToDropdown').on('click', function() {
+        // Show the program dropdown and hide its input container
+        $('#programInputContainer').addClass('hidden');
+        $('#program').show();
+
+        // Show the major dropdown and hide its input container
+        $('#majorInputContainer').addClass('hidden');
+        $('#major').show();
+
+        // Reset dropdown values
+        $('#program').val(dbProgram); // Reset to the value fetched from the database
+        updateMajorDropdown(dbProgram); // Update majors based on the program
+        $('#major').val(dbMajor); // Reset to the value fetched from the database
+
+        // Hide the back button after switching back
+        $(this).addClass('hidden');
+    });
+
+    
+});
+
+    </script>
 </body>
 </html>

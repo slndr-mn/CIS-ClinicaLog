@@ -94,7 +94,9 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
         margin-top: 10px;
       }
 
-   
+      .hidden {
+            display: none;
+        }
       
   </style>
 </head>
@@ -124,7 +126,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
         <div class="row">
           <div class="col-md-12">
             <div class="card">
-              <div class="card-header">
+              <div class="card-header"> 
                 <div class="d-flex align-items-center">
                   <h4 class="card-title">Personal Details</h4>
                 </div>
@@ -164,11 +166,11 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                     <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Enter ID number"  />
                 </div>
 
-                    <!-- Program Input -->
+                <!-- Program Input -->
                 <div class="col-md-4 mb-3">
                     <label for="program" class="form-label">Program</label>
                     <select class="form-select form-control" id="program" name="program" placeholder="Enter Program" >
-                        <option value="">Select Program</option>
+                        <option value="Click to type...">Click to type...</option>
                         <option value="Bachelor of Science in Secondary Education">Bachelor of Science in Secondary Education</option>
                         <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
                         <option value="Bachelor of Science in Agricultural and Biosystems Engineering">Bachelor of Science in Agricultural and Biosystems Engineering</option>
@@ -177,6 +179,11 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                         <option value="Bachelor of Early Childhood Education">Bachelor of Early Childhood Education</option>
                         <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
                     </select>
+                
+                <!-- Text input for custom program (hidden initially) -->
+                    <div id="programInputContainer" class="hidden">
+                        <input type="text" class="form-control" id="programInput"  name="customProgram" placeholder="Enter your program">
+                    </div>
                 </div>
 
                 <!-- Major Input -->
@@ -185,7 +192,19 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                     <select class="form-control form-select" id="major" name="major" placeholder="Enter Major" >
                         <option value="">Select Major</option>
                     </select>
+
+                    <!-- Text input for custom major (hidden initially) -->
+                    <div id="majorInputContainer" class="hidden">
+                        <input type="text" class="form-control" id="majorInput" name="customMajor" placeholder="Enter your major">
+                    </div>
+
+                    <!-- Back to dropdown icon button (hidden initially) -->
+                    <button type="button" id="backToDropdown" class="hidden ">
+                        <i class='fa fa-undo'></i>
+                    </button>
                 </div>
+
+
             <!-- Other elements... -->
                     <!-- Year Dropdown -->
                     <div class="col-md-2 mb-3">
@@ -454,27 +473,34 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             }
         };
 
+        let currentField = '';
 
+        const programMajors = {
+            'Click to type...': [],
+            'Bachelor of Science in Secondary Education': ['Click to type...', 'Filipino', 'English', 'Mathematics'],
+            'Bachelor of Science in Information Technology': ['Click to type...', 'Information Security'],
+            'Bachelor of Science in Agricultural and Biosystems Engineering': ['Click to type...', 'None'],
+            'Bachelor of Technical-Vocational Education': ['Click to type...', 'Agricultural Crop Production', 'Animal Production'],
+            'Bachelor of Special Needs Education': ['Click to type...', 'None'],
+            'Bachelor of Early Childhood Education': ['Click to type...', 'None'],
+            'Bachelor of Elementary Education': ['Click to type...', 'None'],
 
-        const majorOptions = {
-            "Bachelor of Science in Secondary Education": ["Filipino", "English", "Mathematics"],
-            "Bachelor of Science in Information Technology": ["Information Security"],
-            "Bachelor of Science in Agricultural and Biosystems Engineering": ["None"],
-            "Bachelor of Technical-Vocational Education": ["Agricultural Crop Production", "Animal Production"],
-            "Bachelor of Special Needs Education": ["None"],
-            "Bachelor of Early Childhood Education": ["None"],
-            "Bachelor of Elementary Education": ["None"]
         };
 
-        function populateMajors(selectedProgram) {
-            const majorSelect = $('#major');
-            majorSelect.empty().append('<option selected >Select Major</option>');
-            if (majorOptions[selectedProgram]) {
-                majorOptions[selectedProgram].forEach(function(major) {
-                    majorSelect.append(`<option value="${major}">${major}</option>`);
-                });
+        // Function to populate the major dropdown based on selected program
+        function updateMajorDropdown(selectedProgram) {
+            const majors = programMajors[selectedProgram] || [];
+            $('#major').empty(); // Clear existing options
+
+            // Populate the major dropdown
+            $.each(majors, function(index, major) {
+                $('#major').append(`<option value="${major}">${major}</option>`);
+            });
+
+            // Add the 'Other' option if it's not in the list
+            if (!majors.includes('Other')) {
+                $('#major').append('<option value="" hidden></option>');
             }
-            majorSelect.val(patientData.student.student_major).trigger('change'); // Set the selected major
         }
 
         function populateProvinces(selectedRegion) {
@@ -485,7 +511,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                     provinceSelect.append(`<option value="${province}">${province}</option>`);
                 });
             }
-            provinceSelect.val(patientData.address.address_province).trigger('change'); // Set the selected province
+            provinceSelect.val(patientData.address.address_province).trigger('change'); 
         }
 
         function populateMunicipalities(selectedRegion, selectedProvince) {
@@ -512,11 +538,11 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             barangaySelect.val(patientData.address.address_barangay).trigger('change'); // Set the selected barangay
         }
 
+        // Function to check if the value exists in a dropdown
+        function checkIfExistsInDropdown(dropdown, value) {
+            return $(dropdown).find(`option[value='${value}']`).length > 0;
+        }
         
-        // Event handlers for cascading dropdowns
-        $('#program').on('change', function() {
-            populateMajors($(this).val());
-        });
 
         $('#region').on('change', function() {
             populateProvinces($(this).val());
@@ -529,6 +555,31 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
         $('#municipality').on('change', function() {
             populateBarangays($('#region').val(), $('#province').val(), $(this).val());
         });
+
+        // Handle initial program value (from database)
+        if (patientData.student.student_program && !checkIfExistsInDropdown('#program', patientData.student.student_program)) {
+            // If the value is not in the dropdown, switch to text input
+            $('#program').hide();
+            $('#programInputContainer').removeClass('hidden');
+            $('#programInput').val(patientData.student.student_program); // Set the custom program from database
+            $('#backToDropdown').removeClass('hidden'); // Show the back button
+            currentField = 'program';
+        } else {
+            $('#program').val(patientData.student.student_program); // Select the program from dropdown
+            updateMajorDropdown(patientData.student.student_program); // Update the major dropdown based on the initial program
+        }
+
+            // Handle initial major value (from database)
+        if (patientData.student.student_major && !checkIfExistsInDropdown('#major', patientData.student.student_major)) {
+            // If the value is not in the dropdown, switch to text input
+            $('#major').hide();
+            $('#majorInputContainer').removeClass('hidden');
+            $('#majorInput').val(patientData.student.student_major); // Set the custom major from database
+            $('#backToDropdown').removeClass('hidden'); // Show the back button
+            currentField = 'major';
+        } else {
+            $('#major').val(patientData.student.student_major); // Select the major from dropdown
+        }
 
 
         if (patientData.student.student_program) {
@@ -551,19 +602,56 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             $('#barangay').val(patientData.address.address_barangay);
         }
 
-        $('#program').select2({
-            tags: true,
-            placeholder: "Select or add a Program",
-            allowClear: true
+        $('#program').on('change', function() {
+            const selectedProgram = $(this).val();
+            updateMajorDropdown(selectedProgram); // Update majors based on the selected program
+            $('#majorInputContainer').addClass('hidden'); // Hide the input container
+            $('#major').show(); // Show the dropdown
+
+            if (selectedProgram === 'Click to type...') {
+                // Hide program dropdown and show the text input for custom program
+                $('#program').hide();
+                $('#programInputContainer').removeClass('hidden');
+                $('#backToDropdown').removeClass('hidden');
+                currentField = 'program';
+
+                // Automatically switch major dropdown to input as well
+                $('#major').hide();
+                $('#majorInputContainer').removeClass('hidden');
+                currentField = 'major';
+            } else {
+                $('#majorInputContainer').addClass('hidden'); // Ensure major input is hidden if not 'Other'
+            }
         });
 
-        $('#major').select2({
-            tags: true,
-            placeholder: "Select or add a major",
-            allowClear: true
+        // Handle major dropdown change
+        $('#major').on('change', function() {
+            if ($(this).val() === 'Click to type...') {
+                // Hide major dropdown and show the text input for custom major
+                $('#major').hide();
+                $('#majorInputContainer').removeClass('hidden');
+                $('#backToDropdown').removeClass('hidden');
+                currentField = 'major';
+            }
         });
 
-        $('#major').val(patientData.student.student_major).trigger('change');
+        $('#backToDropdown').on('click', function() {
+
+            $('#programInputContainer').addClass('hidden');
+            $('#program').show();
+
+            $('#majorInputContainer').addClass('hidden');
+            $('#major').show();
+
+            // Reset dropdown values
+            $('#program').val(patientData.student.student_program); // Reset to the value fetched from the database
+            updateMajorDropdown(patientData.student.student_program); // Update majors based on the program
+            $('#major').val(patientData.student.student_major); // Reset to the value fetched from the database
+
+            // Hide the back button after switching back
+            $(this).addClass('hidden');
+        });
+
     });
 </script>
 </body>

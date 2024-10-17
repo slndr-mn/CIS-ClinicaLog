@@ -333,8 +333,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
         $connum = $_POST['contactNumber'];
         $sex = $_POST['sex'];
-        $program = $_POST['program'];
-        $major = $_POST['major'];
+
+        $program = (!empty($_POST['program']) &&  $_POST['program'] !== 'Click to type...') ? 
+                        $_POST['program'] : $_POST['customProgram'];
+        $major = (!empty($_POST['major']) &&  $_POST['major'] !== 'Click to type...' && empty($_POST['customProgram']) ) ? 
+                        $_POST['major'] : $_POST['customMajor'];
+
         $year = $_POST['year'];
         $section = $_POST['section']; 
         $region = $_POST['region'];
@@ -383,7 +387,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['message'] .= ' ' . $imageResponse['message'];
                         $_SESSION['status'] = $imageResponse['status'];
                     } else {
-                        $_SESSION['error'] = 'Failed to upload profile picture.';
+                        $_SESSION['error'] = 'Failed to upload profile picture.'; 
                     }
                 } else {
                     $_SESSION['error'] = 'Invalid file type. Only JPEG and PNG files are allowed.';

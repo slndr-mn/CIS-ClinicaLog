@@ -753,17 +753,18 @@ class PatientManager{
     
     public function updateStudent($patientid, $idnum, $program, $major, $year, $section) {
         $sql = "UPDATE patstudents 
-                SET student_program = ?, student_major = ?, student_year = ?, student_section = ?
-                WHERE student_patientid = ? AND student_idnum = ?";
+                SET student_idnum = ?, student_program = ?, student_major = ?, student_year = ?, student_section = ?
+                WHERE student_patientid = ?";
         $stmt = $this->db->prepare($sql);
     
         try {
-            $stmt->execute([$program === '' ? null : $program, 
-                            $major === '' ? null : $major, 
-                            $year === '' ? null : $year, 
-                            $section === '' ? null : $section,
-                            $patientid, 
-                            $idnum]);
+            $stmt->execute([
+                            $idnum,
+                            $program, 
+                            $major,  
+                            $year, 
+                            $section, 
+                            $patientid]);
     
             return ['status' => 'success', 'message' => 'Student updated successfully.'];
     
@@ -775,12 +776,12 @@ class PatientManager{
 
     public function updateFaculty($patientid, $idnum, $college, $depart, $role) {    
         $sql = "UPDATE patfaculties 
-                SET faculty_college = ?, faculty_depart = ?, faculty_role = ?
-                WHERE faculty_patientid = ? AND faculty_idnum = ?";
+                SET faculty_idnum = ?, faculty_college = ?, faculty_depart = ?, faculty_role = ?
+                WHERE faculty_patientid = ?";
         $stmt = $this->db->prepare($sql);
     
         try {
-            $stmt->execute([$college, $depart, $role, $patientid, $idnum]);
+            $stmt->execute([$idnum, $college, $depart, $role, $patientid, $idnum]);
     
             return [
                 'status' => 'success', 
@@ -797,12 +798,12 @@ class PatientManager{
 
     public function updateStaff($patientid, $idnum, $office, $role) {
         $sql = "UPDATE patstaffs 
-                SET staff_office = ?, staff_role = ?
-                WHERE staff_patientid = ? AND staff_idnum = ?";
+                SET staff_idnum = ?, staff_office = ?, staff_role = ?
+                WHERE staff_patientid = ?";
         $stmt = $this->db->prepare($sql);
     
         try {
-            $stmt->execute([$office, $role, $patientid, $idnum]);
+            $stmt->execute([$idnum, $office, $role, $patientid]);
             return ['status' => 'success', 'message' => 'Staff updated successfully.'];
     
         } catch (PDOException $e) {
@@ -813,12 +814,12 @@ class PatientManager{
 
     public function updateExtension($patientid, $idnum, $role) {
         $sql = "UPDATE patextensions 
-                SET exten_role = ?
-                WHERE exten_patientid = ? AND exten_idnum = ?";
+                SET exten_idnunm = ?, exten_role = ?
+                WHERE exten_patientid = ?";
         $stmt = $this->db->prepare($sql);
     
         try {
-            $stmt->execute([$role, $patientid, $idnum]);
+            $stmt->execute([$idnum, $role, $patientid]);
             return ['status' => 'success', 'message' => 'Extension updated successfully.'];
         } catch (PDOException $e) {
             error_log("Error updating extension: " . $e->getMessage());

@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
                 exit;
             }
             if($user_role == 'Admin'){ 
-                header('Location: ../php-admin/adminindex.php'); 
+                header('Location: ../php-admin/adminindex.php');  
                 exit;
             }
         }
