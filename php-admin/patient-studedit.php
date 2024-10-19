@@ -17,7 +17,6 @@ $userData = $user->getUserData($user_id);
 if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     $patientId = $_SESSION['idnum'];
     $patientType = $_SESSION['type'];
-    echo "<script>console.error('Error: Patient data not found for ID: " . addslashes($patientId) . "');</script>";
     $patientDetails = $patient->getStudentData($patientId);
 } else {
     echo "No patient data found.";
@@ -29,15 +28,14 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
 <html lang="en">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Sample Index</title> 
+    <title>CIS:Clinicalog</title> 
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
 
     <!-- Fonts and icons -->
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
@@ -111,10 +109,10 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     <!-- Main Content -->
     <div class="container" id="content">
     <div class="page-inner">
-        <div class=row>
+    <div class=row>
         <h4 class="card-title">Edit Patient's Information</h4>
     </div>
-    <form action="patientcontrol.php" method="POST" enctype="multipart/form-data">   
+    <form id="uppatientForm" action="patientcontrol.php" method="POST" enctype="multipart/form-data">   
     <input type="hidden" class="form-control" id="patientid" name="patientid" value="<?php echo $patientId; ?>" />
         <div class="row">
         <div class="profile-image col-md-3 text-center mx-auto d-flex flex-column align-items-center">
@@ -205,8 +203,8 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                 </div>
 
 
-            <!-- Other elements... -->
-                    <!-- Year Dropdown -->
+                <!-- Other elements... -->
+                <!-- Year Dropdown -->
                     <div class="col-md-2 mb-3">
                         <label for="year" class="form-label">Year</label>
                         <select class="form-select form-control" id="year" name="year" >
@@ -336,24 +334,11 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
 <!-- jQuery Scrollbar -->
 <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
 
-<!-- Chart JS -->
-<script src="../assets/js/plugin/chart.js/chart.min.js"></script>
-
 <!-- jQuery Sparkline -->
 <script src="../assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
 
-<!-- Chart Circle -->
-<script src="../assets/js/plugin/chart-circle/circles.min.js"></script>
-
-<!-- Datatables -->
-<script src="../assets/js/plugin/datatables/datatables.min.js"></script>
-
 <!-- Bootstrap Notify -->
 <script src="../assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
-
-<!-- jQuery Vector Maps -->
-<script src="../assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
-<script src="../assets/js/plugin/jsvectormap/world.js"></script>
 
 <!-- Sweet Alert -->
 <script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
@@ -361,12 +346,8 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
 <!-- Kaiadmin JS -->
 <script src="../assets/js/kaiadmin.min.js"></script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 
 <script>
     $(document).ready(function() {
@@ -401,6 +382,8 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
         });
         <?php endif; ?>
 
+        confirmCancelPatient();
+
         var patientData = <?php echo json_encode($patientDetails); ?>;
 
         function populatePatientForm(data) {
@@ -427,15 +410,40 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             $('#profilePic').attr('src', `uploads/${data.patient.patient_profile}` || 'default-image.jpg');
         }
 
-        $('#downloadBtn').on('click', function () {
-            const imageSrc = $('#profilePic').attr('src');
-            const link = document.createElement('a');
-            link.href = imageSrc;
-            link.download = 'profile-image.jpg';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
+        function confirmCancelPatient() {
+        $('#canceladdpatient').click(function(event) {
+                event.preventDefault();
+
+                let isFormFilled = false;
+
+                $('#uppatientForm input, studentForm select, studentForm textarea').each(function() {
+                    if ($(this).val() !== '') {
+                        isFormFilled = true; 
+                        return false; 
+                    }
+                });
+
+                if (isFormFilled) {
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "Do you really want to cancel adding this patient? Unsaved information will be lost.",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, cancel it!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            sessionStorage.clear();
+                            window.location.href = "patient-record.php";
+                        }
+                    });
+                } else {
+
+                    window.location.href = "patient-record.php";
+                }
+            });
+        }
 
         populatePatientForm(patientData);
 
@@ -487,17 +495,14 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
 
         };
 
-        // Function to populate the major dropdown based on selected program
         function updateMajorDropdown(selectedProgram) {
             const majors = programMajors[selectedProgram] || [];
-            $('#major').empty(); // Clear existing options
+            $('#major').empty(); 
 
-            // Populate the major dropdown
             $.each(majors, function(index, major) {
                 $('#major').append(`<option value="${major}">${major}</option>`);
             });
 
-            // Add the 'Other' option if it's not in the list
             if (!majors.includes('Other')) {
                 $('#major').append('<option value="" hidden></option>');
             }
@@ -556,29 +561,28 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             populateBarangays($('#region').val(), $('#province').val(), $(this).val());
         });
 
-        // Handle initial program value (from database)
         if (patientData.student.student_program && !checkIfExistsInDropdown('#program', patientData.student.student_program)) {
-            // If the value is not in the dropdown, switch to text input
+
             $('#program').hide();
             $('#programInputContainer').removeClass('hidden');
-            $('#programInput').val(patientData.student.student_program); // Set the custom program from database
-            $('#backToDropdown').removeClass('hidden'); // Show the back button
+            $('#programInput').val(patientData.student.student_program); 
+            $('#backToDropdown').removeClass('hidden'); 
             currentField = 'program';
         } else {
-            $('#program').val(patientData.student.student_program); // Select the program from dropdown
-            updateMajorDropdown(patientData.student.student_program); // Update the major dropdown based on the initial program
+            $('#program').val(patientData.student.student_program); 
+            updateMajorDropdown(patientData.student.student_program); 
         }
 
-            // Handle initial major value (from database)
+            
         if (patientData.student.student_major && !checkIfExistsInDropdown('#major', patientData.student.student_major)) {
-            // If the value is not in the dropdown, switch to text input
+            
             $('#major').hide();
             $('#majorInputContainer').removeClass('hidden');
-            $('#majorInput').val(patientData.student.student_major); // Set the custom major from database
-            $('#backToDropdown').removeClass('hidden'); // Show the back button
+            $('#majorInput').val(patientData.student.student_major); 
+            $('#backToDropdown').removeClass('hidden');
             currentField = 'major';
         } else {
-            $('#major').val(patientData.student.student_major); // Select the major from dropdown
+            $('#major').val(patientData.student.student_major); 
         }
 
 
@@ -604,30 +608,28 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
 
         $('#program').on('change', function() {
             const selectedProgram = $(this).val();
-            updateMajorDropdown(selectedProgram); // Update majors based on the selected program
-            $('#majorInputContainer').addClass('hidden'); // Hide the input container
-            $('#major').show(); // Show the dropdown
+            updateMajorDropdown(selectedProgram); 
+            $('#majorInputContainer').addClass('hidden');
+            $('#major').show();
 
             if (selectedProgram === 'Click to type...') {
-                // Hide program dropdown and show the text input for custom program
+                
                 $('#program').hide();
                 $('#programInputContainer').removeClass('hidden');
                 $('#backToDropdown').removeClass('hidden');
                 currentField = 'program';
 
-                // Automatically switch major dropdown to input as well
                 $('#major').hide();
                 $('#majorInputContainer').removeClass('hidden');
                 currentField = 'major';
             } else {
-                $('#majorInputContainer').addClass('hidden'); // Ensure major input is hidden if not 'Other'
+                $('#majorInputContainer').addClass('hidden'); 
             }
         });
 
-        // Handle major dropdown change
         $('#major').on('change', function() {
             if ($(this).val() === 'Click to type...') {
-                // Hide major dropdown and show the text input for custom major
+                
                 $('#major').hide();
                 $('#majorInputContainer').removeClass('hidden');
                 $('#backToDropdown').removeClass('hidden');
@@ -643,12 +645,10 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             $('#majorInputContainer').addClass('hidden');
             $('#major').show();
 
-            // Reset dropdown values
-            $('#program').val(patientData.student.student_program); // Reset to the value fetched from the database
-            updateMajorDropdown(patientData.student.student_program); // Update majors based on the program
-            $('#major').val(patientData.student.student_major); // Reset to the value fetched from the database
+            $('#program').val(patientData.student.student_program); 
+            updateMajorDropdown(patientData.student.student_program); 
+            $('#major').val(patientData.student.student_major); 
 
-            // Hide the back button after switching back
             $(this).addClass('hidden');
         });
 

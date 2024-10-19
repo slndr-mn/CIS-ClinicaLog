@@ -303,7 +303,7 @@ $(document).ready(function() {
             <?php unset($_SESSION['status'], $_SESSION['message']); ?>
         });
     <?php endif; ?>
-
+ 
     initializeSelect2WithSession();
     initializeAddressDataWithSession();
     restoreFormFields();

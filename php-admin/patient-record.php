@@ -50,13 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $redirectUrl = 'patient-studedit.php';
                 break;
             case 'Faculty':
-                $redirectUrl = 'patient-facultyprofile.php';
+                $redirectUrl = 'patient-facultyedit.php';
                 break;
             case 'Staff':
-                $redirectUrl = 'patient-staffprofile.php';
+                $redirectUrl = 'patient-staffedit.php';
                 break;
             case 'Extension':
-                $redirectUrl = 'patient-extensionprofile.php';
+                $redirectUrl = 'patient-extenedit.php';
                 break;
             default:
                 $redirectUrl = 'patient-record.php';
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Sample Index</title> 
+    <title>CIS:Clinicalog</title> 
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
 

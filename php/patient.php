@@ -781,7 +781,7 @@ class PatientManager{
         $stmt = $this->db->prepare($sql);
     
         try {
-            $stmt->execute([$idnum, $college, $depart, $role, $patientid, $idnum]);
+            $stmt->execute([$idnum, $college, $depart, $role, $patientid]);
     
             return [
                 'status' => 'success', 
@@ -814,7 +814,7 @@ class PatientManager{
 
     public function updateExtension($patientid, $idnum, $role) {
         $sql = "UPDATE patextensions 
-                SET exten_idnunm = ?, exten_role = ?
+                SET exten_idnum = ?, exten_role = ?
                 WHERE exten_patientid = ?";
         $stmt = $this->db->prepare($sql);
     
@@ -925,12 +925,12 @@ class PatientManager{
     }
     
     public function updateFacultyPatient(
-        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, 
-        $dateadded, $password, $status, $code, $idnum, $college, $depart, $role,
+        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, 
+        $password, $status, $idnum, $college, $depart, $role,
         $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
         $relationship, $emergency_connum
     ) {
-        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
+        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
         
         if ($updatePatientResponse['status'] !== 'success') {
             return $updatePatientResponse; 
@@ -962,12 +962,12 @@ class PatientManager{
     }
     
     public function updateStaffPatient(
-        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, 
-        $dateadded, $password, $status, $code, $idnum, $office, $role,
+        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex,
+        $password, $status, $idnum, $office, $role,
         $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
         $relationship, $emergency_connum
     ) {
-        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
+        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
         
         if ($updatePatientResponse['status'] !== 'success') {
             return $updatePatientResponse; 
@@ -999,12 +999,12 @@ class PatientManager{
     }
     
     public function updateExtenPatient(
-        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, 
-        $dateadded, $password, $status, $code, $idnum, $role,
+        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex,
+        $password, $status, $idnum, $role,
         $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
         $relationship, $emergency_connum
     ) {
-        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
+        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
         
         if ($updatePatientResponse['status'] !== 'success') {
             return $updatePatientResponse; 
@@ -1208,7 +1208,7 @@ public function getFacultyData($patient_id) {
         'faculty' => [
             'faculty_idnum' => $data['faculty_idnum'],
             'faculty_college' => $data['faculty_college'],
-            'faculty_depart' => $data['faculty_depart'],
+            'faculty_department' => $data['faculty_depart'],
             'faculty_role' => $data['faculty_role']
         ],
         'address' => [
