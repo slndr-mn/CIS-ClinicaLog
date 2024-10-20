@@ -22,7 +22,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     echo "No patient data found.";
 }
 
-?>
+?> 
  
 <!DOCTYPE html> 
 <html lang="en">

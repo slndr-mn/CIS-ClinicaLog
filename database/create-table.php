@@ -7,7 +7,7 @@
     $conn = mysqli_connect($servername, $username, $password);
 
     if(!$conn){
-        die("Connection failed: " . mysqli_connect_error());
+        die("Connection failed: " . mysqli_connect_error()); 
     }
 
     $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
@@ -115,7 +115,6 @@
     }
 
     // Create the 'patients' table
-    // Create the 'patients' table with gender and profile
     $sql_patients = "CREATE TABLE IF NOT EXISTS patients (
         patient_id INT AUTO_INCREMENT PRIMARY KEY,
         patient_lname VARCHAR(50) NOT NULL,
@@ -142,7 +141,7 @@
     // Create the 'students' table
     $sql_students = "CREATE TABLE IF NOT EXISTS patstudents (
         student_id INT AUTO_INCREMENT PRIMARY KEY,
-        student_idnum INT NOT NULL UNIQUE,
+        student_idnum INT NOT NULL UNIQUE, 
         student_patientid INT NOT NULL,
         student_program VARCHAR(100) NOT NULL,
         student_major VARCHAR(100),
@@ -233,7 +232,8 @@
         echo "Error creating table 'emergency_contacts': " . mysqli_error($conn) . "<br>";
     }
 
-    $sql_consultations = "CREATE TABLE consultations (
+    // Create the 'consultations' table
+    $sql_consultations = "CREATE TABLE IF NOT EXISTS consultations (
         consultation_id INT AUTO_INCREMENT PRIMARY KEY,
         patient_idnum INT NOT NULL, 
         diagnosis VARCHAR(255) NOT NULL,
@@ -254,7 +254,23 @@
     } else {
         echo "Error creating table 'consultations': " . mysqli_error($conn) . "<br>";
     }
+
+    // Create the 'medicalrecords' table
+    $sql_medicalrecords = "CREATE TABLE IF NOT EXISTS medicalrec (
+    medicalrec_id INT AUTO_INCREMENT PRIMARY KEY,
+    medicalrec_patientid INT NOT NULL,
+    medicalrec_filename VARCHAR(255) NOT NULL UNIQUE,
+    medicalrec_file VARCHAR(255),
+    medicalrec_comment VARCHAR(255),
+    medicalrec_dateadded DATE,
+    medicalrec_timeadded TIME,
+    FOREIGN KEY (medicalrec_patientid) REFERENCES patients(patient_id))";
     
+    if (mysqli_query($conn, $sql_medicalrecords)) {
+        echo "Table 'medicalrecords' created successfully<br>";
+    } else {
+        echo "Error creating table 'medicalrecords': " . mysqli_error($conn) . "<br>";
+    }
 
 mysqli_close($conn);
 ?>

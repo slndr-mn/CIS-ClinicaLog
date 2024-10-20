@@ -1079,7 +1079,7 @@ class PatientManager{
                 if (isset($entry->patient_id, $entry->patient_lname, $entry->patient_fname, $entry->patient_email, $entry->patient_sex, $entry->patient_status)) {
                     
                     $combinedEntry = (object) [
-                        'idnum' => $entry->patient_id, 
+                        'id' => $entry->patient_id, 
                         'name' => $entry->patient_lname . ' ' . $entry->patient_fname, 
                         'email' => $entry->patient_email, 
                         'sex' => $entry->patient_sex, 

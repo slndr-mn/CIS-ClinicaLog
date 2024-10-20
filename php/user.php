@@ -77,7 +77,7 @@ class LinkedList {
             if ($current->user_id === $user_id) {
                 if ($prev === null) {
                     $this->head = $current->next;
-                } else {
+                } else { 
                     $prev->next = $current->next;
                 }
                 return true;

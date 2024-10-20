@@ -11,39 +11,7 @@ $medicine = new MedicineManager($conn);
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medicine Management</title>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
-    
-    <style>
-        .card {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
 
-        .card-body {
-            flex-grow: 1;
-        }
-
-        /* Equalize the height of both cards */ 
-        .row {
-            display: flex;
-        }
-
-        .col-md-4, .col-md-8 {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .modal-footer {
-            border-top: 1px solid #e9ecef;
-        }
-    </style>
-</head>
 <body>
 
 <div class="container mt-4">
@@ -138,11 +106,7 @@ $medicine = new MedicineManager($conn);
     </div>
 </div>
 
-<!-- Include JavaScript libraries -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
 <script>
 $(document).ready(function () {
@@ -175,7 +139,6 @@ $(document).ready(function () {
 });
 </script>
 
-</script>
 
 </body>
 </html>

@@ -22,15 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $dateadded = date('Y-m-d H:i:s');
         $password = password_hash($id, PASSWORD_DEFAULT);  
         $code = 0;
-  
-        // Handle file upload
+
         $user_profile = '';
         if (isset($_FILES['addprofile']) && $_FILES['addprofile']['error'] === UPLOAD_ERR_OK) {
             $profile = $_FILES['addprofile'];
             $profile_original_name = basename($profile['name']);
             $profile_tmp = $profile['tmp_name'];
 
-            // Validate file type using MIME type
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mime = finfo_file($finfo, $profile_tmp);
             $allowed_mimes = ['image/jpeg', 'image/png'];
@@ -55,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            // Using prepared statement to prevent SQL injection 
+  
             if ($user->register($id, $first_name, $last_name, $middle_name, $email, $position, $role, $status, $dateadded, $user_profile, $password, $code)) {
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = 'User registered successfully!';
@@ -74,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (isset($_POST['updateuser'])) {
-        // Get form data
+
         $user_oldid = $_POST['editoldid'];
         $user_id = $_POST['editid'];
         $new_fname = $_POST['editfname'];
@@ -85,14 +83,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new_role = $_POST['editrole'];
         $new_status = $_POST['editstatus'];
 
-        // Initialize new profile picture variable
         $new_profile = null;
 
-        // Handle file upload
         if (isset($_FILES['editprofile']) && $_FILES['editprofile']['error'] === UPLOAD_ERR_OK) {
             $fileTmpPath = $_FILES['editprofile']['tmp_name'];
 
-            // Validate file type using MIME type
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mime = finfo_file($finfo, $fileTmpPath);
             $allowed_mimes = ['image/jpeg', 'image/png'];
@@ -114,9 +109,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             finfo_close($finfo);
         }
 
-        // Update user details
         if ($user->updateUser($user_oldid, $user_id, $new_fname, $new_lname, $new_mname, $new_email, $new_position, $new_role, $new_status)) {
-            // Update profile picture if needed
+
             if ($new_profile) {
                 if ($user->updateProfilePicture($user_id, $new_profile)) {
                     $_SESSION['status'] = 'success';

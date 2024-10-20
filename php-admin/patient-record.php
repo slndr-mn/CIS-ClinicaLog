@@ -16,12 +16,12 @@ $user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id); 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  if (isset($_POST['idnum'], $_POST['type'], $_POST['action'])) {
-      $idnum = $_POST['idnum'];
+  if (isset($_POST['id'], $_POST['type'], $_POST['action'])) {
+      $id = $_POST['id'];
       $type = $_POST['type'];
       $action = $_POST['action']; 
 
-      $_SESSION['idnum'] = $idnum;
+      $_SESSION['id'] = $id;
       $_SESSION['type'] = $type;
       $_SESSION['action'] = $action;
 
@@ -268,14 +268,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             $index++;
 
-                            echo "<tr data-id='{$node->idnum}' 
+                            echo "<tr data-id='{$node->id}' 
                                         data-name='{$node->name}' 
                                         data-email='{$node->email}' 
                                         data-sex='{$node->sex}' 
                                         data-type='{$node->type}' 
                                         data-status='{$node->status}' class='patient-row'>
                                   <td>{$index}</td> <!-- For No. column -->
-                                  <td>{$node->idnum}</td>
+                                  <td>{$node->id}</td>
                                   <td>{$node->name}</td>
                                   <td>{$node->email}</td>
                                   <td>{$node->sex}</td>
@@ -292,15 +292,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                           {$node->status}
                                       </span>
                                   </td>
-                                  <td>
+                                  <td> 
                                       <div class='form-button-action'>
                                       
                                           <button type='submit' class='btn btn-link btn-primary btn-lg viewButton' 
-                                                  data-id='{$node->idnum}' data-type='{$node->type}'>
+                                                  data-id='{$node->id}' data-type='{$node->type}'>
                                               <i class='fa fa-eye'></i>
                                           </button>
                                           <button type='submit' class='btn btn-link btn-primary btn-lg editButton'
-                                                  data-id='{$node->idnum}' data-type='{$node->type}'>
+                                                  data-id='{$node->id}' data-type='{$node->type}'>
                                                 <i class='fa fa-edit'></i>
                                           </button>
                                       </div>
@@ -388,7 +388,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function handleButtonClick(buttonClass) {
             document.querySelectorAll(buttonClass).forEach(function (button) {
                 button.addEventListener('click', function () {
-                    const idnum = this.getAttribute('data-id');
+                    const id = this.getAttribute('data-id');
                     const type = this.getAttribute('data-type');
                     const action = this.classList.contains('viewButton') ? 'view' : 'edit';
 
@@ -411,7 +411,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                         }
                     };
-                    xhr.send(`idnum=${encodeURIComponent(idnum)}&type=${encodeURIComponent(type)}&action=${encodeURIComponent(action)}`);
+                    xhr.send(`id=${encodeURIComponent(id)}&type=${encodeURIComponent(type)}&action=${encodeURIComponent(action)}`);
                 });
             });
         }

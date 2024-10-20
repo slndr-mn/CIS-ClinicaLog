@@ -194,7 +194,7 @@ $userData = $user->getUserData($user_id);
                                     <label>Expiration Date</label>
                                     <input
                                       id="addED"
-                                      name="addED"
+                                      name="addED" 
                                       type="date"
                                       class="form-control"
                                       placeholder="fill expiration date"
@@ -668,7 +668,7 @@ $("#edit-exit, #edit-close").click(function (e) {
                         $(this).addClass('active');
                     }
                 });
-            }
+            } 
         });
 
         $("#header").load("header.php", function(response, status, xhr) {

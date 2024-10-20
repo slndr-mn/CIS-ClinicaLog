@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
         exit;
     }
 }
-
+ 
 
 $error_message = $_SESSION['error_message'] ?? null;
 unset($_SESSION['error_message']); 

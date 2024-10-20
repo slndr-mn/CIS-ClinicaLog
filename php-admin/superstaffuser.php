@@ -34,7 +34,7 @@ $userData = $user->getUserData($user_id);
             "Font Awesome 5 Solid",
             "Font Awesome 5 Regular",
             "Font Awesome 5 Brands",
-            "simple-line-icons",
+            "simple-line-icons", 
           ],
           urls: ["../css/fonts.min.css"], 
         },

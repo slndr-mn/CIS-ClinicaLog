@@ -14,14 +14,11 @@ $user = new User($conn);
 $user_id = $_SESSION['user_id']; 
 $userData = $user->getUserData($user_id);
 
-if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
-    $patientId = $_SESSION['idnum'];
+if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
+    $patientId = $_SESSION['id'];
     $patientType = $_SESSION['type'];
 
     $patientDetails = $patient->getStudentData($patientId);
-
-    unset($_SESSION['idnum']);
-    unset($_SESSION['type']);
 } else {
     echo "No patient data found.";
 }
@@ -135,7 +132,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                     <i class="fa fa-edit"></i>
                     Edit
                   </button>
-                  <button
+                  <button 
                     class="btn btn-primary btn-round ms-auto"
                     id="savebutton" style="display:none;"
                     >
@@ -318,6 +315,9 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             </div>
           </div>
         </div>
+        <!-- Start Medical Record -->
+        <div id="medicalrecord"> </div>
+         <!-- End Medical Record -->
     </div>
     </div>
   </div>
@@ -372,6 +372,32 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
                 console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
             }
         });
+
+        $("#medicalrecord").load("patientmedrecords.php", function(response, status, xhr) {
+            if (status == "error") {
+                console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
+            }
+        });
+
+        <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
+        var status = '<?php echo $_SESSION['status']; ?>';
+        var message = '<?php echo htmlspecialchars($_SESSION['message'], ENT_QUOTES); ?>';
+        Swal.fire({
+            title: status === 'success' ? "Success!" : "Error!",
+            text: message,
+            icon: status,
+            confirmButtonText: "OK",
+            confirmButtonColor: status === 'success' ? "#77dd77" : "#ff6961"
+        }).then(() => {
+            if (status === 'success') {
+              sessionStorage.clear();
+                window.location.href = "patient-studprofile.php";
+            }
+            <?php unset($_SESSION['status'], $_SESSION['message']); ?>
+        });
+        <?php endif; ?>
+
+
 
         var patientData = <?php echo json_encode($patientDetails); ?>;
 
@@ -559,11 +585,5 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
         }
     });
 </script>
-
-
-
-
-
-
 </body>
 </html>
