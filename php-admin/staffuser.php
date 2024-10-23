@@ -119,7 +119,7 @@ $userData = $user->getUserData($user_id);
                               type="button"
                               class="close"
                               data-bs-dismiss="modal"  
-                              aria-label="Close"
+                              aria-label="Close" 
                             >
                               <span aria-hidden="true">&times;</span>
                             </button>
@@ -197,8 +197,7 @@ $userData = $user->getUserData($user_id);
                               <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                               </div>
                             </form>
-                            
-                             <!-- End Add Modal Form-->`
+                             <!-- End Add Modal Form-->
                           </div>
                         </div>
                       </div>
@@ -322,6 +321,8 @@ $userData = $user->getUserData($user_id);
                         </div>
                       </div>
                     </div>
+
+
                     <div class="table-responsive">
                     <table id="add-row" class="display table table-striped table-hover">
                         <thead>
@@ -404,10 +405,6 @@ $userData = $user->getUserData($user_id);
       </div>
     </div>
 
-    
-    
-
-    
     <!--   Core JS Files   -->
     <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/core/popper.min.js"></script>

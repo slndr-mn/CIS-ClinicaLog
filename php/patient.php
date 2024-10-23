@@ -1232,7 +1232,7 @@ public function getStaffData($patient_id) {
             p.*, 
             s.staff_idnum, 
             s.staff_office, 
-            s.staff_role, 
+            s.staff_role,  
             a.address_region, 
             a.address_province, 
             a.address_municipality,  

@@ -23,7 +23,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
     echo "No patient data found.";
 }
 
-?>
+?> 
  
 <!DOCTYPE html> 
 <html lang="en">
@@ -61,9 +61,6 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
     <link rel="stylesheet" href="../css/bootstrap.min.css" />
     <link rel="stylesheet" href="../css/plugins.min.css" />
     <link rel="stylesheet" href="../css/kaiadmin.min.css" />
-
-    <!-- ICONS -->
-    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 
     <style>
       .sidebar {
@@ -107,16 +104,16 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
     <!-- Main Content -->
     <div class="container" id="content">
     <div class="page-inner">
-        <div class=row>
-        <a href="javascript:history.back()" class="back-nav">
-      <i class="fas fa-arrow-left"></i> Back to Patients' Table
-    </a>
+    <div class=row>
+        <a href="patient-record.php" class="back-nav">
+        <i class="fas fa-arrow-left"></i> Back to Patients' Table
+        </a>
     </div>
         
         <div class="row">
         <div class="profile-image">
             <img id="profilePic" src="default-image.jpg" alt="Profile Image" />
-            <button class="btn btn-primary" id="downloadBtn">Download Image</button>
+            
           </div>
         </div>
         <div class="row">
@@ -125,20 +122,6 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
               <div class="card-header">
                 <div class="d-flex align-items-center">
                   <h4 class="card-title">Personal Details</h4>
-                  <button
-                    class="btn btn-primary btn-round ms-auto"
-                    id="editbutton"
-                    >
-                    <i class="fa fa-edit"></i>
-                    Edit
-                  </button>
-                  <button 
-                    class="btn btn-primary btn-round ms-auto"
-                    id="savebutton" style="display:none;"
-                    >
-                    <i class="fa fa-save"></i>
-                    save
-                  </button>
                 </div>
               </div>
               <div class="card-body" id="InputInfo">

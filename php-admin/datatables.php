@@ -861,7 +861,7 @@ $userData = $user->getUserData($user_id);
                 data: { user_id: userId },
                 success: function(response) {
                    
-                    var data = JSON.parse(response);
+                    var data = JSON.parse(response); 
                     if (data.success) {
                         $("#add-row").DataTable().row(row).remove().draw(); 
 

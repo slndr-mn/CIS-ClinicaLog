@@ -14,8 +14,8 @@ $user = new User($conn);
 $user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id);
 
-if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
-    $patientId = $_SESSION['idnum'];
+if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
+    $patientId = $_SESSION['id'];
     $patientType = $_SESSION['type'];
     $patientDetails = $patient->getStudentData($patientId);
 } else {

@@ -86,6 +86,20 @@ class MedRecordsList {
         }
             return $duplicateFilenames;
     }
+
+    public function isDuplicateFilename($patientid, $filename) {
+        $current = $this->head;
+        while ($current !== null) {
+            if ($current->item->medicalrec_patientid === $patientid && 
+                    strcasecmp($current->item->medicalrec_filename, $filename) === 0) { {
+                return true;  
+            }
+            $current = $current->next;
+        }
+        return false; 
+        }
+    }   
+    
     
 
     public function findMedicalRecordById($medicalrec_id) {
@@ -129,9 +143,8 @@ class MedRecManager {
     public function getDuplicateFilenames($patientid, $filenames) {
         $duplicateFilenames = [];
     
-        // Ensure $filenames is always an array
         if (!is_array($filenames)) {
-            $filenames = [$filenames];  // Wrap a single string in an array
+            $filenames = [$filenames]; 
         }
     
         foreach ($filenames as $filename) {
@@ -182,7 +195,7 @@ class MedRecManager {
     
     
 
-    public function updateMedicalRecord($medicalrec_id, $patientid, $filename, $file, $comment, $dateadded, $timeadded) {
+    public function updateMedicalRecord($medicalrec_id, $patientid, $filename, $comment) {
         try {
 
             if ($this->medicalrecs->MedRecExists($patientid, $filename)) {
@@ -198,15 +211,11 @@ class MedRecManager {
             }
     
             $sql = "UPDATE medicalrec 
-                    SET medicalrec_patientid = ?, medicalrec_filename = ?, medicalrec_file = ?, medicalrec_comment = ?, 
-                        medicalrec_dateadded = ?, medicalrec_timeadded = ? 
-                    WHERE medicalrec_id = ?";
+                    SET medicalrec_filename = ?,  medicalrec_comment = ?
+                    WHERE medicalrec_id = ? AND medicalrec_patientid = ?";
             $stmt = $this->db->prepare($sql);
     
-            if ($stmt->execute([$patientid, $filename, $file, $comment, $dateadded, $timeadded, $medicalrec_id])) {
-                $updatedRecord = new MedicalRecords($medicalrec_id, $patientid, $filename, $file, $comment, $dateadded, $timeadded);
-
-                $this->medicalrecs->add($updatedRecord); 
+            if ($stmt->execute([$filename, $comment, $medicalrec_id, $patientid ])) {
                 return [
                     'status' => 'success',
                     'message' => 'Medical record updated successfully.',
@@ -268,6 +277,25 @@ class MedRecManager {
         return $records; 
     }
 
+    public function getFilePathByMedicalRecId($medicalrecId) {
+        $filePath = null; 
+        $current = $this->medicalrecs->head; 
+    
+        while ($current !== null) {
+            if (strcasecmp($current->item->medrec_id, $medicalrecId) === 0) {
+                $filePath = $current->item->medicalrec_file; 
+                break; 
+            }
+            $current = $current->next; 
+        }
+    
+        return $filePath;
+    }
+    
+
+    public function isDuplicateFilename($patientid, $filename) {
+        return $this->medicalrecs->isDuplicateFilename($patientid, $filename);
+    }
 
 }
 ?>

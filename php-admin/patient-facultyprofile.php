@@ -14,14 +14,12 @@ $user = new User($conn);
 $user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id);
 
-if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
-    $patientId = $_SESSION['idnum'];
+if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
+    $patientId = $_SESSION['id'];
     $patientType = $_SESSION['type'];
 
     $patientDetails = $patient->getFacultyData($patientId);
 
-    unset($_SESSION['idnum']);
-    unset($_SESSION['type']);
 } else {
     echo "No patient data found.";
 }
@@ -109,18 +107,14 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     <!-- Main Content -->
     <div class="container" id="content">
     <div class="page-inner">
-    <?php
-    // Assuming you have fetched the profile picture URL from the database
-    //$profilePic = $user['profile_picture']; // Replace with your database field for the profile pic
-    //$defaultPic = "default-picture.png"; // Path to your default image
-
-    // Check if the profile picture is empty or null and assign default picture if needed
-    //$displayPic = !empty($profilePic) ? $profilePic : $defaultPic;
-    ?>
+    <div class=row>
+        <a href="patient-record.php" class="back-nav">
+        <i class="fas fa-arrow-left"></i> Back to Patients' Table
+        </a>
+    </div>
         <div class="row">
         <div class="profile-image">
             <img id="profilePic" src="default-image.jpg" alt="Profile Image" />
-            <button class="btn btn-primary" id="downloadBtn">Download Image</button>
           </div>
         </div>
         <div class="row">
@@ -139,23 +133,23 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     <div class="row">
         <div class="col-md-3 mb-3">
             <label for="lastName" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="last name" readonly />
+            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="last name" disabled />
         </div>
         <div class="col-md-3 mb-3">
             <label for="firstName" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="first name" readonly />
+            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="first name" disabled />
         </div>
         <div class="col-md-2 mb-3">
             <label for="middleName" class="form-label">Middle Name</label>
-            <input type="text" class="form-control" id="middleName" name="middleName" placeholder="middle name" readonly/>
+            <input type="text" class="form-control" id="middleName" name="middleName" placeholder="middle name" disabled/>
         </div>
         <div class="col-md-2 mb-3">
             <label for="dob" class="form-label">Date of Birth</label>
-            <input type="date" class="form-control" id="dob" name="dob" readonly />
+            <input type="date" class="form-control" id="dob" name="dob" disabled />
         </div>
         <div class="col-md-2 mb-3">
             <label for="sex" class="form-label">Sex</label>
-            <select class="form-select form-control" id="sex" name="sex" readonly>
+            <select class="form-select form-control" id="sex" name="sex" disabled>
                 <option selected disabled>Select Sex</option>
                 <option value="Female">Female</option>
                 <option value="Male">Male</option>
@@ -167,24 +161,24 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     <div class="row">
         <div class="col-md-2 mb-3">
             <label for="facultyID" class="form-label">ID Number</label>
-            <input type="text" class="form-control" id="facultyID" name="facultyID" placeholder="ID number" readonly />
+            <input type="text" class="form-control" id="facultyID" name="facultyID" placeholder="ID number" disabled />
         </div> 
 
         <!-- college Input -->
         <div class="col-md-4 mb-3">
-            <label for="college" class="form-label">college</label>
-            <input type="text" class="form-control" id="college" name="college" placeholder="College" readonly />
+            <label for="college" class="form-label">College</label>
+            <input type="text" class="form-control" id="college" name="college" placeholder="College" disabled />
         </div>
 
         <!-- department Input -->
-        <div class="col-md-2 mb-3">
+        <div class="col-md-4 mb-3">
             <label for="department" class="form-label">Department</label>
-            <input type="text" class="form-control" id="department" name="department" placeholder="Department" readonly />
+            <input type="text" class="form-control" id="department" name="department" placeholder="Department" disabled />
         </div>
 
         <div class="col-md-2 mb-3">
-            <label for="role" class="form-label">role</label>
-            <input type="text" class="form-control" id="role" name="role" placeholder="Role" readonly />
+            <label for="role" class="form-label">Role</label>
+            <input type="text" class="form-control" id="role" name="role" placeholder="Role" disabled />
         </div>
     </div>
 
@@ -194,31 +188,31 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
         <!-- Region Input -->
         <div class="col-md-2 mb-3">
             <label for="region" class="form-label">Region</label>
-            <input type="text" class="form-control" id="region" name="region" placeholder=" Region" readonly />
+            <input type="text" class="form-control" id="region" name="region" placeholder=" Region" disabled />
         </div>
 
         <!-- Province Input -->
         <div class="col-md-3 mb-3">
             <label for="province" class="form-label">Province</label>
-            <input type="text" class="form-control" id="province" name="province" placeholder="Province" readonly />
+            <input type="text" class="form-control" id="province" name="province" placeholder="Province" disabled />
         </div>
 
         <!-- Municipality Input --> 
         <div class="col-md-3 mb-3">
             <label for="municipality" class="form-label">Municipality</label>
-            <input type="text" class="form-control" id="municipality" name="municipality" placeholder="Municipality" readonly />
+            <input type="text" class="form-control" id="municipality" name="municipality" placeholder="Municipality" disabled />
         </div>
 
         <!-- Barangay Input -->
         <div class="col-md-2 mb-3">
             <label for="barangay" class="form-label">Barangay</label>
-            <input type="text" class="form-control" id="barangay" name="barangay" placeholder="Barangay" readonly />
+            <input type="text" class="form-control" id="barangay" name="barangay" placeholder="Barangay" disabled />
         </div>
 
         <!-- Street Input (Text Field) -->
         <div class="col-md-2 mb-3">
             <label for="street" class="form-label">Purok/Block No./Street</label>
-            <input type="text" class="form-control" id="street" name="street" placeholder="Street address" readonly />
+            <input type="text" class="form-control" id="street" name="street" placeholder="Street address" disabled />
         </div>
     </div>
 
@@ -226,11 +220,11 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="email" class="form-label">Email Address</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Email" readonly />
+            <input type="email" class="form-control" id="email" name="email" placeholder="Email" disabled />
         </div>
         <div class="col-md-6 mb-3">
             <label for="contactNumber" class="form-label">Contact Number</label>
-            <input type="tel" class="form-control" id="contactNumber" name="contactNumber" placeholder="Contact number" readonly />
+            <input type="tel" class="form-control" id="contactNumber" name="contactNumber" placeholder="Contact number" disabled />
         </div>
     </div>
 
@@ -239,15 +233,15 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="emergencyContactName" class="form-label">Emergency Contact Name</label>
-            <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Emergency contact name" readonly />
+            <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Emergency contact name" disabled />
         </div>
         <div class="col-md-3 mb-3">
             <label for="relationship" class="form-label">Relationship</label>
-            <input type="text" class="form-control" id="relationship" name="relationship" placeholder="Relationship" readonly/>
+            <input type="text" class="form-control" id="relationship" name="relationship" placeholder="Relationship" disabled/>
         </div>
         <div class="col-md-3 mb-3">
             <label for="emergencyContactNumber" class="form-label">Emergency Contact Number</label>
-            <input type="tel" class="form-control" id="emergencyContactNumber" name="emergencyContactNumber" placeholder="Emergency contact number" readonly />
+            <input type="tel" class="form-control" id="emergencyContactNumber" name="emergencyContactNumber" placeholder="Emergency contact number" disabled />
         </div>
     </div>
 
@@ -255,7 +249,7 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
         <h5>Patient's Account Status</h5>
         <div class="col-md-2 mb-3">
             <label for="Status" class="form-label">Status</label>
-            <select class="form-select form-control" id="Status" name="Status" readonly>
+            <select class="form-select form-control" id="Status" name="Status" disabled>
                 <option selected disabled>Select Status</option>
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -264,10 +258,6 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
     </div>
     <div class="row">
                     <div class="col-md-12 text-center ">
-                      
-                      <button type="button" class="btn btn-primary ms-3" id="canceladdpatient">
-                        Back
-                      </button>
                     </div>
                   </div>
 
@@ -278,95 +268,15 @@ if (isset($_SESSION['idnum']) && isset($_SESSION['type'])) {
             </div>
           </div>
         </div>
+            <!-- Start Medical Record -->
+            <div id="medicalrecord"> </div>
+         <!-- End Medical Record -->
     </div>
     </div>
   </div>
 </div>
 
-<?php
-  if (isset($_SESSION['message'])) {
-    echo "<script>
-            swal({
-                title: 'Message',
-                text: '" . htmlspecialchars($_SESSION['message'], ENT_QUOTES) . "',
-                icon: '" . ($_SESSION['status'] === 'success' ? 'success' : 'error') . "',
-                button: 'OK',
-            }).then((value) => {
-                // SweetAlert will automatically close when the button is clicked
-            });
-          </script>";
-
-    // Clear the session variables after showing the alert
-    unset($_SESSION['message']);
-    unset($_SESSION['status']);
-  }
-?>
-
-
-    
-<script>
-    // Passing PHP data to JavaScript
-    var patientData = <?php echo json_encode($patientDetails); ?>;
-
-    // Function to populate form inputs with patient data
-    function populatePatientForm(patientData) {
-        // Populate patient details
-       // Populate patient details
-       document.getElementById('lastName').value = patientData.patient.patient_lname || '';
-            document.getElementById('firstName').value = patientData.patient.patient_fname || '';
-            document.getElementById('middleName').value = patientData.patient.patient_mname || '';
-            document.getElementById('dob').value = patientData.patient.patient_dob || '';
-            document.getElementById('sex').value = patientData.patient.patient_sex || 'Male';
-            document.getElementById('facultyID').value = patientData.faculty.faculty_idnum || '';
-
-            document.getElementById('college').value = patientData.faculty.faculty_college || '';
-            document.getElementById('department').value = patientData.faculty.faculty_depart || '';
-            document.getElementById('role').value = patientData.faculty.faculty_role || '';
-            document.getElementById('region').value = patientData.address.address_region || '';
-            document.getElementById('province').value = patientData.address.address_province || '';
-            document.getElementById('municipality').value = patientData.address.address_municipality || '';
-            document.getElementById('barangay').value = patientData.address.address_barangay || '';
-            document.getElementById('street').value = patientData.address.address_prkstrtadd || '';
-            document.getElementById('email').value = patientData.patient.patient_email || '';
-            document.getElementById('contactNumber').value = patientData.patient.patient_connum || '';
-            document.getElementById('emergencyContactName').value = patientData.emergencyContact.emcon_conname || '';
-            document.getElementById('relationship').value = patientData.emergencyContact.emcon_relationship || '';
-            document.getElementById('emergencyContactNumber').value = patientData.emergencyContact.emcon_connum || '';
-            document.getElementById('Status').value = patientData.patient.patient_status || '';
-            document.getElementById('profilePic').src = `uploads/${patientData.patient.patient_profile}` || 'default-image.jpg';
-
-        // Populate other fields as needed
-    }
-
-    // Populate the form when the page loads
-    document.addEventListener("DOMContentLoaded", function() {
-        populatePatientForm(patientData);
-    });
-    </script>
-
-<script>
-// Function to download the image
-document.getElementById('downloadBtn').addEventListener('click', function () {
-    // Get the source of the image
-    const imageSrc = document.getElementById('profilePic').src;
-
-    // Create a temporary link element
-    const link = document.createElement('a');
-    link.href = imageSrc;  // Set the link's href to the image's source
-    link.download = 'profile-image.jpg';  // Set a default filename for the download
-
-    // Append the link to the body (required for Firefox)
-    document.body.appendChild(link);
-
-    // Trigger the download by simulating a click
-    link.click();
-
-    // Remove the link from the document
-    document.body.removeChild(link);
-});
-</script>
-
-    <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
+<script src="../assets/js/core/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/core/popper.min.js"></script>
     <script src="../assets/js/core/bootstrap.min.js"></script>
 
@@ -412,6 +322,31 @@ document.getElementById('downloadBtn').addEventListener('click', function () {
                     console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
                 }
             });
+
+            $("#medicalrecord").load("patientmedrecords.php", function(response, status, xhr) {
+                if (status == "error") {
+                    console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
+                }
+            });
+
+            
+        <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
+        var status = '<?php echo $_SESSION['status']; ?>';
+        var message = '<?php echo htmlspecialchars($_SESSION['message'], ENT_QUOTES); ?>';
+        Swal.fire({
+            title: status === 'success' ? "Success!" : "Error!",
+            text: message,
+            icon: status,
+            confirmButtonText: "OK",
+            confirmButtonColor: status === 'success' ? "#77dd77" : "#ff6961"
+        }).then(() => {
+            if (status === 'success') {
+              sessionStorage.clear();
+                window.location.href = "patient-facultyprofile.php";
+            }
+            <?php unset($_SESSION['status'], $_SESSION['message']); ?>
+        });
+        <?php endif; ?>
         });
     </script>
 
@@ -443,6 +378,71 @@ document.getElementById('downloadBtn').addEventListener('click', function () {
   
 </script>
 
+
+    
+<script>
+    // Passing PHP data to JavaScript
+    var patientData = <?php echo json_encode($patientDetails); ?>;
+
+    // Function to populate form inputs with patient data
+    function populatePatientForm(patientData) {
+        // Populate patient details
+       // Populate patient details
+       document.getElementById('lastName').value = patientData.patient.patient_lname || '';
+            document.getElementById('firstName').value = patientData.patient.patient_fname || '';
+            document.getElementById('middleName').value = patientData.patient.patient_mname || '';
+            document.getElementById('dob').value = patientData.patient.patient_dob || '';
+            document.getElementById('sex').value = patientData.patient.patient_sex || 'Male';
+            document.getElementById('facultyID').value = patientData.faculty.faculty_idnum || '';
+
+            document.getElementById('college').value = patientData.faculty.faculty_college || '';
+            document.getElementById('department').value = patientData.faculty.faculty_department || '';
+            document.getElementById('role').value = patientData.faculty.faculty_role || '';
+            document.getElementById('region').value = patientData.address.address_region || '';
+            document.getElementById('province').value = patientData.address.address_province || '';
+            document.getElementById('municipality').value = patientData.address.address_municipality || '';
+            document.getElementById('barangay').value = patientData.address.address_barangay || '';
+            document.getElementById('street').value = patientData.address.address_prkstrtadd || '';
+            document.getElementById('email').value = patientData.patient.patient_email || '';
+            document.getElementById('contactNumber').value = patientData.patient.patient_connum || '';
+            document.getElementById('emergencyContactName').value = patientData.emergencyContact.emcon_conname || '';
+            document.getElementById('relationship').value = patientData.emergencyContact.emcon_relationship || '';
+            document.getElementById('emergencyContactNumber').value = patientData.emergencyContact.emcon_connum || '';
+            document.getElementById('Status').value = patientData.patient.patient_status || '';
+            document.getElementById('profilePic').src = `uploads/${patientData.patient.patient_profile}` || 'default-image.jpg';
+
+        // Populate other fields as needed
+    }
+
+    // Populate the form when the page loads
+    document.addEventListener("DOMContentLoaded", function() {
+        populatePatientForm(patientData);
+    });
+    </script>
+
+<script>
+// Function to download the image
+document.getElementById('downloadBtn').addEventListener('click', function () {
+    // Get the source of the image
+    const imageSrc = document.getElementById('profilePic').src;
+
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = imageSrc;  // Set the link's href to the image's source
+    link.download = 'profile-image.jpg';  // Set a default filename for the download
+
+    // Append the link to the body (required for Firefox)
+    document.body.appendChild(link);
+
+    // Trigger the download by simulating a click
+    link.click();
+
+    // Remove the link from the document
+    document.body.removeChild(link);
+});
+</script>
+
+    
 
 <script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
 <!-- Ensure you include these in your HTML -->

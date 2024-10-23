@@ -193,7 +193,7 @@ if (isset($_POST['pname'])) {
                                             <label for="date">Date:</label>
                                             <input type="date" id="date" name="date" class="form-control" />
                                         </div>
-
+ 
                                         <script>
                                     
                                         window.onload = function() {
