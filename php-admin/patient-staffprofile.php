@@ -269,15 +269,12 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
   </div>
 </div>
 
-
- 
-    
 <script>
     var patientData = <?php echo json_encode($patientDetails); ?>;
 
     function populatePatientForm(patientData) {
 
-       document.getElementById('lastName').value = patientData.patient.patient_lname || '';
+            document.getElementById('lastName').value = patientData.patient.patient_lname || '';
             document.getElementById('firstName').value = patientData.patient.patient_fname || '';
             document.getElementById('middleName').value = patientData.patient.patient_mname || '';
             document.getElementById('dob').value = patientData.patient.patient_dob || '';

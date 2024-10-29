@@ -636,7 +636,7 @@ $("#edit-exit, #edit-close").click(function (e) {
                 Swal.fire({
                     title: "Error!",
                     text: message,
-                    icon: "error",
+                    icon: "error", 
                     confirmButtonText: "OK",
                     confirmButtonColor: "#dc3545" // Red
                 });

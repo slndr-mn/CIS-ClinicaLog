@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
         $_SESSION['user_id'] = $userData->user_id;  
         $_SESSION['user_status'] = $userData->user_status;
         $_SESSION['user_position'] = $userData->user_position;
-        $_SESSION['user_role'] = $userData->user_role;
+        $_SESSION['user_role'] = $userData->user_role; 
 
         $user_position = $_SESSION['user_position'];
         $user_role = $_SESSION['user_role'];

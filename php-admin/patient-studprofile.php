@@ -88,8 +88,6 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
       .upload-btn {
         margin-top: 10px;
       }
-
-   
       
   </style>
 </head>
@@ -101,23 +99,58 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
   <div class="main-panel">
     <!-- Header -->
     <div class="main-header" id="header"></div>
-    <!-- Main Content -->
+    <!-- Main Content --> 
     <div class="container" id="content">
     <div class="page-inner">
     <div class=row>
+    <div class="mb-3">
         <a href="patient-record.php" class="back-nav">
-        <i class="fas fa-arrow-left"></i> Back to Patients' Table
+        <i class="fas fa-arrow-left "></i> Back to Patients' Table
         </a>
     </div>
-        
+    </div>
+    <div class="page-inner">
+    <div class="row"> 
+        <h3 class="fw-bold mb-3">Patient's Profle</h3>
+    </div>
+    <!-- 
+        Naa sab changes sa script sa baba. 
+        Mao ni nga file ang na organize na code, Palimpyo sab ko jack huhu 
+        Arigathankss <3!
+    -->
         <div class="row">
+        <div class="col-md-4">
+        <div class="card">
         <div class="profile-image">
-            <img id="profilePic" src="default-image.jpg" alt="Profile Image" />
-            
-          </div>
+            <div class="card-header">
+                <img id="profilePic" src="default-image.jpg" alt="Profile Image" />    
+                <div class="row" >                
+                    <span style="
+                        display: inline-block;
+                        padding: 5px 10px;
+                        border-radius: 50px;
+                        background-color: #DA6F65; 
+                        color: white; 
+                        text-align: center;
+                        min-width: 60px;">
+                        Student
+                </span>  
+            </div>         
+            </div>
         </div>
-        <div class="row">
-          <div class="col-md-12">
+            <div class="row" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                <h5 style="color: #59535A; margin: 0;">#<span id="studentID"></span></h5>
+                <h5 style="margin: 0;">
+                    <span id="lastName"></span><span>, </span><span id="firstName"></span> <span id="middleName"></span>
+                </h5>
+                <h5 style="color: #59535A; margin: 0;"><span id="program"></span></h5>
+                <h5 style="color: #59535A; margin: 0;">Major in <span id="major"></span></h5>
+                <h5 style="color: #59535A; margin: 0;"><span id="year"></span> Year - <span id="section"></span></h5>
+                <p style="color: #888888; margin-top: 5px;">Status: <span id="Status"></span></p>
+            </div>
+        </div>
+        </div>
+            <div class="col-md-8">  
             <div class="card">
               <div class="card-header">
                 <div class="d-flex align-items-center">
@@ -125,176 +158,58 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
                 </div>
               </div>
               <div class="card-body" id="InputInfo">
-                <!-- Form Starts Here -->
-                <!-- Form Starts Here -->
-            <form action="patientcontrol.php" method="POST" enctype="multipart/form-data">   
-            
-            <!-- Name Fields -->
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <label for="lastName" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter last name" disabled />
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label for="firstName" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter first name" disabled />
-                </div>
-                <div class="col-md-2 mb-3">
-                    <label for="middleName" class="form-label">Middle Name</label>
-                    <input type="text" class="form-control" id="middleName" name="middleName" placeholder="Enter middle name" disabled/>
-                </div>
-                <div class="col-md-2 mb-3">
-                    <label for="dob" class="form-label">Date of Birth</label>
-                    <input type="date" class="form-control" id="dob" name="dob" disabled />
-                </div>
-                <div class="col-md-2 mb-3">
-                    <label for="sex" class="form-label">Sex</label>
-                    <select class="form-select form-control" id="sex" name="sex" disabled>
-                        <option selected disabled>Select Sex</option>
-                        <option value="Female">Female</option>
-                        <option value="Male">Male</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- ID and Academic Info -->
-            <div class="row">
-                <div class="col-md-2 mb-3">
-                    <label for="studentID" class="form-label">ID Number</label>
-                    <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Enter ID number" disabled />
-                </div>
-
-                    <!-- Program Input -->
-                <div class="col-md-4 mb-3">
-                    <label for="program" class="form-label">Program</label>
-                    <select class="form-select form-control" id="program" name="program" placeholder="Enter Program" disabled>
-                        <option value="">Select Program</option>
-                        <option value="Bachelor of Science in Secondary Education">Bachelor of Science in Secondary Education</option>
-                        <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
-                        <option value="Bachelor of Science in Agricultural and Biosystems Engineering">Bachelor of Science in Agricultural and Biosystems Engineering</option>
-                        <option value="Bachelor of Technical-Vocational Education">Bachelor of Technical-Vocational Education</option>
-                        <option value="Bachelor of Special Needs Education">Bachelor of Special Needs Education</option>
-                        <option value="Bachelor of Early Childhood Education">Bachelor of Early Childhood Education</option>
-                        <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
-                    </select>
-                </div>
-
-                <!-- Major Input -->
-                <div class="col-md-2 mb-3">
-                    <label for="major" class="form-label">Major</label>
-                    <select class="form-control form-select" id="major" name="major" placeholder="Enter Major" disabled>
-                        <option value="">Select Major</option>
-                    </select>
-                </div>
-            <!-- Other elements... -->
-                    <!-- Year Dropdown -->
-                    <div class="col-md-2 mb-3">
-                        <label for="year" class="form-label">Year</label>
-                        <select class="form-select form-control" id="year" name="year" disabled>
-                            <option selected disabled>Select Year</option>
-                            <option value="1">1st Year</option>
-                            <option value="2">2nd Year</option>
-                            <option value="3">3rd Year</option>
-                            <option value="4">4th Year</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2 mb-3">
-                        <label for="section" class="form-label">Section</label>
-                        <input type="text" class="form-control" id="section" name="section" placeholder="e.g., 3A" disabled />
-                    </div>
-                </div>
-
-                <!-- Address Fields -->
-                <h5>Current Address</h5>
                 <div class="row">
-                    <!-- Region Input -->
-                    <div class="col-md-2 mb-3">
-                        <label for="region" class="form-label">Region</label>
-                        <select class="form-select form-control" id="region" name="region" placeholder="Enter Region" disabled>
-                        <option value="">Select Region</option>
-                        <option value="Region XI">Region XI</option>
-                        <option value="Region XII">Region XII</option>
-                        </select>
-                    </div>
-                    <!-- Province Input -->
-                    <div class="col-md-3 mb-3">
-                        <label for="province" class="form-label">Province</label>
-                        <select class="form-control" id="province" name="province" placeholder="Enter Province" disabled>
-                            <option value="">Select Province</option>
-                        </select>
-                    </div>
+                    <div class="col-md-4 mb-3">
+                        <h5 style=" margin: 0;"><span id="age"></span></h5>
+                        <label for="dob" class="form-label">Age</label>
 
-                    <!-- Municipality Input -->
-                    <div class="col-md-3 mb-3">
-                        <label for="municipality" class="form-label">Municipality</label>
-                        <select class="form-select form-control" id="municipality" name="municipality" placeholder="Enter Municipality" disabled>
-                            <option value="">Select Municipality</option>
-                        </select>
                     </div>
+                    <div class="col-md-4 mb-3">
+                        <h5 style=" margin: 0;"><span id="sex"></span></h5>
+                        <label for="dob" class="form-label">Sex</label>
 
-                    <!-- Barangay Input -->
-                    <div class="col-md-2 mb-3">
-                        <label for="barangay" class="form-label">Barangay</label>
-                        <select class="form-select form-control" id="barangay" name="barangay" placeholder="Enter Barangay" disabled>
-                            <option value="">Select Barangay</option>
-                        </select>
                     </div>
+                    <div class="col-md-4 mb-3">
+                        <h5 style=" margin: 0;"><span id="dob"></span></h5>
+                        <label for="dob" class="form-label">Date of Birth</label>
 
-
-                    <!-- Street Input (Text Field) -->
-                    <div class="col-md-2 mb-3">
-                        <label for="street" class="form-label">Purok/Block No./Street</label>
-                        <input type="text" class="form-control" id="street" name="street" placeholder="Enter street address" disabled />
                     </div>
                 </div>
-
-                <!-- Contact Information -->
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h5 style=" margin: 0;">
+                            <span id="street"></span>,
+                            <span id="barangay"></span>, 
+                            <span id="municipality"></span>, 
+                            <span id="province"></span>, 
+                            <span id="region"></span>
+                        </h5>
+                        <label for="dob" class="form-label">Current Address (Strt./Prk., Brgy., Municipality, Province, Region)</label>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" disabled />
+                        <h5 style=" margin: 0;"><span id="email"></span></h5>
+                        <label for="dob" class="form-label">Email Address</label>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="contactNumber" class="form-label">Contact Number</label>
-                        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" placeholder="Enter contact number" disabled />
+                        <h5 style=" margin: 0;"><span id="contactNumber"></span></h5>
+                        <label for="dob" class="form-label">Contact Number</label>
+
                     </div>
                 </div>
-
-                <!-- Emergency Contact Information -->
-                <h5>Emergency Contact Information</h5>
                 <div class="row">
+                <h5 style="margin-top: 9px">Emergency Contact Information</h5>
                     <div class="col-md-6 mb-3">
-                        <label for="emergencyContactName" class="form-label">Emergency Contact Name</label>
-                        <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Enter emergency contact name" disabled />
+                        <h5 style=" margin: 0;"><span id="emergencyContactName"></span> <label for="dob" class="form-label" id="relationship">//</label></h5>
+                        <label for="dob" class="form-label">Emergency Contact Name</label>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="relationship" class="form-label">Relationship</label>
-                        <input type="text" class="form-control" id="relationship" name="relationship" placeholder="Enter relationship" disabled/>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="emergencyContactNumber" class="form-label">Emergency Contact Number</label>
-                        <input type="tel" class="form-control" id="emergencyContactNumber" name="emergencyContactNumber" placeholder="Enter emergency contact number" disabled />
-                    </div>
-                </div>
+                    <div class="col-md-6 mb-3">
+                        <h5 style=" margin: 0;"><span id="emergencyContactNumber"></span></h5>
+                        <label for="dob" class="form-label">Emergency Contact Number</label>
 
-                <div class="row">
-                    <h5>Patient's Account Status</h5>
-                    <div class="col-md-2 mb-3">
-                        <label for="Status" class="form-label">Status</label>
-                        <select class="form-select form-control" id="Status" name="Status" disabled>
-                            <option selected disabled>Select Status</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12 text-center"></div>
-                </div>
-                </form>
-                <!-- End of Form -->
-              </div>
             </div>
           </div>
         </div>
@@ -343,7 +258,6 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
 
 <script>
     $(document).ready(function() {
-        // Dynamically load the sidebar and header
         $("#sidebar").load("sidebar.php", function(response, status, xhr) {
             if (status == "error") {
                 console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
@@ -380,35 +294,87 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
         });
         <?php endif; ?>
 
+        
+        function formatDateToWords(dateString) {
+            if (!dateString || (!dateString.includes('/') && !dateString.includes('-'))) {
+                return ''; 
+            }
+
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            dateString = dateString.replace(/-/g, '/');
+
+            const [year, month, day] = dateString.split('/');
+
+            if (!year || !month || !day) return '';
+
+            const monthName = monthNames[parseInt(month, 10) - 1];
+            const dayNumber = parseInt(day, 10);
+
+            if (!monthName || isNaN(dayNumber)) return '';
+
+            return `${monthName} ${dayNumber}, ${year}`;
+        }
+
+        function calculateAge(dobString) {
+            if (!dobString) return ''; 
+
+            const dob = new Date(dobString);
+            const today = new Date();
+
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDifference = today.getMonth() - dob.getMonth();
+
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            return age;
+        }
+
+        function getOrdinalSuffix(num) {
+            const suffixes = ["th", "st", "nd", "rd"];
+            const value = num % 100;
+            return suffixes[(value - 20) % 10] || suffixes[value] || suffixes[0];
+        }
 
 
         var patientData = <?php echo json_encode($patientDetails); ?>;
 
         function populatePatientForm(data) {
-            $('#lastName').val(data.patient.patient_lname || '');
-            $('#firstName').val(data.patient.patient_fname || '');
-            $('#middleName').val(data.patient.patient_mname || '');
-            $('#dob').val(data.patient.patient_dob || ''); 
-            $('#sex').val(data.patient.patient_sex || 'Male');
-            $('#studentID').val(data.student.student_idnum || '');
-            $('#program').val(data.student.student_program || '').trigger('change'); 
-            $('#year').val(data.student.student_year || '');
-            $('#section').val(data.student.student_section || '');
-            $('#region').val(data.address.address_region || '').trigger('change'); 
-            $('#province').val(data.address.address_province || '').trigger('change'); 
-            $('#municipality').val(data.address.address_municipality || '').trigger('change'); 
-            $('#barangay').val(data.address.address_barangay || '');
-            $('#street').val(data.address.address_prkstrtadd || '');
-            $('#email').val(data.patient.patient_email || '');
-            $('#contactNumber').val(data.patient.patient_connum || '');
-            $('#emergencyContactName').val(data.emergencyContact.emcon_conname || '');
-            $('#relationship').val(data.emergencyContact.emcon_relationship || '');
-            $('#emergencyContactNumber').val(data.emergencyContact.emcon_connum || '');
-            $('#Status').val(data.patient.patient_status || '');
+
+            const dobFormatted = data.patient.patient_dob ? formatDateToWords(data.patient.patient_dob) : 'Ey';
+            const age = calculateAge(data.patient.patient_dob); 
+            const year = data.student.student_year + getOrdinalSuffix(data.student.student_year);
+
+            $('#lastName').text(data.patient.patient_lname || '');
+            $('#firstName').text(data.patient.patient_fname || '');
+            $('#middleName').text(data.patient.patient_mname || '');
+            $('#dob').text(dobFormatted); 
+            $('#age').text(age); 
+            $('#sex').text(data.patient.patient_sex || 'Male');
+            $('#studentID').text(data.student.student_idnum || '');
+            $('#program').text(data.student.student_program || ''); 
+            $('#major').text(data.student.student_major || ''); 
+            $('#year').text(year);
+            $('#section').text(data.student.student_section || '');
+            $('#region').text(data.address.address_region || '').
+            $('#province').text(data.address.address_province || '').
+            $('#municipality').text(data.address.address_municipality || '').
+            $('#barangay').text(data.address.address_barangay || '');
+            $('#street').text(data.address.address_prkstrtadd || '');
+            $('#email').text(data.patient.patient_email || '');
+            $('#contactNumber').text(data.patient.patient_connum || '');
+            $('#emergencyContactName').text(data.emergencyContact.emcon_conname || '');
+            $('#relationship').text(data.emergencyContact.emcon_relationship || '');
+            $('#emergencyContactNumber').text(data.emergencyContact.emcon_connum || '');
+            $('#Status').text(data.patient.patient_status || '');
             $('#profilePic').attr('src', `uploads/${data.patient.patient_profile}` || 'default-image.jpg');
         }
 
-        // Download profile picture functionality
         $('#downloadBtn').on('click', function () {
             const imageSrc = $('#profilePic').attr('src');
             const link = document.createElement('a');
@@ -419,153 +385,9 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
             document.body.removeChild(link);
         });
 
-        // Populate the form on document ready
         populatePatientForm(patientData);
 
-        // Address dropdown functionality
-        const addressOptions = {
-            regions: {
-                "Region XI": {
-                    provinces: {
-                        "Davao del Norte": {
-                            municipalities: ["Tagum City", "Sto. Tomas"],
-                            barangays: {
-                                "Tagum City": ["Apokon", "Pagsabangan"],
-                                "Sto. Tomas": ["Kinamayan", "Poblacion"]
-                            }
-                        },
-                        "Davao de Oro": {
-                            municipalities: ["Pantukan", "Nabunturan"],
-                            barangays: {
-                                "Pantukan": ["Kingking", "Magnaga"],
-                                "Nabunturan": ["Anislagan", "Poblacion"]
-                            }
-                        }
-                    }
-                },
-                "Region XII": {
-                    provinces: {
-                        "Cotabato": {
-                            municipalities: ["Alamada", "Carmen"],
-                            barangays: {
-                                "Alamada": ["Camansi", "Macabasa"],
-                                "Carmen": ["Bentangan", "General Luna"]
-                            }
-                        }
-                    }
-                }
-            }
-        };
-
-        const majorOptions = {
-            "Bachelor of Science in Secondary Education": ["Filipino", "English", "Mathematics"],
-            "Bachelor of Science in Information Technology": ["Information Security"],
-            "Bachelor of Science in Agricultural and Biosystems Engineering": ["None"],
-            "Bachelor of Technical-Vocational Education": ["Agricultural Crop Production", "Animal Production"],
-            "Bachelor of Special Needs Education": ["None"],
-            "Bachelor of Early Childhood Education": ["None"],
-            "Bachelor of Elementary Education": ["None"]
-        };
-
-        function populateMajors(selectedProgram) {
-            const majorSelect = $('#major');
-            majorSelect.empty().append('<option selected disabled>Select Major</option>');
-            if (majorOptions[selectedProgram]) {
-                majorOptions[selectedProgram].forEach(function(major) {
-                    majorSelect.append(`<option value="${major}">${major}</option>`);
-                });
-            }
-            majorSelect.val(patientData.student.student_major).trigger('change'); // Set the selected major
-        }
-
-        function populateProvinces(selectedRegion) {
-            const provinceSelect = $('#province');
-            provinceSelect.empty().append('<option selected disabled>Select Province</option>');
-            if (selectedRegion && addressOptions.regions[selectedRegion]) {
-                Object.keys(addressOptions.regions[selectedRegion].provinces).forEach(function(province) {
-                    provinceSelect.append(`<option value="${province}">${province}</option>`);
-                });
-            }
-            provinceSelect.val(patientData.address.address_province).trigger('change'); // Set the selected province
-        }
-
-        function populateMunicipalities(selectedRegion, selectedProvince) {
-            const municipalitySelect = $('#municipality');
-            municipalitySelect.empty().append('<option selected disabled>Select Municipality</option>');
-            if (selectedProvince && addressOptions.regions[selectedRegion].provinces[selectedProvince]) {
-                const municipalities = addressOptions.regions[selectedRegion].provinces[selectedProvince].municipalities;
-                municipalities.forEach(function(municipality) {
-                    municipalitySelect.append(`<option value="${municipality}">${municipality}</option>`);
-                });
-            }
-            municipalitySelect.val(patientData.address.address_municipality).trigger('change'); // Set the selected municipality
-        }
-
-        function populateBarangays(selectedRegion, selectedProvince, selectedMunicipality) {
-            const barangaySelect = $('#barangay');
-            barangaySelect.empty().append('<option selected disabled>Select Barangay</option>');
-            if (selectedMunicipality && addressOptions.regions[selectedRegion].provinces[selectedProvince]) {
-                const barangays = addressOptions.regions[selectedRegion].provinces[selectedProvince].barangays[selectedMunicipality];
-                barangays.forEach(function(barangay) {
-                    barangaySelect.append(`<option value="${barangay}">${barangay}</option>`);
-                });
-            }
-            barangaySelect.val(patientData.address.address_barangay).trigger('change'); // Set the selected barangay
-        }
-
-        // Event handlers for cascading dropdowns
-        $('#program').on('change', function() {
-            populateMajors($(this).val());
-        });
-
-        $('#region').on('change', function() {
-            populateProvinces($(this).val());
-        });
-
-        $('#province').on('change', function() {
-            populateMunicipalities($('#region').val(), $(this).val());
-        });
-
-        $('#municipality').on('change', function() {
-            populateBarangays($('#region').val(), $('#province').val(), $(this).val());
-        });
-
-        // Edit button functionality
-        $('#editButton').on('click', function() {
-            $('#patientForm input, #patientForm select').removeClass('readonly').prop('disabled', false);
-            $(this).hide();
-            $('#saveButton').show();
-        });
-
-        // Save button functionality
-        $('#saveButton').on('click', function() {
-            // Add your save logic here
-            alert('Patient information saved!');
-            $('#patientForm input, #patientForm select').addClass('readonly').prop('disabled', true);
-            $(this).hide();
-            $('#editButton').show();
-        });
-
-        // Initial population of fields based on existing data
-        if (patientData.student.student_program) {
-            $('#program').val(patientData.student.student_program).trigger('change');
-        }
-
-        if (patientData.address.address_region) {
-            $('#region').val(patientData.address.address_region).trigger('change');
-        }
-
-        if (patientData.address.address_province) {
-            $('#province').val(patientData.address.address_province).trigger('change');
-        }
-
-        if (patientData.address.address_municipality) {
-            $('#municipality').val(patientData.address.address_municipality).trigger('change');
-        }
-
-        if (patientData.address.address_barangay) {
-            $('#barangay').val(patientData.address.address_barangay);
-        }
+    
     });
 </script>
 </body>

@@ -37,14 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $filenames[] = $originalName;
                 $hashedFiles[] = $hashedName;
-            }
+            } 
         }
 
         if (!empty($duplicateFilenames)) {
             $_SESSION['status'] = 'error';
             $_SESSION['message'] = 'Duplicate files found: ' . implode(', ', $duplicateFilenames);
-    
-            // Redirect based on patient type
+
             switch ($patienttype) {
                 case 'Student':
                     $redirectUrl = 'patient-studprofile.php';
@@ -77,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (move_uploaded_file($originalTmpPath, $destination)) {
 
                 } else {
-                    // Handle file move failure
+                    
                     $_SESSION['status'] = 'error';
                     $_SESSION['message'] = 'Failed to upload file: ' . $filenames[$i];
                     // Redirect based on patient type
@@ -159,8 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $patienttype = $_POST['patienttype']; 
 
             $response = $medicalrecords->updateMedicalRecord($id, $patientid, $filename, $comment);
-    
-            // Check the response status
+
             if ($response['status'] === 'success') {
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = $response['message'];
@@ -168,8 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['status'] = 'error';
                 $_SESSION['message'] = $response['message'];
             }
-    
-            // Redirect based on patient type after update
+
             switch ($patienttype) {
                 case 'Student':
                     $redirectUrl = 'patient-studprofile.php';
@@ -191,7 +188,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         
     }
-
     if (isset($_POST['medrec_id'])) {
         $medicalrecId = $_POST['medrec_id'];
     

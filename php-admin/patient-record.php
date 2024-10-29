@@ -133,6 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="container" id="content">
             <div class="page-inner">
+            <div class="page-inner">
               <div class="row">
                 <div class="col-md-12">
                   <div>
@@ -317,6 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               </div>
             </div>
           </div>
+            </div>
         </div>
       </div>
 
@@ -421,10 +423,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         handleButtonClick('.editButton');
     });
 </script>
-
-
-
-
 
     <script>
     $(document).ready(function() {

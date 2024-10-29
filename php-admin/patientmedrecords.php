@@ -111,7 +111,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
                                     type="button"
                                     class="btn btn-danger"
                                     data-bs-dismiss="modal"
-                                    >
+                                    > 
                                     Close
                                     </button>
                                 </div>
@@ -224,14 +224,20 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
                             <tbody>
                                 <?php if (!empty($records)) : ?>
                                     <?php foreach ($records as $record) : ?>
-                                        <tr data-id="<?= $record->medicalrec_id ?>", data-filename="<?= htmlspecialchars($record->medicalrec_filename) ?>", data-comment="<?= htmlspecialchars($record->medicalrec_comment) ?>" >
+                                        <tr data-id="<?= $record->medicalrec_id ?>", 
+                                            data-filename="<?= htmlspecialchars($record->medicalrec_filename) ?>", 
+                                            data-comment="<?= htmlspecialchars($record->medicalrec_comment) ?>" >
                                             <td><?= $record->medicalrec_id ?></td>
-                                            <td><?= htmlspecialchars($record->medicalrec_filename) ?></td>
+                                            <td>
+                                                <i class="fas fa-file-pdf" style="color: #d50000; margin-right: 5px;"></i>
+                                                <?= htmlspecialchars($record->medicalrec_filename) ?>
+                                            </td>
+
                                             <td><?= htmlspecialchars($record->medicalrec_comment) ?></td>
                                             <td><?= htmlspecialchars($record->medicalrec_dateadded . ' ' . $record->medicalrec_timeadded) ?></td>
                                             <td>
                                                 <div class="form-button-action">
-                                                <button
+                                                <button 
                                                     type="button"
                                                     data-bs-toggle="tooltip"
                                                     class="btn btn-link btn-primary btn-lg viewButton"

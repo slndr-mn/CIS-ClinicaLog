@@ -259,7 +259,7 @@
     $sql_medicalrecords = "CREATE TABLE IF NOT EXISTS medicalrec (
     medicalrec_id INT AUTO_INCREMENT PRIMARY KEY,
     medicalrec_patientid INT NOT NULL,
-    medicalrec_filename VARCHAR(255) NOT NULL UNIQUE,
+    medicalrec_filename VARCHAR(255) NOT NULL,
     medicalrec_file VARCHAR(255),
     medicalrec_comment VARCHAR(255),
     medicalrec_dateadded DATE,

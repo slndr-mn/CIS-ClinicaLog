@@ -8,7 +8,7 @@ include('../php/patient.php');
 
 $db = new Database();
 $conn = $db->getConnection();
-
+ 
 $patient = new PatientManager($db);
 $user = new User($conn);
 $user_id = $_SESSION['user_id'];
