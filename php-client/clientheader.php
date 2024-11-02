@@ -1,15 +1,27 @@
 <?php
 session_start();
 include('../database/config.php');
-include('../php/user.php');
+include '../php/patient.php';
+
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: login.php'); 
+    exit;
+}
 
 $db = new Database();
 $conn = $db->getConnection();
 
-$user = new User($conn);
-$user_id = $_SESSION['user_id'];
-$userData = $user->getUserData($user_id);
+$patient_id = $_SESSION['patuser_id'];
+$patient_type = $_SESSION['patuser_type'];
+
+$patient = new PatientManager($conn);
+$patientData = $patient->getPatientData($patient_id); 
+
 ?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -59,13 +71,13 @@ $userData = $user->getUserData($user_id);
   <div class="main-header-logo">
     <!-- Logo Header -->
     <div class="logo-header" data-background-color="dark">
-      <a href="index.php" class="logo" style="color: white;">
+      <a href="clientindex.php" class="logo" style="color: white;">
         <img
           src="../assets/img/ClinicaLog.png"
           alt="navbar brand"
           class="navbar-brand"
           height="30" />
-          ClinicaLog
+        ClinicaLog
       </a>
       <div class="nav-toggle">
       </div>
@@ -79,6 +91,13 @@ $userData = $user->getUserData($user_id);
   <nav
     class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
     <div class="container-fluid">
+      <a href="clientindex.php" class="logo">
+        <img
+          src="../assets/img/sidebar-logo.svg"
+          alt="navbar brand"
+          class="navbar-brand"
+          height="60" />
+      </a>
       <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
         <li>
           <nav
@@ -116,89 +135,6 @@ $userData = $user->getUserData($user_id);
                   class="form-control" />
               </div>
             </form>
-          </ul>
-        </li>
-        <li class="nav-item topbar-icon dropdown hidden-caret">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="messageDropdown"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false">
-            <i class="fa fa-envelope"></i>
-          </a>
-          <ul
-            class="dropdown-menu messages-notif-box animated fadeIn"
-            aria-labelledby="messageDropdown">
-            <li>
-              <div
-                class="dropdown-title d-flex justify-content-between align-items-center">
-                Messages
-                <a href="#" class="small">Mark all as read</a>
-              </div>
-            </li>
-            <li>
-              <div class="message-notif-scroll scrollbar-outer">
-                <div class="notif-center">
-                  <a href="#">
-                    <div class="notif-img">
-                      <img
-                        src="../assets/img/jm_denis.jpg"
-                        alt="Img Profile" />
-                    </div>
-                    <div class="notif-content">
-                      <span class="subject">Jimmy Denis</span>
-                      <span class="block"> How are you ? </span>
-                      <span class="time">5 minutes ago</span>
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div class="notif-img">
-                      <img
-                        src="../assets/img/chadengle.jpg"
-                        alt="Img Profile" />
-                    </div>
-                    <div class="notif-content">
-                      <span class="subject">Chad</span>
-                      <span class="block"> Ok, Thanks ! </span>
-                      <span class="time">12 minutes ago</span>
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div class="notif-img">
-                      <img
-                        src="../assets/img/mlane.jpg"
-                        alt="Img Profile" />
-                    </div>
-                    <div class="notif-content">
-                      <span class="subject">Jhon Doe</span>
-                      <span class="block">
-                        Ready for the meeting today...
-                      </span>
-                      <span class="time">12 minutes ago</span>
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div class="notif-img">
-                      <img
-                        src="../assets/img/talha.jpg"
-                        alt="Img Profile" />
-                    </div>
-                    <div class="notif-content">
-                      <span class="subject">Talha</span>
-                      <span class="block"> Hi, Apa Kabar ? </span>
-                      <span class="time">17 minutes ago</span>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </li>
-            <li>
-              <a class="see-all" href="javascript:void(0);">See all messages<i class="fa fa-angle-right"></i>
-              </a>
-            </li>
           </ul>
         </li>
         <li class="nav-item topbar-icon dropdown hidden-caret">
@@ -247,7 +183,7 @@ $userData = $user->getUserData($user_id);
                   <a href="#">
                     <div class="notif-img">
                       <img
-                        src="../assets/img/profile2.jpg"
+                        src="assets/img/profile2.jpg"
                         alt="Img Profile" />
                     </div>
                     <div class="notif-content">
@@ -275,128 +211,45 @@ $userData = $user->getUserData($user_id);
             </li>
           </ul>
         </li>
-        <li class="nav-item topbar-icon dropdown hidden-caret">
+        <li class="nav-item topbar-user dropdown hidden-caret">
           <a
-            class="nav-link"
+            class="dropdown-toggle profile-pic"
             data-bs-toggle="dropdown"
             href="#"
             aria-expanded="false">
-            <i class="fas fa-layer-group"></i>
-          </a>
-          <div class="dropdown-menu quick-actions animated fadeIn">
-            <div class="quick-actions-header">
-              <span class="title mb-1">Quick Actions</span>
-              <span class="subtitle op-7">Shortcuts</span>
+            <div class="avatar-sm">
+              <img
+              src='/php-admin/uploads/<?php echo ($patientData->patient_profile); ?>'
+              alt="..."
+                class="avatar-img rounded-circle" />
             </div>
-            <div class="quick-actions-scroll scrollbar-outer">
-              <div class="quick-actions-items">
-                <div class="row m-0">
-                  <a class="col-6 col-md-4 p-0" href="#">
-                    <div class="quick-actions-item">
-                      <div class="avatar-item bg-danger rounded-circle">
-                        <i class="far fa-calendar-alt"></i>
-                      </div>
-                      <span class="text">Calendar</span>
-                    </div>
-                  </a>
-                  <a class="col-6 col-md-4 p-0" href="#">
-                    <div class="quick-actions-item">
-                      <div
-                        class="avatar-item bg-warning rounded-circle">
-                        <i class="fas fa-map"></i>
-                      </div>
-                      <span class="text">Maps</span>
-                    </div>
-                  </a>
-                  <a class="col-6 col-md-4 p-0" href="#">
-                    <div class="quick-actions-item">
-                      <div class="avatar-item bg-info rounded-circle">
-                        <i class="fas fa-file-excel"></i>
-                      </div>
-                      <span class="text">Reports</span>
-                    </div>
-                  </a>
-                  <a class="col-6 col-md-4 p-0" href="#">
-                    <div class="quick-actions-item">
-                      <div
-                        class="avatar-item bg-success rounded-circle">
-                        <i class="fas fa-envelope"></i>
-                      </div>
-                      <span class="text">Emails</span>
-                    </div>
-                  </a>
-                  <a class="col-6 col-md-4 p-0" href="#">
-                    <div class="quick-actions-item">
-                      <div
-                        class="avatar-item bg-primary rounded-circle">
-                        <i class="fas fa-file-invoice-dollar"></i>
-                      </div>
-                      <span class="text">Invoice</span>
-                    </div>
-                  </a>
-                  <a class="col-6 col-md-4 p-0" href="#">
-                    <div class="quick-actions-item">
-                      <div
-                        class="avatar-item bg-secondary rounded-circle">
-                        <i class="fas fa-credit-card"></i>
-                      </div>
-                      <span class="text">Payments</span>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </li>
-        <li class="nav-item topbar-user dropdown hidden-caret">
-          <?php if ($userData): ?>
-            <a
-              class="dropdown-toggle profile-pic"
-              data-bs-toggle="dropdown"
-              href="#"
-              aria-expanded="false">
-              <div class="avatar-sm">
-                <img
-                  src='/php-admin/uploads/<?php echo htmlspecialchars($userData['user_profile']); ?>'
-                  alt='Profile Picture'
-                  class="avatar-img rounded-circle" />
-              </div>
-              <span class="profile-username">
-                <span class="op-7">Hi,</span>
-                <span class="fw-bold"><?php echo htmlspecialchars($userData['user_fname']); ?></span>
+            <span class="profile-username">
+              <span class="op-7">Hi,</span>
+              <span class="fw-bold"><?php echo ($patientData->patient_fname); ?></span>
               </span>
-            </a>
-          <?php else: ?>
-            <p>User data not found.</p>
-          <?php endif; ?>
+          </a>
           <ul class="dropdown-menu dropdown-user animated fadeIn">
             <div class="dropdown-user-scroll scrollbar-outer">
               <li>
                 <div class="user-box">
                   <div class="avatar-lg">
                     <img
-                      src="../assets/img/profile.jpg"
-                      alt="image profile"
+                    src='/php-admin/uploads/<?php echo ($patientData->patient_profile); ?>'
+                    alt="image profile"
                       class="avatar-img rounded" />
                   </div>
                   <div class="u-text">
-                    <h4>Hizrian</h4>
-                    <p class="text-muted">hello@example.com</p>
+                    <h4><?php echo ($patientData->patient_fname); ?></h4>
+                    <p class="text-muted"><?php echo ($patientData->patient_email); ?></p>
                     <a
-                      href="profile.html"
+                      href="clientviewprofile.php"
                       class="btn btn-xs btn-secondary btn-sm">View Profile</a>
                   </div>
-                </div>
               </li>
               <li>
+                <a class="dropdown-item" href="clientprofile.php">Account Setting</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">My Profile</a>
-                <a class="dropdown-item" href="#">My Balance</a>
-                <a class="dropdown-item" href="#">Inbox</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Account Setting</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Logout</a>
+                <a class="dropdown-item" href="clientindex.php">Logout</a>
               </li>
             </div>
           </ul>

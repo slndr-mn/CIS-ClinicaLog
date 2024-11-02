@@ -196,13 +196,25 @@ class PatientLinkedList {
     public function PatientExists($email) {
         $current = $this->head;
         while ($current !== null) {
-            if (strcasecmp($current->item->patient_email, $email) === 0) { 
+            if ($current->patient_email  === $email) { 
                 return true; 
             }
             $current = $current->next;
         }
         return false; 
     }
+
+    public function PatientEmailExists($email) {
+        $current = $this->head;
+        while ($current !== null) {
+            if ($current->patient_email === $email) { 
+                return $current; // Return the patient object instead of true
+            }
+            $current = $current->next;
+        }
+        return false; // Return false if no matching email is found
+    }
+    
 
     public function StudentExists($id) {
         $current = $this->head;
@@ -255,13 +267,13 @@ class PatientLinkedList {
 
 class PatientManager{
     private $db;
-    public $patients;
-    public $students;
-    public $faculties;
-    public $staffs;
-    public $extensions;
-    public $addresses;
-    public $emergencycon;
+    private $patients;
+    private $students;
+    private $faculties;
+    private $staffs;
+    private $extensions;
+    private $addresses;
+    private $emergencycon;
 
 
     public function __construct($db) {
@@ -373,6 +385,51 @@ class PatientManager{
         }
     }
 
+    public function userpatientExists($email, $password) {
+        $sql = "SELECT * FROM patients WHERE patient_email = :email";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+    
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        if ($row && password_verify($password, $row['patient_password'])) {
+            return new Patient(
+                $row['patient_id'], $row['patient_lname'], $row['patient_fname'], 
+                $row['patient_mname'], $row['patient_dob'], $row['patient_email'], 
+                $row['patient_connum'], $row['patient_sex'], $row['patient_profile'], 
+                $row['patient_patienttype'], $row['patient_dateadded'], $row['patient_password'], 
+                $row['patient_status'], $row['patient_code']
+            );
+        }
+    
+        return false;
+    }
+
+    public function getPatientData($patient_id) {
+        $sql = "SELECT * FROM patients WHERE patient_id = :patientid";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':patientid', $patient_id);
+        $stmt->execute();
+    
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        if ($row) {
+            return new Patient(
+                $row['patient_id'], $row['patient_lname'], $row['patient_fname'], 
+                $row['patient_mname'], $row['patient_dob'], $row['patient_email'], 
+                $row['patient_connum'], $row['patient_sex'], $row['patient_profile'], 
+                $row['patient_patienttype'], $row['patient_dateadded'], $row['patient_password'], 
+                $row['patient_status'], $row['patient_code']
+            );
+        }
+    
+        return false;
+    }
+    
+
+    
+
     public function insertPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code) {
         try {
             if ($this->patients->patientExists($email)) {
@@ -383,12 +440,11 @@ class PatientManager{
                     (patient_lname, patient_fname, patient_mname, patient_dob, patient_email, patient_connum, patient_sex, patient_profile, patient_patienttype, patient_dateadded, patient_password, patient_status, patient_code)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $this->db->prepare($sql);
-            
-            // Prepare the values
+ 
             $params = [
                 $lname, 
                 $fname, 
-                $mname === '' ? null : $mname,  // Set to null if empty
+                $mname === '' ? null : $mname,  
                 $dob, 
                 $email, 
                 $connum, 
@@ -403,26 +459,22 @@ class PatientManager{
     
             $stmt->execute($params);
     
-            // Get last inserted patient ID
             $patient_id = $this->db->lastInsertId();
     
-            // Create and add patient to the list
             $patient = new Patient($patient_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
             $this->patients->add($patient);
             
-            // Return success response
             return ['status' => 'success', 'message' => 'Patient inserted successfully.', 'patient_id' => $patient_id];
     
         } catch (PDOException $e) {
             error_log("Error inserting patient: " . $e->getMessage());
             
-            // Show sanitized error response
             return [
                 'status' => 'error',
-                'message' => 'Error inserting patient: ' . $e->getMessage(),  // Include SQL error message
+                'message' => 'Error inserting patient: ' . $e->getMessage(),  
                 'details' => [
-                    'sqlState' => $e->getCode(),  // SQL State for reference
-                    'params' => json_encode($params)  // Log the parameters passed for debugging
+                    'sqlState' => $e->getCode(),  
+                    'params' => json_encode($params)  
                 ]
             ];
         }
@@ -1145,7 +1197,7 @@ public function getStudentData($patient_id) {
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
     
     return [
-        'patient' => $data, // Patient data
+        'patient' => $data, 
         'student' => [
             'student_idnum' => $data['student_idnum'],
             'student_program' => $data['student_program'],
@@ -1205,7 +1257,7 @@ public function getFacultyData($patient_id) {
     
     return [
         'patient' => $data, // Patient data
-        'faculty' => [
+        'faculty' => [ 
             'faculty_idnum' => $data['faculty_idnum'],
             'faculty_college' => $data['faculty_college'],
             'faculty_department' => $data['faculty_depart'],

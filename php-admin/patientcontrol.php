@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
         $connum = $_POST['contactNumber'];
         $sex = $_POST['sex'];
-        $idnum = $_POST['studentID'];
+        $idnum = $_POST['studentID']; 
         $program = $_POST['program'];
         $major = $_POST['major'];
         $year = $_POST['year'];

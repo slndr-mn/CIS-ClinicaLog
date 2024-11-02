@@ -96,7 +96,7 @@ if (isset($_POST['pname'])) {
           ],
           urls: ["../css/fonts.min.css"], 
         },
-        active: function () {
+        active: function () { 
           sessionStorage.fonts = true;
         },
       });

@@ -15,6 +15,7 @@ $user = new User($conn);
 $user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id); 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -62,7 +63,7 @@ $userData = $user->getUserData($user_id);
       .sidebar {
           transition: background 0.3s ease;
           /* Initial background */
-          background: linear-gradient(to bottom, #DB6079, #DA6F65, #E29AB4);
+          background: linear-gradient(to bottom, #DB6079, #DA6F65, #E29AB4); 
       }
       .logo-header {
           transition: background 0.3s ease;

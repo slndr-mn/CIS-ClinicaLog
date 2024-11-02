@@ -1,7 +1,7 @@
 <?php
 session_start();
 include('../database/config.php');
-include('../php/user.php');
+include('../php/user.php'); 
 include('../php/medicine.php');
 include('../php/patient.php');
 

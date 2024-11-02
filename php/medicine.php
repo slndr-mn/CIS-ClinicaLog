@@ -10,7 +10,7 @@ class Medicine {
         $this->medicine_name = $name;
         $this->medicine_category = $category;
     }
-} 
+}  
 
 // Medstock class
 class Medstock { 

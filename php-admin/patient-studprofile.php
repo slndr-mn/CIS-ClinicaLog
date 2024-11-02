@@ -22,7 +22,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
 } else {
     echo "No patient data found.";
 }
-
+ 
 ?> 
  
 <!DOCTYPE html> 
@@ -361,9 +361,9 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
             $('#major').text(data.student.student_major || ''); 
             $('#year').text(year);
             $('#section').text(data.student.student_section || '');
-            $('#region').text(data.address.address_region || '').
-            $('#province').text(data.address.address_province || '').
-            $('#municipality').text(data.address.address_municipality || '').
+            $('#region').text(data.address.address_region || '');
+            $('#province').text(data.address.address_province || '');
+            $('#municipality').text(data.address.address_municipality || '');
             $('#barangay').text(data.address.address_barangay || '');
             $('#street').text(data.address.address_prkstrtadd || '');
             $('#email').text(data.patient.patient_email || '');

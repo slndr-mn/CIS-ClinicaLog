@@ -19,7 +19,7 @@ $userData = $user->getUserData($user_id);
 
 if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
     $patientId = $_SESSION['id'];
-    $patientType = $_SESSION['type'];
+    $patientType = $_SESSION['type']; 
 
 } else {
     echo "No patient data found.";
@@ -292,7 +292,7 @@ $(document).ready(function () {
         var row = $(this).closest('tr'); 
         var id = row.data('id');
         var filename = row.data('filename');
-        var comment = row.data('comment');
+        var comment = row.data('comment'); 
       
         $("#editid").val(id);
         $("#editid").val(id);

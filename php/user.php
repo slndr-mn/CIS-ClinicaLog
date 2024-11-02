@@ -2,7 +2,7 @@
 
 class ListNode {
     public $user_id;
-    public $user_fname;
+    public $user_fname; 
     public $user_lname;
     public $user_mname; 
     public $user_email;
@@ -58,6 +58,18 @@ class LinkedList {
         }
         return null;
     }
+
+    public function findNodeByEmail($email) {
+        $current = $this->head;
+        while ($current !== null) {
+            if ($current->user_email === $email) {
+                return $current;
+            }
+            $current = $current->next;
+        }
+        return null;
+    }
+    
 
     public function getAllNodes() {
         $nodes = [];
@@ -197,11 +209,28 @@ class User {
 
     public function userExists($email, $password) {
         $node = $this->linkedList->findNode($email);
-        if ($node && password_verify($password, $node->passwordhash)) {
-            return $node; 
+        if (!$node) {
+            $this->log("User not found for email: $email");
+            return false;
         }
-        return false;
-    }  
+    
+        if (!password_verify($password, $node->passwordhash)) {
+            $this->log("Incorrect password attempt for email: $email");
+            return false;
+        }
+    
+        return $node;
+    }
+    
+    private function log($message) {
+        // Log to the server-side log (error_log)
+        error_log($message); 
+    
+        // Log to the browser console
+        echo "<script>console.log(" . json_encode($message) . ");</script>";
+    }
+    
+    
     
 
     public function emailVerify($email) {
@@ -236,8 +265,6 @@ class User {
             return false;
         }
 
-        $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
-
         $query = "INSERT INTO staffusers (user_id, user_fname, user_lname, user_mname, user_email, user_position, user_role, user_status, user_dateadded, user_profile, user_password, user_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($query);
 
@@ -252,11 +279,11 @@ class User {
             $stmt->bindValue(8, $user_status);
             $stmt->bindValue(9, $user_dateadded); 
             $stmt->bindValue(10, $user_profile);
-            $stmt->bindValue(11, $hashedpassword); 
+            $stmt->bindValue(11, $password); 
             $stmt->bindValue(12, $code); 
 
             if ($stmt->execute()) {
-                $this->linkedList->addNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $hashedpassword, $code);
+                $this->linkedList->addNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $password, $code);
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = 'User registered successfully!';
                 header('Location: staffuser.php');

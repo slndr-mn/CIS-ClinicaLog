@@ -7,11 +7,11 @@ session_start();
 
 include '../database/config.php'; 
 include '../php/user.php';
- 
+include '../php/patient.php';
 $database = new Database();      
 $db = $database->getConnection();
-
 $user = new User($db);
+$patient = new PatientManager($db);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_POST['password'])) {
 
@@ -19,51 +19,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
     $password = $_POST['password'];  
     $defaultadmin = "Administrator";
     $doctor = "Campus Physician";
-     
-    $userData = $user->userExists($email, $password);
       
-    if ($userData) {  
-        session_regenerate_id(true);
-        $_SESSION['logged_in'] = true; 
-        $_SESSION['user_id'] = $userData->user_id;  
-        $_SESSION['user_status'] = $userData->user_status;
-        $_SESSION['user_position'] = $userData->user_position;
-        $_SESSION['user_role'] = $userData->user_role; 
+    $userData = $user->userExists($email, $password);
 
-        $user_position = $_SESSION['user_position'];
-        $user_role = $_SESSION['user_role'];
-        $status = $_SESSION['user_status'];   
- 
-        if($userData->user_status === 'Active'){
+if ($userData) {  
+    session_regenerate_id(true); 
+    $_SESSION['logged_in'] = true; 
+    $_SESSION['user_id'] = $userData->user_id;  
+    $_SESSION['user_status'] = $userData->user_status;
+    $_SESSION['user_position'] = $userData->user_position;
+    $_SESSION['user_role'] = $userData->user_role;
 
-            if($user_position == $defaultadmin){
-                header('Location: ../php-admin/index.php'); 
-                exit;
-            }
-            if($user_position == $doctor){
-                header('Location: ../php-admin/index.php'); 
-                exit; 
-            }
-            if($user_role == 'Super Admin'){
-                header('Location: ../php-admin/superadindex.php'); 
-                exit;
-            }
-            if($user_role == 'Admin'){ 
-                header('Location: ../php-admin/adminindex.php');  
-                exit;
-            }
-        }
-        else{
-            $_SESSION['error_message'] = "Acount can't be used.";
-            header('Location: ' . $_SERVER['PHP_SELF']);
+    if ($userData->user_status === 'Active') {
+        if ($_SESSION['user_position'] === $defaultadmin || $_SESSION['user_position'] === $doctor) {
+            header('Location: ../php-admin/index.php'); 
+            exit;
+        } elseif ($_SESSION['user_role'] === 'Super Admin') {
+            header('Location: ../php-admin/superadindex.php'); 
+            exit;
+        } elseif ($_SESSION['user_role'] === 'Admin') { 
+            header('Location: ../php-admin/adminindex.php');  
             exit;
         }
-    }  
-    else { 
-        $_SESSION['error_message'] = 'Invalid email or password.';
+    } else {
+        $_SESSION['error_message'] = "Account can't be used.";
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit;
     }
+} else {
+    $patientData = $patient->userpatientExists($email, $password);
+
+    if ($patientData) {
+        if ($patientData->patient_status === 'Active') {
+            session_regenerate_id(true); 
+            $_SESSION['logged_in'] = true; 
+            $_SESSION['patuser_id'] = $patientData->patient_id;  
+            $_SESSION['patuser_status'] = $patientData->patient_status;
+            $_SESSION['patuser_type'] = $patientData->patient_patienttype;
+
+            header('Location: ../php-client/index.php'); 
+            exit;
+        } else {
+            $_SESSION['error_message'] = "Account can't be used.";
+            header('Location: ' . $_SERVER['PHP_SELF']);
+            exit;
+        }
+    } else {
+        $_SESSION['error_message'] = "Invalid email or password.";
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
+    }
+} 
+
 }
  
 
