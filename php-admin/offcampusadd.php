@@ -4,6 +4,7 @@ include('../database/config.php');
 include('../php/user.php');
 include('../php/medicine.php');
 include('../php/patient.php');
+include('../php/offcampus.php');
 @include('../php/patient-studprofile.php');
 @include('../php/patient-staffprofile.php');
 @include('../php/patient-facultyprofile.php');
@@ -16,52 +17,13 @@ $conn = $db->getConnection();
 
 $consultations = new ConsultationManager($conn);
 $medicine = new MedicineManager($conn);
+$offCampusManager = new OffCampusManager($db);
+$allOffCampusRecords = $offCampusManager->getAllOffCampusData();
 
 $patientId = isset($_GET['id']) ? $_GET['id'] : null;
 $patientType = isset($_GET['patient_patienttype']) ? $_GET['patient_patienttype'] : null;
 
 $patientDetails = null;
-
-if (isset($_POST['pname'])) {
-    $searchQuery = "%" . $_POST['pname'] . "%"; 
-
-    $sql = "SELECT 
-                p.patient_id, 
-                CONCAT(p.patient_fname, ' ', p.patient_lname) AS name, 
-                CASE 
-                    WHEN p.patient_patienttype = 'Student' THEN ps.student_idnum
-                    WHEN p.patient_patienttype = 'Faculty' THEN pf.faculty_idnum
-                    WHEN p.patient_patienttype = 'Staff' THEN pst.staff_idnum
-                    WHEN p.patient_patienttype = 'Extension' THEN pe.exten_idnum
-                    ELSE NULL 
-                END AS idnum
-            FROM 
-                patients p
-            LEFT JOIN patstudents ps ON p.patient_id = ps.student_patientid
-            LEFT JOIN patfaculties pf ON p.patient_id = pf.faculty_patientid
-            LEFT JOIN patstaffs pst ON p.patient_id = pst.staff_patientid
-            LEFT JOIN patextensions pe ON p.patient_id = pe.exten_patientid
-            WHERE 
-                p.patient_lname LIKE ? OR p.patient_fname LIKE ? OR 
-                ps.student_idnum LIKE ? OR pf.faculty_idnum LIKE ? OR pst.staff_idnum LIKE ? OR pe.exten_idnum LIKE ?";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([$searchQuery, $searchQuery, $searchQuery, $searchQuery, $searchQuery, $searchQuery]);
-
-    $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Return results as suggestions
-    if ($patients) {
-        foreach ($patients as $p) {
-            echo "<div class='suggestion' data-id='{$p['patient_id']}'>
-                    {$p['name']} ({$p['idnum']})
-                  </div>";
-        }
-    } else {
-        echo "<div>No results found</div>";
-    }
-    exit(); 
-}
 
 $medicineId = isset($_GET['id']) ? $_GET['id'] : null;
 
@@ -122,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
 <html lang="en">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Clinic Staff User</title>
+    <title>CIS:Clinicalog</title>
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -195,57 +157,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
         <div class="container" id="content">
             <div class="page-inner">
                 <div class="page-inner">
-                <div class="row">
-                    <!-- Add Consultation Form -->
-                    <div class="col-md-12">
-                        <div class="card card-equal-height">
-                            <div class="card-header">
-                                <div class="d-flex align-items-center">
-                                    <h4 class="card-title">Add Consultation</h4>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <form id="addConsultationForm" action="consultationcontrol.php" method="POST">
-                                <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <div class="form-group mb-3">
-                                        <label for="pname">Search by Name or ID:</label>
-                                        <input type="text" id="pname" name="pname" class="form-control" placeholder="Search" autocomplete="off" required>
-                                        <div class="form-control" id="suggestions" style="display: none;"></div>
-                                        <!-- Hidden form field to store selected patient ID -->
-                                        <input type="text" id="selected_patient_id" name="selected_patient_id" style="display:none;">
-                                    </div>  
-                                </div>                                 
-                                    <?php
-                                    if (isset($_POST['pname'])) {
-                                        $pname = $_POST['pname'];
-
-                                        $pname = $conn->real_escape_string($pname);
-
-                                        $sql = "SELECT patient_id, patient_name FROM patients WHERE patient_name LIKE '%$pname%' OR patient_id LIKE '%$pname%' LIMIT 10";
-                                        $result = $conn->query($sql);
-
-                                        if ($result->num_rows > 0) {
-                                            // Generate suggestion list items
-                                            while ($row = $result->fetch_assoc()) {
-                                                echo "<div class='suggestion' data-id='{$row['patient_id']}'>";
-                                                echo $row['patient_name'] . " (" . $row['patient_id'] . ")";
-                                                echo "</div>";
-                                            }
-                                        } else {
-                                            echo "<div class='suggestion'>No results found</div>";
-                                        }
-                                    }
-                                    ?>
-                                    </div>
-                                    <div class="row">
+                <div
+                    class="modal fade"
+                    id="addRowModal"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-hidden="true"
+                >
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header border-0">
+                            <h5 class="modal-title">
+                              <span class="fw-mediumbold"> New</span>
+                              <span class="fw-mediumbold"> Issued Medicine</span>
+                            </h5>
+                            <button
+                              type="button"
+                              class="close"
+                              data-bs-dismiss="modal"  
+                              aria-label="Close" 
+                            >
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div> 
+                          <div class="modal-body">
+                            <p class="small">
+                              Issue a Medicine for Off-Campus Distribution
+                            </p>
+                             <!-- Start Add Modal Form-->
+                             <form class="form" action="offcampuscontrol.php" method="POST" enctype="multipart/form-data">
+                             <div class="row">
                                     <div class="col-md-6 mb-3">
-                                    <div class="form-group mb-3">
-                                        <label for="Diagnosis">Diagnosis:</label>
-                                        <textarea id="Diagnosis" name="Diagnosis" class="form-control" placeholder="Type the diagnosis (e.g., Hypertension)"  rows="3" required></textarea>
-                                    </div>
-                                    </div>
-                                    <div class="col-md-3 mb-3">
                                     <div class="form-group mb-3">
                                         <label for="prescribemed">Search medicine:</label>
                                         <input type="text" id="prescribemed" name="prescribemed" class="form-control" placeholder="Search" autocomplete="off" required>
@@ -274,7 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                                         }
                                     }
                                     ?>
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-6 mb-3">
                                     <div class="form-group mb-3">
                                         <label for="presmedqty">Quantity:</label>
                                         <input type="number" id="presmedqty" name="presmedqty" class="form-control" placeholder="Enter quantity" min="1"  required oninput="checkQuantity()">
@@ -282,37 +224,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                                     </div>
                                     </div>
                                     </div>
-                                    <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                    <div class="form-group mb-3">
-                                        <label for="presmednotes">Notes:</label>
-                                        <textarea id="presmednotes" name="presmednotes" class="form-control" placeholder="Enter any notes regarding the treatment (optional)"  rows="3"></textarea>
-                                    </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                    <div class="form-group mb-3">
-                                        <label for="Remarks">Remarks:</label>
-                                        <textarea id="Remarks" name="Remarks" class="form-control" placeholder="Enter any important remarks (e.g., follow-up needed)"  rows="3" required></textarea>
-                                    </div>
-                                    </div>
-                                    </div>
-                                    <div class="modal-footer border-0 mt-auto">
-                                        <button type="submit" class="btn btn-primary" name="addcon" id="addcon">Submit</button>
-                                        <button type="reset" class="btn btn-secondary ms-2">Clear</button>
-                                    </div>
-                                </form>
-                            </div>
+                              <div class="modal-footer border-0">
+                              <button type="submit" class="btn btn-primary" name="addoffcampus">Add</button>
+                              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                              </div>
+                            </form>
+                             <!-- End Add Modal Form-->
+                          </div>
                         </div>
+                      </div>
                     </div>
-                </div> <!-- End of .row -->
-
                 <!-- Consultation Edit Modal -->
-                <div class="modal fade" id="editConModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade" id="editRowModal" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header border-0">
                                 <h5 class="modal-title">
-                                    <span class="fw-mediumbold"> Edit</span>
+                                    <span class="fw-mediumbold">Edit</span>
                                     <span class="fw-light"> Consultation </span>
                                 </h5>
                                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" id="edit-exit">
@@ -320,22 +248,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form id="editConForm" action="consultationcontrol.php" method="POST">
-                                       <input id="edit_consult_id" name="edit_consult_id" type="text" class="form-control" hidden/>
+                                <form id="editConForm" action="offcampuscontrol.php" method="POST">
+                                       <input id="editid" name="editid" type="text" class="form-control" hidden/>
                                         <input id="edit_patient_id" name="edit_patient_id" type="text" class="form-control" hidden  />
                                     <div class="form-group mb-3">
-                                        <label>Patient Name</label>
-                                        <input id="edit_patient_name" name="edit_patient_name" type="text" class="form-control" readonly />
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <label for="edit_diagnosis">Diagnosis</label>
-                                        <input id="edit_diagnosis" name="edit_diagnosis" type="text" class="form-control" required />
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <label for="edit_medicine">Edit Medicine</label>
-                                        <input id="edit_medicine" name="edit_medicine" type="text" class="form-control" placeholder="Search medicine" autocomplete="off">
+                                        <label for="editmedstockname">Edit Medicine</label>
+                                        <input id="editmedstockname" name="editmedstockname" type="text" class="form-control" placeholder="Search medicine" autocomplete="off">
                                         <div id="edit-suggestion" class="form-control" style="display: none;"></div>
-                                        <input type="hidden" id="edit_medicine_id" name="edit_medicine_id">
+                                        <input type="hidden" id="editmedstockid" name="editmedstockid">
                                     </div>
                                         <?php
                                         if (isset($_POST['prescribemed'])) {
@@ -359,11 +279,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                                         ?>
                                         <script>
                                             $(document).ready(function () {
-                                                $('#edit_medicine').on('keyup', function () {
+                                                $('#editmedstockname').on('keyup', function () {
                                                     var query = $(this).val();
                                                     if (query.length > 2) {
                                                         $.ajax({
-                                                            url: 'addconsultation.php',
+                                                            url: 'offcampusadd.php',
                                                             method: 'POST',
                                                             data: { prescribemed: query },
                                                             success: function (data) {
@@ -378,37 +298,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                                                     }
                                                 });
 
-                                                // Make sure the suggestions are clickable
                                                 $(document).on('click', '.med-suggestion', function () {
                                                     var medName = $(this).text().split(' (')[0];
                                                     var medId = $(this).data('id');
-                                                    $('#edit_medicine_id').val(medId);
-                                                    $('#edit_medicine').val(medName);
+                                                    $('#editmedstockid').val(medId);
+                                                    $('#editmedstockname').val(medName);
                                                     $('#edit-suggestion').html('').hide();
                                                 });
                                             });
                                         </script>
                                         <div class="form-group mb-3">
                                             <label for="edit_quantity">Quantity</label>
-                                            <input id="edit_quantity" name="edit_quantity" type="number"  min="1" class="form-control" required/>
+                                            <input id="editmedqty" name="editmedqty" type="number"  min="1" class="form-control" required/>
                                             <div id="qty-message" class="text-danger" style="color: red; display: none;"></div>
                                         </div>
                                         <div class="form-group mb-3">
-                                            <label for="edit_notes">Notes</label>
-                                            <input id="edit_notes" name="edit_notes" type="text" class="form-control" />
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <label for="edit_remarks">Remarks</label>
-                                            <input id="edit_remarks" name="edit_remarks" type="text" class="form-control" required />
-                                        </div>
-                                        <div class="form-group mb-3">
                                             <label for="edit_date">Date</label>
-                                            <input id="edit_date" name="edit_date" type="date" class="form-control" readonly />
+                                            <input id="editdate" name="editdate" type="date" class="form-control"/>
                                         </div>
-
                                         <div class="modal-footer border-0">
-                                            <button type="submit" class="btn btn-primary" name="editcon" id="editcon">Save</button>
-                                            <button type="submit" class="btn btn-danger" name="delete" id="delete">Delete</button>
+                                            <button type="submit" class="btn btn-primary" name="updateoffcampus" id="updateoffcampus">Save</button>
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                         </div>
                                     </form>
@@ -420,25 +329,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                     $(document).on('click', '.editConButton', function () {
                         const row = $(this).closest('tr'); 
                         const consultId = row.attr('data-id');
-                        const patientId = row.attr('data-stock');
-                        const patientName = row.attr('name'); 
-                        const diagnosis = row.attr('consult_diagnosis'); 
                         const medicineName = row.attr('data-medicine-name');
                         const medicineId = row.attr('data-medstock'); 
                         const quantity = row.attr('pm_medqty');
-                        const notes = row.attr('notes'); 
-                        const remarks = row.attr('remarks'); 
                         const date = row.attr('consult_date'); 
 
                         $("#edit_consult_id").val(consultId);
-                        $("#edit_patient_id").val(patientId);
-                        $("#edit_patient_name").val(patientName);
-                        $("#edit_diagnosis").val(diagnosis);
                         $("#edit_medicine").val(medicineName);
                         $("#edit_medicine_id").val(medicineId);
                         $("#edit_quantity").val(quantity);
-                        $("#edit_notes").val(notes); 
-                        $("#edit_remarks").val(remarks);
                         $("#edit_date").val(date);
 
                         const editModal = new bootstrap.Modal(document.getElementById('editConModal'));
@@ -452,101 +351,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                         <div class="card card-equal-height">
                             <div class="card-header">
                                 <div class="d-flex align-items-center">
-                                    <h4 class="card-title">Consultations List</h4>
+                                    <h4 class="card-title">Off-Campus Issuance List</h4>
+                                    <button
+                                        class="btn btn-primary btn-round ms-auto"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#addRowModal"
+                                    >
+                                        <i class="fa fa-plus"></i>
+                                        Add 
+                                    </button>
                                 </div>
                             </div>
 
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table id="add-con" class="display table table-striped table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Name:</th>
-                                                <th>Diagnosis</th>
-                                                <th>Prescribed Medicine:</th>
-                                                <th>Quantity:</th>
-                                                <th>Notes:</th>
-                                                <th>Remark</th>
-                                                <th>Date</th>
-                                                <th style="width: 10%">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tfoot>
-                                            <tr>
-                                                <th>Name:</th>
-                                                <th>Diagnosis</th>
-                                                <th>Prescribed Medicine:</th>
-                                                <th>Quantity:</th>
-                                                <th>Notes:</th>
-                                                <th>Remark</th>
-                                                <th>Date</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </tfoot>
-                                        <tbody>
-                                        <?php
-                                            $items = $consultations->getAllItems();
-
-                                            if (is_array($items) && !empty($items)) {
-                                                foreach ($items as $item) {
-                                                    if (is_array($item)) {
-                                                        $consultId = $item['consult_id'] ?? null;
-                                                        $medstockId = 'N/A';
-                                                        $medicationName = 'N/A';
-                                                        $medQty = 'N/A';
-
-                                                        if ($consultId) {
-                                                            $stmt = $conn->prepare("
-                                                                SELECT pm.pm_medstockid, pm.pm_medqty, m.medicine_name 
-                                                                FROM prescribemed AS pm 
-                                                                JOIN medstock AS ms ON pm.pm_medstockid = ms.medstock_id 
-                                                                JOIN medicine AS m ON ms.medicine_id = m.medicine_id 
-                                                                WHERE pm.pm_consultid = :consult_id
-                                                            ");
-                                                            $stmt->execute(['consult_id' => $consultId]);
-                                                            $prescription = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                                                            if ($prescription) {
-                                                                $medstockId = htmlspecialchars($prescription['pm_medstockid'] ?? 'N/A');
-                                                                $medicationName = htmlspecialchars($prescription['medicine_name'] ?? 'N/A');
-                                                                $medQty = htmlspecialchars($prescription['pm_medqty'] ?? 'N/A');
-                                                            }
-                                                        }
-
-                                                        echo "<tr data-id='" . htmlspecialchars($item['consult_id']) . "'
-                                                            data-stock='" . htmlspecialchars($item['consult_patientid']) . "' 
-                                                            name='" . htmlspecialchars($item['name'] ?? 'N/A') . "'
-                                                            data-medstock='" . $medstockId . "' 
-                                                            data-medicine-name='" . $medicationName . "' 
-                                                            pm_medqty='" . htmlspecialchars($medQty) . "'
-                                                            notes='" . htmlspecialchars($item['consult_treatmentnotes'] ?? 'N/A') . "'
-                                                            remarks='" . htmlspecialchars($item['consult_remark'] ?? 'N/A') . "'
-                                                            consult_diagnosis='" . htmlspecialchars($item['consult_diagnosis'] ?? 'N/A') . "' 
-                                                            consult_date='" . htmlspecialchars($item['consult_date'] ?? 'N/A') . "' >
-                                                            <td>" . htmlspecialchars($item['name'] ?? 'N/A') . "</td>
-                                                            <td>" . htmlspecialchars($item['consult_diagnosis'] ?? 'N/A') . "</td>
-                                                            <td>" . $medicationName . "</td>
-                                                            <td>" . $medQty . "</td>
-                                                            <td>" . htmlspecialchars($item['consult_treatmentnotes'] ?? 'N/A') . "</td>
-                                                            <td>" . htmlspecialchars($item['consult_remark'] ?? 'N/A') . "</td>
-                                                            <td>" . htmlspecialchars($item['consult_date'] ?? 'N/A') . "</td>
-                                                            <td>
-                                                                <div class='form-button-action'>
-                                                                    <button type='button' class='btn btn-link btn-primary btn-lg editConButton'>
-                                                                        <i class='fa fa-edit'></i>
-                                                                    </button>  
-                                                                </div>
-                                                            </td>
-                                                        </tr>";
-                                                    } else {
-                                                        echo "<tr><td colspan='11'>Invalid data format</td></tr>";
-                                                    }
-                                                }
-                                            } else {
-                                                echo "<tr><td colspan='11'>No consultations found.</td></tr>";
-                                            }
-                                            ?>
-                                        </tbody>
+                                    <table id="add-con" class="display table table-striped table-hover">             
+                                            <thead>
+                                                <tr>
+                                                    <th>No.</th>
+                                                    <th>Medicine Stock No.</th>
+                                                    <th>Medicine Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Date</th>
+                                                    <th style="width: 10%">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>No.</th>
+                                                    <th>Medicine Stock No.</th>
+                                                    <th>Medicine Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Date</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </tfoot>
+                                            <tbody>
+                                                <?php foreach ($allOffCampusRecords as $index => $record): ?>
+                                                    <tr data-id="<?= $record['id']; ?>" data-medstockid="<?= $record['medstockid']; ?>" data-medstockname="<?= $record['medstockname']; ?>" data-medqty="<?= $record['medqty']; ?>" data-date="<?= $record['date']; ?>">
+                                                        <td><?= $index + 1; ?></td>
+                                                        <td><?= htmlspecialchars($record['medstockid']) ?></td>
+                                                        <td><?= htmlspecialchars($record['medstockname']);?></td>
+                                                        <td><?= htmlspecialchars($record['medqty']); ?></td>
+                                                        <td><?= htmlspecialchars($record['date']); ?></td>
+                                                        <td>
+                                                            <div class="form-button-action">
+                                                                <button type="button" class="btn btn-link btn-primary btn-lg editButton" data-id="<?= $record['id']; ?>">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </button>
+                                                                <button type="button" class="btn btn-link btn-danger removeButton" data-id="<?= $record['id']; ?>">
+                                                                    <i class="fa fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -594,13 +454,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
         pageLength: 10, 
         responsive: true 
     });
+
+    $("#addRowButton").click(function () {
+        var action =
+            '<td> <div class="form-button-action"> <button class="editButton" type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button class="removeAccess" type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
+
+        $("#add-row")
+            .dataTable()
+            .fnAddData([
+                $("#addid").val(),
+                $("#addfname").val(),
+                $("#addlname").val(),
+                $("#addemail").val(),
+                $("#addposition").val(),
+                $("#addrole").val(),
+                $("#addstatus").val(), 
+                action,
+            ]);
+        $("#addRowModal").modal("hide");
+    });
+
+    $(document).on('click', '.editButton', function () {
+        var row = $(this).closest('tr'); 
+        var id = row.data('id');
+        var medstockid = row.data('medstockid');
+        var medstockname = row.data('medstockname');
+        var medqty = row.data('medqty');
+        var date = row.data('date');
+
+        $("#editid").val(id);
+        $("#editmedstockid").val(medstockid);
+        $("#editmedstockname").val(medstockname);
+        $("#editmedqty").val(medqty);
+        $("#editdate").val(date);
+
+        var myModal = new bootstrap.Modal(document.getElementById('editRowModal'));
+        myModal.show();
+    });
+
+
     // Keyup event for search box
     $('#pname').on('keyup', function () {
         var query = $(this).val();
 
         if (query.length > 2) { 
             $.ajax({
-                url: 'addconsultation.php', 
+                url: 'offcampusadd.php', 
                 method: 'POST',
                 data: { pname: query }, 
                 success: function (data) {
@@ -634,7 +533,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
             var query = $(this).val();
             if (query.length > 2) {
                 $.ajax({
-                    url: 'addconsultation.php', 
+                    url: 'offcampusadd.php', 
                     method: 'POST',
                     data: { prescribemed: query },
                     success: function (data) {
@@ -745,7 +644,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
             }
         });
 
-        $("#addmedrow").load("addconsultation.php", function(response, status, xhr) {
+        $("#addmedrow").load("offcampusadd.php", function(response, status, xhr) {
             if (status == "error") {
                 console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
             }
@@ -796,6 +695,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
     }
 </script>
 
+<script>
+$(document).ready(function () {
+    $('.removeButton').on('click', function () {
+        var offcampusId = $(this).data('id'); // Get the record ID
+        
+        // SweetAlert confirmation dialog
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this record!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                // Proceed with deletion
+                $.ajax({
+                    url: 'offcampuscontrol.php', 
+                    method: 'POST',
+                    data: { deleteoffcampus: true, offcampus_id: offcampusId }, // Send the ID
+                    success: function (response) {
+                        // Handle the response from the server
+                        var result = JSON.parse(response); // Assuming server returns JSON
+                        swal(result.message, {
+                            icon: result.status === 'success' ? 'success' : 'error',
+                        });
+
+                        if (result.status === 'success') {
+                           window.location.href = 'offcampusadd.php';
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error deleting record:', error);
+                        swal('An error occurred while deleting the record.', {
+                            icon: 'error',
+                        });
+                    }
+                });
+            } else {
+                // User canceled the deletion
+                swal("Your record is safe!");
+            }
+        });
+    });
+});
+</script>
 
 
 

@@ -155,13 +155,33 @@ class MedicineManager {
     }
 
     private function loadMedstocks() {
-        $sql = "SELECT * FROM medstock";
+        $sql = "
+            SELECT 
+                ms.medstock_id,
+                ms.medicine_id,
+                (ms.medstock_qty - COALESCE(SUM(p.pm_medqty), 0) - COALESCE(SUM(mi.mi_medqty), 0)) AS current_qty,
+                ms.medstock_dosage,
+                ms.medstock_dateadded,
+                ms.medstock_timeadded,
+                ms.medstock_expirationdt,
+                ms.medstock_disable
+            FROM 
+                medstock ms
+            LEFT JOIN 
+                prescribemed p ON ms.medstock_id = p.pm_medstockid
+            LEFT JOIN 
+                medissued mi ON ms.medstock_id = mi.mi_medstockid
+            GROUP BY 
+                ms.medstock_id
+
+        ";
+    
         $stmt = $this->db->query($sql); // Use PDO query method
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $medstock = new Medstock(
                 $row['medstock_id'],
                 $row['medicine_id'],
-                $row['medstock_qty'],
+                $row['current_qty'],      // This is now the summed quantity
                 $row['medstock_dosage'],
                 $row['medstock_dateadded'],
                 $row['medstock_timeadded'],
@@ -171,6 +191,7 @@ class MedicineManager {
             $this->medstocks->add($medstock);
         }
     }
+    
 
     public function insertMedicine($name, $category) {
         if ($this->medicines->medicineExists($name)) {
@@ -275,7 +296,7 @@ class MedicineManager {
             if (!$stmt) {
                 throw new Exception("Failed to prepare the SQL statement.");
             }
-    
+     
             if ($stmt->execute([$name, $category, $medicine_id])) {
               
                 $medicine = $this->medicines->find($medicine_id);
