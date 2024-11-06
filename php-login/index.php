@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
     $email = $_POST['email'];  
     $password = $_POST['password'];  
     $defaultadmin = "Administrator";
-    $doctor = "Campus Physician";
+    $doctor = "Campus Physician"; 
       
     $userData = $user->userExists($email, $password);
 

@@ -133,7 +133,7 @@
                 </a>
               </li>
               <li class="nav-item" id="reports-item">
-                <a href="reports.php">
+                <a href="reports.php"> 
                   <i class="fas fas fa-file-medical"></i>
                   <p>Transaction Report</p>
                 </a>

@@ -31,7 +31,7 @@ $user_id = $_SESSION['user_id'];
         google: { families: ["Public Sans:300,400,500,600,700"] },
         custom: {
           families: [
-            "Font Awesome 5 Solid",
+            "Font Awesome 5 Solid", 
             "Font Awesome 5 Regular",
             "Font Awesome 5 Brands",
             "simple-line-icons",
@@ -61,6 +61,14 @@ $user_id = $_SESSION['user_id'];
       .logo-header {
           transition: background 0.3s ease;
       }
+      .nav-item.active {
+            background-color: rgba(0, 0, 0, 0.1); 
+            color: #fff; 
+        }
+
+        .nav-item.active i {
+            color: #fff;
+        } 
   </style>
 </head>
 <body>
@@ -76,6 +84,34 @@ $user_id = $_SESSION['user_id'];
                 <h1>
                 Reports
                 </h1>
+                <div class="row">
+                <div class="col-md-8">
+                <div class="card card-round">
+                  <div class="card-header">
+                    <div class="card-head-row">
+                      <div class="card-title">User Statistics</div>
+                      <div class="card-tools">
+                        <a
+                          href="#"
+                          class="btn btn-label-success btn-round btn-sm me-2"
+                        >
+                          <span class="btn-label">
+                            <i class="fa fa-pencil"></i>
+                          </span>
+                          Export
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart-container" style="min-height: 375px">
+                      <canvas id="statisticsChart"></canvas>
+                    </div>
+                    <div id="myChart"></div>
+                  </div>
+                </div>
+              </div>                   
+              </div>
             </div>
         </div>
     </div>
@@ -131,5 +167,149 @@ $user_id = $_SESSION['user_id'];
             });
         });
     </script>
+<script>
+// Chart initialization
+var ctx = document.getElementById('statisticsChart').getContext('2d');
+var statisticsChart = new Chart(ctx, {
+	type: 'line',
+	data: {
+		labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+		datasets: [{
+			label: "Subscribers",
+			borderColor: '#f3545d',
+			pointBackgroundColor: 'rgba(243, 84, 93, 0.6)',
+			pointRadius: 0,
+			backgroundColor: 'rgba(243, 84, 93, 0.4)',
+			legendColor: '#f3545d',
+			fill: true,
+			borderWidth: 2,
+			data: [15, 84, 15, 23, 20, 21, 20, 28, 22, 32, 30, 34]
+		}, {
+			label: "New Visitors",
+			borderColor: '#fdaf4b',
+			pointBackgroundColor: 'rgba(253, 175, 75, 0.6)',
+			pointRadius: 0,
+			backgroundColor: 'rgba(253, 175, 75, 0.4)',
+			legendColor: '#fdaf4b',
+			fill: true,
+			borderWidth: 2,
+			data: [26, 20, 25, 87, 40, 50, 30, 95, 31, 41, 46, 51]
+		}, {
+			label: "Active Users",
+			borderColor: '#177dff',
+			pointBackgroundColor: 'rgba(23, 125, 255, 0.6)',
+			pointRadius: 0,
+			backgroundColor: 'rgba(23, 125, 255, 0.4)',
+			legendColor: '#177dff',
+			fill: true,
+			borderWidth: 2,
+			data: [52, 40, 40, 50, 30, 53, 80, 44, 68, 60, 70, 90]
+		}, {
+			label: "Pastel Green Users",
+			borderColor: '#c7f2c4',
+			pointBackgroundColor: 'rgba(199, 242, 196, 0.6)',
+			pointRadius: 0,
+			backgroundColor: 'rgba(199, 242, 196, 0.4)',
+			legendColor: '#c7f2c4',
+			fill: true,
+			borderWidth: 2,
+			data: [50, 40, 42, 54, 50, 53, 38, 44, 58, 10, 70, 90]
+		}]
+	},
+	options: {
+		responsive: true, 
+		maintainAspectRatio: false,
+		legend: {
+			display: false
+		},
+		tooltips: {
+			bodySpacing: 4,
+			mode: "nearest",
+			intersect: 0,
+			position: "nearest",
+			xPadding: 10,
+			yPadding: 10,
+			caretPadding: 10
+		},
+		layout: {
+			padding: {left: 5, right: 5, top: 15, bottom: 15}
+		},
+		scales: {
+			yAxes: [{
+				ticks: {
+					fontStyle: "500",
+					beginAtZero: false,
+					maxTicksLimit: 5,
+					padding: 10
+				},
+				gridLines: {
+					drawTicks: false,
+					display: false
+				}
+			}],
+			xAxes: [{
+				gridLines: {
+					zeroLineColor: "transparent"
+				},
+				ticks: {
+					padding: 10,
+					fontStyle: "500"
+				}
+			}]
+		},
+		legendCallback: function(chart) {
+			var text = [];
+			text.push('<ul class="' + chart.id + '-legend html-legend">');
+			for (var i = 0; i < chart.data.datasets.length; i++) {
+				text.push('<li><span style="background-color:' + chart.data.datasets[i].legendColor + '"></span>');
+				if (chart.data.datasets[i].label) {
+					text.push(chart.data.datasets[i].label);
+				}
+				text.push('</li>');
+			}
+			text.push('</ul>');
+			return text.join('');
+		}
+	}
+});
+
+// Generate HTML legend
+var myLegendContainer = document.getElementById("myChart");
+myLegendContainer.innerHTML = statisticsChart.generateLegend();
+
+// Toggle visibility on legend item click
+function legendClickCallback(event) {
+    const index = Array.from(legendItems).indexOf(event.target.closest('li'));
+    if (index !== -1) {
+        const meta = statisticsChart.getDatasetMeta(index);
+        
+        // If the clicked dataset is currently hidden, show all datasets
+        if (meta.hidden) {
+            statisticsChart.data.datasets.forEach((dataset, i) => {
+                const meta = statisticsChart.getDatasetMeta(i);
+                meta.hidden = false; // Show all datasets
+            });
+        } else {
+            // Hide all datasets except the clicked one
+            statisticsChart.data.datasets.forEach((dataset, i) => {
+                const meta = statisticsChart.getDatasetMeta(i);
+                meta.hidden = i !== index; // Only show the clicked dataset
+            });
+        }
+
+        statisticsChart.update(); // Refresh chart
+    }
+}
+
+
+
+
+// Bind click event to legend items
+var legendItems = myLegendContainer.getElementsByTagName('li');
+for (var i = 0; i < legendItems.length; i++) {
+	legendItems[i].addEventListener("click", legendClickCallback, false);
+}
+</script>
+
 </body>
 </html>

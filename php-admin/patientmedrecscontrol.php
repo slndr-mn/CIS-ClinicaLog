@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $comment = 'No Comment';
         $dateadded = date('Y-m-d');
         $timeadded = date('H:i:s');
-        $files = $_FILES['uploadfile'];  
+        $files = $_FILES['uploadfile'];   
         $patienttype = $_POST['patienttype']; 
 
         $filenames = [];

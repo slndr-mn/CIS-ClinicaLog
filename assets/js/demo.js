@@ -264,7 +264,7 @@ var world_map = new jsVectorMap({
 		tooltip.css({ backgroundColor: '#435ebe' })
 	}
 });
-
+ 
 //Chart
 
 var ctx = document.getElementById('statisticsChart').getContext('2d');
@@ -374,12 +374,12 @@ for (var i = 0; i < legendItems.length; i += 1) {
 }
 
 var dailySalesChart = document.getElementById('dailySalesChart').getContext('2d');
-
+ 
 var myDailySalesChart = new Chart(dailySalesChart, {
 	type: 'line',
 	data: {
 		labels:["January",
-		"February",
+		"February", 
 		"March",
 		"April",
 		"May",

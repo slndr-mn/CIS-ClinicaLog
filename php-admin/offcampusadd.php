@@ -700,7 +700,6 @@ $(document).ready(function () {
     $('.removeButton').on('click', function () {
         var offcampusId = $(this).data('id'); // Get the record ID
         
-        // SweetAlert confirmation dialog
         swal({
             title: "Are you sure?",
             text: "Once deleted, you will not be able to recover this record!",
@@ -709,21 +708,23 @@ $(document).ready(function () {
             dangerMode: true,
         }).then((willDelete) => {
             if (willDelete) {
-                // Proceed with deletion
+                
                 $.ajax({
-                    url: 'offcampuscontrol.php', 
+                    url: 'offcampuscontrol.php',
                     method: 'POST',
-                    data: { deleteoffcampus: true, offcampus_id: offcampusId }, // Send the ID
+                    data: { deleteoffcampus: true, offcampus_id: offcampusId },
                     success: function (response) {
-                        // Handle the response from the server
-                        var result = JSON.parse(response); // Assuming server returns JSON
+                        console.log(response); 
+
+                        var result = typeof response === 'object' ? response : JSON.parse(response);
+
                         swal(result.message, {
                             icon: result.status === 'success' ? 'success' : 'error',
+                        }).then(() => {
+                            if (result.status === 'success') {
+                                window.location.href = 'offcampusadd.php';
+                            }
                         });
-
-                        if (result.status === 'success') {
-                           window.location.href = 'offcampusadd.php';
-                        }
                     },
                     error: function (xhr, status, error) {
                         console.error('Error deleting record:', error);
@@ -733,13 +734,16 @@ $(document).ready(function () {
                     }
                 });
             } else {
-                // User canceled the deletion
-                swal("Your record is safe!");
+                
+                swal("Your record is safe!", {
+                    icon: 'info',
+                });
             }
         });
     });
 });
 </script>
+
 
 
 

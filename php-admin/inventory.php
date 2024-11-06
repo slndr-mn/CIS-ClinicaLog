@@ -215,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             <tr>
                                                 <th>Balance Month</th>
                                                 <th>Received for the Period</th>
-                                                <th>Total Start Balance</th>
+                                                <th>Total Start Balance</th> 
                                                 <th>Unit</th>
                                                 <th>Item</th>
                                                 <th>Issuance (Mabini)</th>
@@ -320,8 +320,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     medstock.total_start_balance,
                                     medstock.unit,
                                     medstock.item,
-                                    medstock.total_prescribed,
                                     medstock.total_issued,
+                                    medstock.total_prescribed,
                                     medstock.end_balance,
                                     medstock.expiry_date
                                 ]);

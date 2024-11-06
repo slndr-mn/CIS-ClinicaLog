@@ -46,7 +46,7 @@ class MedicineManager{
     public function calculateTotalIssued($medstock_id, $quarterStart, $quarterEnd) {
         $query = "SELECT COALESCE(SUM(mi.mi_medqty), 0) AS total_issued
                   FROM medissued mi
-                  WHERE mi.mi_medstockid = ?
+                  WHERE mi.mi_medstockid = ? 
                   AND mi.mi_date BETWEEN ? AND ?";
         
         $stmt = $this->conn->prepare($query);
