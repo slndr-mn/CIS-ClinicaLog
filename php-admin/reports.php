@@ -81,15 +81,16 @@ $user_id = $_SESSION['user_id'];
             <div class="main-header" id="header"></div>
             <!-- Main Content -->
             <div class="container" id="content">
+              <div class="page-inner">
                 <h1>
-                Reports
+                Yearly Statistic Report of Services
                 </h1>
                 <div class="row">
                 <div class="col-md-8">
                 <div class="card card-round">
                   <div class="card-header">
                     <div class="card-head-row">
-                      <div class="card-title">User Statistics</div>
+                      <div class="card-title">Medical Certificate Issuance</div>
                       <div class="card-tools">
                         <a
                           href="#"
@@ -115,6 +116,7 @@ $user_id = $_SESSION['user_id'];
             </div>
         </div>
     </div>
+  </div>
  
     
     
@@ -157,6 +159,15 @@ $user_id = $_SESSION['user_id'];
             $("#sidebar").load("sidebar.php", function(response, status, xhr) {
                 if (status == "error") {
                     console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
+                } else {
+                    var currentPage = window.location.pathname.split('/').pop(); 
+                    $('.nav-item').removeClass('active');
+                    $('.nav-item').each(function() {
+                        var href = $(this).find('a').attr('href');
+                        if (href.indexOf(currentPage) !== -1) {
+                            $(this).addClass('active');
+                        }
+                    });
                 }
             });
 
@@ -167,149 +178,151 @@ $user_id = $_SESSION['user_id'];
             });
         });
     </script>
+
 <script>
-// Chart initialization
-var ctx = document.getElementById('statisticsChart').getContext('2d');
-var statisticsChart = new Chart(ctx, {
-	type: 'line',
-	data: {
-		labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-		datasets: [{
-			label: "Subscribers",
-			borderColor: '#f3545d',
-			pointBackgroundColor: 'rgba(243, 84, 93, 0.6)',
-			pointRadius: 0,
-			backgroundColor: 'rgba(243, 84, 93, 0.4)',
-			legendColor: '#f3545d',
-			fill: true,
-			borderWidth: 2,
-			data: [15, 84, 15, 23, 20, 21, 20, 28, 22, 32, 30, 34]
-		}, {
-			label: "New Visitors",
-			borderColor: '#fdaf4b',
-			pointBackgroundColor: 'rgba(253, 175, 75, 0.6)',
-			pointRadius: 0,
-			backgroundColor: 'rgba(253, 175, 75, 0.4)',
-			legendColor: '#fdaf4b',
-			fill: true,
-			borderWidth: 2,
-			data: [26, 20, 25, 87, 40, 50, 30, 95, 31, 41, 46, 51]
-		}, {
-			label: "Active Users",
-			borderColor: '#177dff',
-			pointBackgroundColor: 'rgba(23, 125, 255, 0.6)',
-			pointRadius: 0,
-			backgroundColor: 'rgba(23, 125, 255, 0.4)',
-			legendColor: '#177dff',
-			fill: true,
-			borderWidth: 2,
-			data: [52, 40, 40, 50, 30, 53, 80, 44, 68, 60, 70, 90]
-		}, {
-			label: "Pastel Green Users",
-			borderColor: '#c7f2c4',
-			pointBackgroundColor: 'rgba(199, 242, 196, 0.6)',
-			pointRadius: 0,
-			backgroundColor: 'rgba(199, 242, 196, 0.4)',
-			legendColor: '#c7f2c4',
-			fill: true,
-			borderWidth: 2,
-			data: [50, 40, 42, 54, 50, 53, 38, 44, 58, 10, 70, 90]
-		}]
-	},
-	options: {
-		responsive: true, 
-		maintainAspectRatio: false,
-		legend: {
-			display: false
-		},
-		tooltips: {
-			bodySpacing: 4,
-			mode: "nearest",
-			intersect: 0,
-			position: "nearest",
-			xPadding: 10,
-			yPadding: 10,
-			caretPadding: 10
-		},
-		layout: {
-			padding: {left: 5, right: 5, top: 15, bottom: 15}
-		},
-		scales: {
-			yAxes: [{
-				ticks: {
-					fontStyle: "500",
-					beginAtZero: false,
-					maxTicksLimit: 5,
-					padding: 10
-				},
-				gridLines: {
-					drawTicks: false,
-					display: false
-				}
-			}],
-			xAxes: [{
-				gridLines: {
-					zeroLineColor: "transparent"
-				},
-				ticks: {
-					padding: 10,
-					fontStyle: "500"
-				}
-			}]
-		},
-		legendCallback: function(chart) {
-			var text = [];
-			text.push('<ul class="' + chart.id + '-legend html-legend">');
-			for (var i = 0; i < chart.data.datasets.length; i++) {
-				text.push('<li><span style="background-color:' + chart.data.datasets[i].legendColor + '"></span>');
-				if (chart.data.datasets[i].label) {
-					text.push(chart.data.datasets[i].label);
-				}
-				text.push('</li>');
-			}
-			text.push('</ul>');
-			return text.join('');
-		}
-	}
-});
-
-// Generate HTML legend
-var myLegendContainer = document.getElementById("myChart");
-myLegendContainer.innerHTML = statisticsChart.generateLegend();
-
-// Toggle visibility on legend item click
-function legendClickCallback(event) {
-    const index = Array.from(legendItems).indexOf(event.target.closest('li'));
-    if (index !== -1) {
-        const meta = statisticsChart.getDatasetMeta(index);
-        
-        // If the clicked dataset is currently hidden, show all datasets
-        if (meta.hidden) {
-            statisticsChart.data.datasets.forEach((dataset, i) => {
-                const meta = statisticsChart.getDatasetMeta(i);
-                meta.hidden = false; // Show all datasets
-            });
-        } else {
-            // Hide all datasets except the clicked one
-            statisticsChart.data.datasets.forEach((dataset, i) => {
-                const meta = statisticsChart.getDatasetMeta(i);
-                meta.hidden = i !== index; // Only show the clicked dataset
-            });
+  // Chart initialization
+  var ctx = document.getElementById('statisticsChart').getContext('2d');
+  var statisticsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      datasets: [{
+        label: "Faculties",
+        borderColor: '#f3545d',
+        pointBackgroundColor: 'rgba(243, 84, 93, 0.6)',
+        pointRadius: 0,
+        backgroundColor: 'rgba(243, 84, 93, 0.4)',
+        legendColor: '#f3545d',
+        fill: true,
+        borderWidth: 2,
+        data: [15, 84, 15, 23, 20, 21, 20, 28, 22, 32, 30, 34]
+      }, {
+        label: "Students",
+        borderColor: '#fdaf4b',
+        pointBackgroundColor: 'rgba(253, 175, 75, 0.6)',
+        pointRadius: 0,
+        backgroundColor: 'rgba(253, 175, 75, 0.4)',
+        legendColor: '#fdaf4b',
+        fill: true,
+        borderWidth: 2,
+        data: [26, 20, 25, 87, 40, 50, 30, 95, 31, 41, 46, 51]
+      }, {
+        label: "Staffs",
+        borderColor: '#177dff',
+        pointBackgroundColor: 'rgba(23, 125, 255, 0.6)',
+        pointRadius: 0,
+        backgroundColor: 'rgba(23, 125, 255, 0.4)',
+        legendColor: '#177dff',
+        fill: true,
+        borderWidth: 2,
+        data: [52, 40, 40, 50, 30, 53, 80, 44, 68, 60, 70, 90]
+      }, {
+        label: "Extensions",
+        borderColor: '#c7f2c4',
+        pointBackgroundColor: 'rgba(199, 242, 196, 0.6)',
+        pointRadius: 0,
+        backgroundColor: 'rgba(199, 242, 196, 0.4)',
+        legendColor: '#c7f2c4',
+        fill: true,
+        borderWidth: 2,
+        data: [50, 40, 42, 54, 50, 53, 38, 44, 58, 10, 70, 90]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      legend: {
+        display: false
+      },
+      tooltips: {
+        bodySpacing: 4,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest",
+        xPadding: 10,
+        yPadding: 10,
+        caretPadding: 10
+      },
+      layout: {
+        padding: { left: 5, right: 5, top: 15, bottom: 15 }
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontStyle: "500",
+            beginAtZero: false,
+            maxTicksLimit: 5,
+            padding: 10
+          },
+          gridLines: {
+            drawTicks: false,
+            display: false
+          }
+        }],
+        xAxes: [{
+          gridLines: {
+            zeroLineColor: "transparent"
+          },
+          ticks: {
+            padding: 10,
+            fontStyle: "500"
+          }
+        }]
+      },
+      legendCallback: function (chart) {
+        var text = [];
+        text.push('<ul class="' + chart.id + '-legend html-legend">');
+        for (var i = 0; i < chart.data.datasets.length; i++) {
+          text.push('<li><span style="background-color:' + chart.data.datasets[i].legendColor + '"></span>');
+          if (chart.data.datasets[i].label) {
+            text.push(chart.data.datasets[i].label);
+          }
+          text.push('</li>');
         }
-
-        statisticsChart.update(); // Refresh chart
+        text.push('</ul>');
+        return text.join('');
+      }
     }
-}
+  });
 
+  // Generate HTML legend
+  var myLegendContainer = document.getElementById("myChart");
+  myLegendContainer.innerHTML = statisticsChart.generateLegend();
 
+  // Toggle visibility on legend item click
+  function legendClickCallback(event) {
+    const item = event.target.closest('li');
+    const index = Array.from(legendItems).indexOf(item);
+    const meta = statisticsChart.getDatasetMeta(index);
 
+    // Check if we're showing only one dataset or all
+    const currentlyOnlyOneVisible = statisticsChart.data.datasets.filter((ds, i) => !statisticsChart.getDatasetMeta(i).hidden).length === 1;
 
-// Bind click event to legend items
-var legendItems = myLegendContainer.getElementsByTagName('li');
-for (var i = 0; i < legendItems.length; i++) {
-	legendItems[i].addEventListener("click", legendClickCallback, false);
-}
+    if (currentlyOnlyOneVisible && !meta.hidden) {
+      // All datasets were hidden except this one, so show all
+      statisticsChart.data.datasets.forEach((dataset, i) => {
+        statisticsChart.getDatasetMeta(i).hidden = false;
+      });
+    } else {
+      // Show only the clicked dataset, hide others
+      statisticsChart.data.datasets.forEach((dataset, i) => {
+        statisticsChart.getDatasetMeta(i).hidden = i !== index;
+      });
+      meta.hidden = false;
+    }
+
+    statisticsChart.update(); // Refresh chart
+  }
+
+  // Bind click event to legend items
+  var legendItems = myLegendContainer.getElementsByTagName('li');
+  for (var i = 0; i < legendItems.length; i++) {
+    legendItems[i].addEventListener("click", legendClickCallback, false);
+  }
 </script>
+
+
+
 
 </body>
 </html>

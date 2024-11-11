@@ -184,7 +184,7 @@ class ConsultationManager {
                 $consult_patientid, 
                 $consult_diagnosis, 
                 $consult_treatmentnotes, 
-                $consult_remark, 
+                $consult_remark,  
                 $consult_date
             ];
     

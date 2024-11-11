@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         default:
             $startOfQuarter = null;
             $endOfQuarter = null;
-    }
+    } 
 
     $medicineManager->fetchAndStoreMedstocks($firstDayOfMonth, $startOfQuarter, $endOfQuarter);
 
@@ -107,6 +107,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       .logo-header {
           transition: background 0.3s ease;
       }
+      .nav-item.active {
+            background-color: rgba(0, 0, 0, 0.1); 
+            color: #fff; 
+        }
+
+        .nav-item.active i {
+            color: #fff;
+        } 
   </style>
 </head>
 <body>

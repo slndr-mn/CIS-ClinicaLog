@@ -272,11 +272,11 @@ class User {
             $stmt->bindValue(1, $user_id); 
             $stmt->bindValue(2, $user_fname);
             $stmt->bindValue(3, $user_lname);
-            $stmt->bindValue(4, $user_mname);
+            $stmt->bindValue(4, $user_mname); 
             $stmt->bindValue(5, $user_email);
             $stmt->bindValue(6, $user_position);
             $stmt->bindValue(7, $user_role);
-            $stmt->bindValue(8, $user_status);
+            $stmt->bindValue(8, $user_status); 
             $stmt->bindValue(9, $user_dateadded); 
             $stmt->bindValue(10, $user_profile);
             $stmt->bindValue(11, $password); 

@@ -369,7 +369,7 @@ $userData = $user->getUserData($user_id);
                                   <td>{$node->user_dateadded}</td>
                                   <td>
                                       <span style='
-                                          display: inline-block;
+                                          display: inline-block; 
                                           padding: 5px 10px;
                                           border-radius: 50px;
                                           background-color: {$statusColor};
@@ -536,7 +536,7 @@ $userData = $user->getUserData($user_id);
                                 confirm: {
                                     className: "btn btn-success",
                                 },
-                            },
+                            }, 
                         });
                     } else {
                         swal({

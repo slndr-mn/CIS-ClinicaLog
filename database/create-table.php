@@ -22,7 +22,7 @@
     $conn = mysqli_connect($servername, $username, $password, $dbname); 
  
     if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error()); 
+        die("Connection failed: " . mysqli_connect_error());  
     } else {
         echo "Connected to database $dbname successfully<br>";
     }
@@ -201,7 +201,7 @@
         echo "Error creating table 'extension': " . mysqli_error($conn) . "<br>";
     }
 
-    // Create the 'addresses' table
+    // Create the 'addresses' table 
     $sql_addresses = "CREATE TABLE IF NOT EXISTS pataddresses (
         address_id INT AUTO_INCREMENT PRIMARY KEY,
         address_patientid INT NOT NULL,
@@ -300,6 +300,26 @@
     } else {
         echo "Error creating table 'medicalrecords': " . mysqli_error($conn) . "<br>";
     }
+
+    //Create the 'transaction' table
+    $sql_transaction = "CREATE TABLE IF NOT EXISTS transactions (
+        transac_id INT AUTO_INCREMENT PRIMARY KEY,
+        transac_patientid INT NOT NULL,
+        transac_purpose VARCHAR(50), 
+        transac_date DATE,
+        transac_in TIME,
+        transac_out TIME,
+        transac_spent INT,
+        transac_status ENUM('Pending', 'Progress', 'Done') NOT NULL,
+        FOREIGN KEY (transac_patientid) REFERENCES patients(patient_id)
+    )";
+
+    if (mysqli_query($conn, $sql_transaction)) {
+        echo "Table 'transaction' created successfully<br>";
+    } else {
+        echo "Error creating table 'transaction': " . mysqli_error($conn) . "<br>";
+    }
+
 
 mysqli_close($conn);
 ?>

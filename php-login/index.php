@@ -7,7 +7,7 @@ session_start();
 
 include '../database/config.php'; 
 include '../php/user.php';
-include '../php/patient.php';
+include '../php/patient.php'; 
 $database = new Database();      
 $db = $database->getConnection();
 $user = new User($db);
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
 
 if ($userData) {  
     session_regenerate_id(true); 
-    $_SESSION['logged_in'] = true; 
+    $_SESSION['logged_in'] = true;  
     $_SESSION['user_id'] = $userData->user_id;  
     $_SESSION['user_status'] = $userData->user_status;
     $_SESSION['user_position'] = $userData->user_position;
@@ -41,7 +41,7 @@ if ($userData) {
             header('Location: ../php-admin/adminindex.php');  
             exit;
         }
-    } else {
+    } else { 
         $_SESSION['error_message'] = "Account can't be used.";
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit;

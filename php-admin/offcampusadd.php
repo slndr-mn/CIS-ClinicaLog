@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
     <div class="sidebar" id="sidebar"></div>
     <!-- End Sidebar -->
 
-    <div class="main-panel">
+    <div class="main-panel"> 
         <!-- Header -->
         <div class="main-header" id="header"></div>
         <!-- End Header -->
@@ -698,7 +698,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
 <script>
 $(document).ready(function () {
     $('.removeButton').on('click', function () {
-        var offcampusId = $(this).data('id'); // Get the record ID
+        var offcampusId = $(this).data('id'); 
         
         swal({
             title: "Are you sure?",

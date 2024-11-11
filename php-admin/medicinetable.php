@@ -339,7 +339,7 @@ $userData = $user->getUserData($user_id);
                                 <th>Name</th>
                                 <th>Quantity</th>
                                 <th>Dosage Strength</th>
-                                <th>Date & Time Added</th>
+                                <th>Date & Time Added</th> 
                                 <th>Expiration Date</th>
                                 <th>Status</th> <!-- Column for Disable status -->
                                 <th>Action</th>

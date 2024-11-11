@@ -32,12 +32,10 @@
     <link rel="stylesheet" href="../css/kaiadmin.min.css" />
 
     <!-- ICONS -->
-    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
-
     <style>
-      .sidebar {
+      .sidebar {  
           transition: background 0.3s ease;
-          /* Initial background */
+          /* Initial background */ 
           background: linear-gradient(to bottom, #DB6079, #DA6F65, #E29AB4);
       }
       .logo-header {
@@ -115,7 +113,7 @@
                 </a>
               </li>
               <li class="nav-item" id="appoint-item">
-                <a href="appointments.php">
+                <a href="transactions.php">
                   <i class="fas fas fa-receipt"></i>
                   <p>Transactions</p>
                 </a>
@@ -145,7 +143,7 @@
                 </a>
               </li>
               <li class="nav-item" id="reports-item">
-                <a href="reports.php">
+                <a href="adminlogs.php">
                   <i class="fas fa-file-alt"></i>
                   <p>Admin Logs</p>
                 </a>

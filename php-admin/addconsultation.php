@@ -474,7 +474,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                                         <tfoot>
                                             <tr>
                                                 <th>Name:</th>
-                                                <th>Diagnosis</th>
+                                                <th>Diagnosis</th> 
                                                 <th>Prescribed Medicine:</th>
                                                 <th>Quantity:</th>
                                                 <th>Notes:</th>

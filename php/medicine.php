@@ -261,7 +261,6 @@ class MedicineManager {
         $medstocks = $this->medstocks->getAllNodes();
         $medicines = $this->medicines->getAllNodes();
         
-        // Create a map to count occurrences (stocks) per medicine
         $stockCountMap = [];
     
         // Count occurrences of each medicine_id in medstocks
