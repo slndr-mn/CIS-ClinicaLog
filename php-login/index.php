@@ -41,7 +41,7 @@ if ($userData) {
             header('Location: ../php-admin/adminindex.php');  
             exit;
         }
-    } else { 
+    } else {  
         $_SESSION['error_message'] = "Account can't be used.";
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit;

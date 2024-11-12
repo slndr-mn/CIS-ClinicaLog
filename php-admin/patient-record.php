@@ -1,9 +1,17 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+  header('Location: ../php-login/index.php'); 
+  exit; 
+}
+
+
 include('../database/config.php');
 include('../php/user.php'); 
 include('../php/medicine.php');
 include('../php/patient.php');
+include('../php/patienttables.php');
 
 
 $db = new Database();
@@ -257,13 +265,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </tfoot>
                         <tbody> 
                         <?php
-                        $nodes = $patient->getAllPatientsTable();
+                        $patientTables = new PatientTablesbyType($conn);
+                        $nodes = $patientTables->getAllTable();
                         $index = 0; 
 
                         foreach ($nodes as $node) {
                             
                             $disableStatus = isset($node->status) && $node->status == 'Inactive' ? 'Disabled' : 'Enabled';
                             $statusColor = isset($node->status) && $node->status == 'Inactive' ? '#ff6961' : '#77dd77';
+                            $node->name = "{$node->fname} " . (!empty($node->mname) ? "{$node->mname} " : "") . "{$node->lname}";
 
                             $index++;
 
@@ -274,7 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         data-type='{$node->type}' 
                                         data-status='{$node->status}' class='patient-row'>
                                   <td>{$index}</td> <!-- For No. column -->
-                                  <td>{$node->id}</td>
+                                  <td>{$node->idnum}</td>
                                   <td>{$node->name}</td>
                                   <td>{$node->email}</td>
                                   <td>{$node->sex}</td>

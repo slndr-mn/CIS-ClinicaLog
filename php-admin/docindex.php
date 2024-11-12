@@ -4,9 +4,9 @@ include('../database/config.php');
 include('../php/user.php');
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: login.php'); 
-    exit;
-}
+    header('Location: ../php-login/index.php'); 
+    exit; 
+  }
 
 $db = new Database();
 $conn = $db->getConnection();

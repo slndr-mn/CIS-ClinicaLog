@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: ../php-login/index.php'); 
+    exit; 
+  }
+
 include('../database/config.php');
 include('../php/user.php');
 include('../php/medicine.php');

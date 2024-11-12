@@ -1130,34 +1130,38 @@ class PatientManager{
             foreach ($dataArray as $entry) {
                 if (isset($entry->patient_id, $entry->patient_lname, $entry->patient_fname, $entry->patient_email, $entry->patient_sex, $entry->patient_status)) {
                     
+                    // Construct dynamic idnum field name based on the personType
+                    $idnumField = strtolower($personType) . '_idnum';
+                    $idnum = property_exists($entry, $idnumField) ? $entry->$idnumField : null;
+    
                     $combinedEntry = (object) [
-                        'id' => $entry->patient_id, 
-                        'name' => $entry->patient_lname . ' ' . $entry->patient_fname, 
-                        'email' => $entry->patient_email, 
-                        'sex' => $entry->patient_sex, 
-                        'type' => $entry->patient_patienttype, 
-                        'status' => $entry->patient_status 
+                        'id' => $entry->patient_id,
+                        'name' => $entry->patient_lname . ' ' . $entry->patient_fname,
+                        'email' => $entry->patient_email,
+                        'sex' => $entry->patient_sex,
+                        'type' => $personType,
+                        'status' => $entry->patient_status,
+                        'idnum' => $idnum // Dynamically added idnum
                     ];
     
-                    
                     $combinedData[] = $combinedEntry;
                 } else {
-                    
                     error_log("Missing required fields in entry: " . json_encode($entry));
                 }
             }
         };
     
-       
+        // Combine each type of data
         $combineRows('Patient', $patients);
         $combineRows('Student', $students);
         $combineRows('Faculty', $faculties);
         $combineRows('Staff', $staffs);
         $combineRows('Extension Worker', $extensions);
     
-        
         return $combinedData;
     }
+    
+    
     
   
 public function getStudentData($patient_id) {

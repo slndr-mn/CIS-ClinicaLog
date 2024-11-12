@@ -4,6 +4,7 @@ include('../database/config.php');
 include('../php/user.php');
 include('../php/medicine.php');
 
+
 $db = new Database();
 $conn = $db->getConnection(); 
 
@@ -23,8 +24,8 @@ $medicine = new MedicineManager($conn);
                     <div class="d-flex align-items-center">
                         <h4 class="card-title">Medicine Details</h4> 
                     </div>
-                </div>
-                <div class="card-body">
+                </div> 
+                <div class="card-body"> 
                     <form id="medicineForm" action="medicinecontrol.php" method="POST">
                     <input type="hidden" id="medicineId" name="medicineId" value="" />
                         <div class="form-group mb-3">

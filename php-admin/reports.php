@@ -4,8 +4,8 @@ include('../database/config.php');
 include('../php/user.php');
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: login.php'); 
-    exit;
+  header('Location: ../php-login/index.php'); 
+  exit; 
 }
 
 $db = new Database();
@@ -23,7 +23,7 @@ $user_id = $_SESSION['user_id'];
     <title>CIS:Clinicalog</title> 
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
-
+ 
     <!-- Fonts and icons -->
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
     <script>
@@ -85,6 +85,7 @@ $user_id = $_SESSION['user_id'];
                 <h1>
                 Yearly Statistic Report of Services
                 </h1>
+                <!--start card -->
                 <div class="row">
                 <div class="col-md-8">
                 <div class="card card-round">
@@ -113,6 +114,7 @@ $user_id = $_SESSION['user_id'];
                 </div>
               </div>                   
               </div>
+              <!--end card -->
             </div>
         </div>
     </div>

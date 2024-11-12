@@ -1,4 +1,32 @@
 <?php
+class AllPatTable{
+    public $id;
+    public $lname;
+    public $fname;
+    public $mname;
+    public $email;
+    public $profile;
+    public $status;
+    public $idnum;
+    public $sex; 
+    public $type; 
+
+    public function __construct($patient_id, $all_lname, $all_fname, $all_mname, $all_email, 
+                                $all_profile, $all_status, $all_idnum,
+                                 $all_sex, $patient_type) { 
+        $this->id = $patient_id;
+        $this->lname = $all_lname;
+        $this->fname = $all_fname;
+        $this->mname = $all_mname;
+        $this->email = $all_email;
+        $this->profile = $all_profile;
+        $this->status = $all_status;
+        $this->idnum = $all_idnum;
+        $this->sex = $all_sex; 
+        $this->type = $patient_type; 
+    }
+}
+
 class StudentTable{
     public $patient_id;
     public $student_lname;
@@ -174,6 +202,7 @@ class PatLinkedList {
 
 class PatientTablesbyType {
     private $db;
+    private $allpat;
     private $students;
     private $faculties;
     private $staffs;
@@ -184,15 +213,55 @@ class PatientTablesbyType {
 
     public function __construct($db) {
         $this->db = $db;
+        $this->allpat= new PatLinkedList();
         $this->students = new PatLinkedList();
         $this->faculties = new PatLinkedList();
         $this->staffs = new PatLinkedList();
         $this->extens = new PatLinkedList();
+        $this->loadAllTable();
         $this->loadStudentTable();
         $this->loadFacultyTable();
         $this->loadStaffTable();
         $this->loadExtensionsTable();
 
+    }
+
+    public function loadAllTable() {
+        $stmt = $this->db->prepare("SELECT 
+                            patients.patient_id AS patient_id,
+                            patients.patient_lname AS all_lname,
+                            patients.patient_fname AS all_fname,
+                            patients.patient_mname AS all_mname,
+                            patients.patient_email AS all_email,
+                            patients.patient_profile AS all_profile,
+                            patients.patient_status AS all_status,
+                            patients.patient_sex AS all_sex,
+                            patients.patient_patienttype AS patient_type,
+                            COALESCE(patstudents.student_idnum, patfaculties.faculty_idnum, patstaffs.staff_idnum, patextensions.exten_idnum) AS all_idnum
+                        FROM patients
+                        LEFT JOIN patstudents ON patients.patient_id = patstudents.student_patientid
+                        LEFT JOIN patfaculties ON patients.patient_id = patfaculties.faculty_patientid
+                        LEFT JOIN patstaffs ON patients.patient_id = patstaffs.staff_patientid
+                        LEFT JOIN patextensions ON patients.patient_id = patextensions.exten_patientid;
+                        ");
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($result as $row) {
+            $all = new AllPatTable(
+                $row['patient_id'],
+                $row['all_lname'],
+                $row['all_fname'],
+                $row['all_mname'],
+                $row['all_email'],
+                $row['all_profile'],
+                $row['all_status'],
+                $row['all_idnum'],
+                $row['all_sex'],
+                $row['patient_type']
+            );
+            $this->allpat->add($all);
+        }
     }
 
     public function loadStudentTable() {
@@ -308,6 +377,10 @@ class PatientTablesbyType {
             );
             $this->extens->add($exten);
         }
+    }
+
+    public function getAllTable() {
+        return $this->allpat->getAllNodes();
     }
 
     public function getAllStudents() {

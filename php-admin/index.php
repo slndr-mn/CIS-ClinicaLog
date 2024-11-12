@@ -4,8 +4,8 @@ include('../database/config.php');
 include('../php/user.php');
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: ../php-login/index.php'); 
-    exit;
+  header('Location: ../php-login/index.php'); 
+  exit; 
 }
 
 $db = new Database();
@@ -15,9 +15,9 @@ $user = new User($conn);
 $user_id = $_SESSION['user_id'];
 
 ?>
- 
+  
 <!DOCTYPE html> 
-<html lang="en">  
+<html lang="en">   
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>CIS:Clinicalog</title> 

@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +29,7 @@
       });
     </script>
 
-    <!-- CSS Files -->
+    <!-- CSS Files --> 
     <link rel="stylesheet" href="../css/bootstrap.min.css" />
     <link rel="stylesheet" href="../css/plugins.min.css" />
     <link rel="stylesheet" href="../css/kaiadmin.min.css" />
@@ -57,7 +60,7 @@
 <div class="sidebar-logo">
           <!-- Logo Header -->
           <div class="logo-header" id="logo-header">
-            <a href="index.html" class="logo">
+            <a href="index.php" class="logo">
               <img
                 src="../assets/img/sidebar-logo.svg"
                 alt="navbar brand"

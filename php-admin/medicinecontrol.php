@@ -4,6 +4,8 @@ session_start();
 include('../database/config.php');
 include('../php/medicine.php');
 
+
+
 $db = new Database();
 $conn = $db->getConnection();
 $medicine = new MedicineManager($conn);

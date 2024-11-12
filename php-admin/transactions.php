@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: ../php-login/index.php'); 
+    exit; 
+  }
+
+
 include('../database/config.php');
 include('../php/user.php');
 include('../php/transaction.php');
@@ -14,7 +21,7 @@ $patientType = isset($_GET['patient_patienttype']) ? $_GET['patient_patienttype'
 
 $patientDetails = null;
 
-$medicineId = isset($_GET['id']) ? $_GET['id'] : null;
+$medicineId = isset($_GET['id']) ? $_GET['id'] : null; 
 
 ?>
 <!DOCTYPE html>
