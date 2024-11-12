@@ -4,12 +4,15 @@ include('../database/config.php');
 include('../php/user.php'); 
 include('../php/medicine.php');
 include('../php/patient.php');
+include('../php/patienttables.php');
+
 
 
 $db = new Database();
 $conn = $db->getConnection(); 
 
 $patient = new PatientManager($db);
+
  
 $user = new User($conn); 
 $user_id = $_SESSION['user_id'];
@@ -139,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div>
                   <ul class="nav nav-pills nav-secondary nav-pills-no-bd" id="pills-tab-without-border" role="tablist">
                     <li>
-                      <a class="nav-link active" href="patient-record.php" role="tab">All</a>
+                      <a class="nav-link" href="patient-record.php" role="tab">All</a>
                     </li>
                     <li>
                       <a class="nav-link" href="patient-recordstud.php" role="tab">Student</a>
@@ -148,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       <a class="nav-link" href="patient-recordfac.php" role="tab">Faculty</a>
                     </li>
                     <li>
-                      <a class="nav-link" href="patient-recordstaff.php" role="tab">Staff</a>
+                      <a class="nav-link active" href="patient-recordstaff.php" role="tab">Staff</a>
                     </li>
                     <li>
                       <a class="nav-link" href="patient-recordexten.php" role="tab">Extension</a>
@@ -228,86 +231,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           </div>
                         </div>
                       </div>
-
                       <div class="table-responsive">
-                      <table id="add-patient" class="table table-striped table-hover">
-                        <thead>
-                          <tr>
-                            <th>No.</th>
-                            <th>ID Number</th>
-                            <th>Full Name</th>
-                            <th>Email</th>
-                            <th>Sex</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                            <th style="width: 10%">Action</th>
-                          </tr>
-                        </thead>
-                        <tfoot>
-                          <tr>
-                            <th>No.</th>
-                            <th>ID Number</th>
-                            <th>Full Name</th>
-                            <th>Email</th>
-                            <th>Sex</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                          </tr>
-                        </tfoot>
-                        <tbody> 
-                        <?php
-                        $nodes = $patient->getAllPatientsTable();
-                        $index = 0; 
+                                <table id="add-patient" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Name & ID</th>
+                                            <th>Email</th>
+                                            <th>Sex</th>
+                                            <th>Office</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th style="width: 10%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Name & ID</th>
+                                            <th>Email</th>
+                                            <th>Sex</th>
+                                            <th>Office</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                <?php
+                                $patientTables = new PatientTablesbyType($conn);
+                                $staffs = $patientTables->getAllStaffs();
+                                $counter = 1;
+                                
+                                foreach ($staffs as $staff) {
+                                    // Determine the status and color for each staff
+                                    $statusText = isset($staff->staff_status) && $staff->staff_status == 'Inactive' ? 'Disabled' : 'Enabled';
+                                    $statusColor = isset($staff->staff_status) && $staff->staff_status == 'Inactive' ? '#ff6961' : '#77dd77';
 
-                        foreach ($nodes as $node) {
-                            
-                            $disableStatus = isset($node->status) && $node->status == 'Inactive' ? 'Disabled' : 'Enabled';
-                            $statusColor = isset($node->status) && $node->status == 'Inactive' ? '#ff6961' : '#77dd77';
+                                    echo '<tr>';
+                                    echo '<td>' . $counter++ . '</td>';
+                                    echo '<td>' . $staff->staff_lname . ', ' . $staff->staff_fname . ' ' . $staff->staff_mname . ' (' . $staff->staff_idnum . ')</td>';
+                                    echo '<td>' . $staff->staff_email . '</td>';
+                                    echo '<td>' . $staff->staff_sex . '</td>';
+                                    echo '<td>' . $staff->staff_office . '</td>';
+                                    echo '<td>' . $staff->staff_role . '</td>';
+                                    
+                                    // Status span with dynamic color and text
+                                    echo '<td>
+                                            <span style="display: inline-block;
+                                                        padding: 5px 10px;
+                                                        border-radius: 50px;
+                                                        background-color: ' . $statusColor . '; /* Color based on status */
+                                                        color: white;
+                                                        text-align: center;
+                                                        min-width: 60px;">
+                                                ' . $statusText . '
+                                            </span>
+                                        </td>';
 
-                            $index++;
+                                    echo '<td> 
+                                        <div class="form-button-action">
+                                            <button type="submit" class="btn btn-link btn-primary btn-lg viewButton" 
+                                                    data-id="' . $staff->patient_id . '" data-type="'. $staff->patient_type .'">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                            <button type="submit" class="btn btn-link btn-primary btn-lg editButton"
+                                                    data-id="' . $staff->patient_id . '" data-type="'. $staff->patient_type .'">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </td>';
+                                    echo '</tr>';
+                                }
+                                ?>
+                            </tbody>
 
-                            echo "<tr data-id='{$node->id}' 
-                                        data-name='{$node->name}' 
-                                        data-email='{$node->email}' 
-                                        data-sex='{$node->sex}' 
-                                        data-type='{$node->type}' 
-                                        data-status='{$node->status}' class='patient-row'>
-                                  <td>{$index}</td> <!-- For No. column -->
-                                  <td>{$node->id}</td>
-                                  <td>{$node->name}</td>
-                                  <td>{$node->email}</td>
-                                  <td>{$node->sex}</td>
-                                  <td>{$node->type}</td>
-                                  <td>
-                                      <span style='
-                                          display: inline-block;
-                                          padding: 5px 10px;
-                                          border-radius: 50px;
-                                          background-color: {$statusColor}; /* Determine color based on status if needed */
-                                          color: white; 
-                                          text-align: center;
-                                          min-width: 60px;'>
-                                          {$node->status}
-                                      </span>
-                                  </td>
-                                  <td> 
-                                      <div class='form-button-action'>
-                                      
-                                          <button type='submit' class='btn btn-link btn-primary btn-lg viewButton' 
-                                                  data-id='{$node->id}' data-type='{$node->type}'>
-                                              <i class='fa fa-eye'></i>
-                                          </button>
-                                          <button type='submit' class='btn btn-link btn-primary btn-lg editButton'
-                                                  data-id='{$node->id}' data-type='{$node->type}'>
-                                                <i class='fa fa-edit'></i>
-                                          </button>
-                                      </div>
-                                  </td>
-                              </tr>";
-                        }
-                        ?>
-                      </tbody>
                       </table>
                     </div>
                     </div>

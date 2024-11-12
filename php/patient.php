@@ -21,7 +21,7 @@ class Patient {
         $this->patient_id = $id;
         $this->patient_lname = $lname;
         $this->patient_fname = $fname;
-        $this->patient_mname = $mname;
+        $this->patient_mname = $mname; 
         $this->patient_dob = $dob;
         $this->patient_email = $email;
         $this->patient_connum = $connum;
@@ -208,11 +208,11 @@ class PatientLinkedList {
         $current = $this->head;
         while ($current !== null) {
             if ($current->patient_email === $email) { 
-                return $current; // Return the patient object instead of true
+                return $current; 
             }
             $current = $current->next;
         }
-        return false; // Return false if no matching email is found
+        return false; 
     }
     
 

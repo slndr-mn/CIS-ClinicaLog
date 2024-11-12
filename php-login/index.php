@@ -32,7 +32,7 @@ if ($userData) {
 
     if ($userData->user_status === 'Active') {
         if ($_SESSION['user_position'] === $defaultadmin || $_SESSION['user_position'] === $doctor) {
-            header('Location: ../php-admin/index.php'); 
+            header('Location: ../php-admin/index.php');  
             exit;
         } elseif ($_SESSION['user_role'] === 'Super Admin') {
             header('Location: ../php-admin/superadindex.php'); 

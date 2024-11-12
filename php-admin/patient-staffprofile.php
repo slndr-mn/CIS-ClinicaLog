@@ -15,482 +15,369 @@ $user_id = $_SESSION['user_id'];
 $userData = $user->getUserData($user_id);
 
 if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
-    $patientId = $_SESSION['id'];
-    $patientType = $_SESSION['type'];
-    $patientDetails = $patient->getStaffData($patientId);
+  $patientId = $_SESSION['id'];
+  $patientType = $_SESSION['type'];
+  $patientDetails = $patient->getStaffData($patientId);
 } else {
-    echo "No patient data found.";
+  echo "No patient data found.";
 }
 ?>
- 
-<!DOCTYPE html> 
+
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>CIS:Clinicalog</title> 
-    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
-    <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CIS:Clinicalog</title>
+  <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
+  <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 
-    <!-- Fonts and icons -->
-    <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
-    <script>
-      WebFont.load({ 
-        google: { families: ["Public Sans:300,400,500,600,700"] },
-        custom: {
-          families: [
-            "Font Awesome 5 Solid",
-            "Font Awesome 5 Regular",
-            "Font Awesome 5 Brands",
-            "simple-line-icons",
-          ],
-          urls: ["../css/fonts.min.css"], 
-        },
-        active: function () {
-          sessionStorage.fonts = true;
-        },
-      });
-    </script>
+  <!-- Fonts and icons -->
+  <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
+  <script>
+    WebFont.load({
+      google: {
+        families: ["Public Sans:300,400,500,600,700"]
+      },
+      custom: {
+        families: [
+          "Font Awesome 5 Solid",
+          "Font Awesome 5 Regular",
+          "Font Awesome 5 Brands",
+          "simple-line-icons",
+        ],
+        urls: ["../css/fonts.min.css"],
+      },
+      active: function() {
+        sessionStorage.fonts = true;
+      },
+    });
+  </script>
 
-    <!-- CSS Files -->
-    <link rel="stylesheet" href="../css/bootstrap.min.css" />
-    <link rel="stylesheet" href="../css/plugins.min.css" />
-    <link rel="stylesheet" href="../css/kaiadmin.min.css" />
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="../css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../css/plugins.min.css" />
+  <link rel="stylesheet" href="../css/kaiadmin.min.css" />
 
-    <!-- ICONS -->
-    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+  <!-- ICONS -->
+  <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 
-    <style>
-      .sidebar {
-          transition: background 0.3s ease;
-          /* Initial background */
-          background: linear-gradient(to bottom, #DB6079, #DA6F65, #E29AB4);
-      }
-      .logo-header {
-          transition: background 0.3s ease;
-      }
-      .profile-image {
-        display: flex;
-        justify-content: center ;
-        align-items: center ;
-        flex-direction: column;
-        margin-bottom: 20px;
-      }
-  
-      .profile-image img {
-        border-radius: 50%;
-        width: 150px;
-        height: 150px;
-        margin-bottom: 10px;
-      }
-  
-      .upload-btn {
-        margin-top: 10px;
-      }
+  <style>
+    .sidebar {
+      transition: background 0.3s ease;
+      /* Initial background */
+      background: linear-gradient(to bottom, #DB6079, #DA6F65, #E29AB4);
+    }
 
-  
+    .logo-header {
+      transition: background 0.3s ease;
+    }
+
+    .profile-image {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    .profile-image img {
+      border-radius: 50%;
+      width: 150px;
+      height: 150px;
+      margin-bottom: 10px;
+    }
+
+    .upload-btn {
+      margin-top: 10px;
+    }
   </style>
 </head>
+
 <body>
-<div class="wrapper">
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar"></div>
-  <!-- End Sidebar -->
-  <div class="main-panel">
-    <!-- Header -->
-    <div class="main-header" id="header"></div>
-    <!-- Main Content -->
-    <div class="container" id="content">
-    <div class="page-inner">
-    <div class=row>
-        <a href="patient-record.php" class="back-nav">
-        <i class="fas fa-arrow-left"></i> Back to Patients' Table
-        </a>
-    </div>
-        <div class="row">
-        <div class="profile-image">
-            <img id="profilePic" src="default-image.jpg" alt="Profile Image" />
+  <div class="wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar"></div>
+    <!-- End Sidebar -->
+    <div class="main-panel">
+      <!-- Header -->
+      <div class="main-header" id="header"></div>
+      <!-- Main Content -->
+      <div class="container" id="content">
+        <div class="page-inner">
+          <div class=row>
+            <div class="mb-3">
+              <a href="patient-record.php" class="back-nav">
+                <i class="fas fa-arrow-left "></i> Back to Patients' Table
+              </a>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card">
-              <div class="card-header">
-                <div class="d-flex align-items-center ">
-                  <h4 class="card-title">Personal Details</h4>
-                </div>
-              </div>
-              <div class="card-body" id="InputInfo">
-                <!-- Form Starts Here -->
-                <form action="patientcontrol.php" method="POST" enctype="multipart/form-data">   
-    
-    <!-- Name Fields -->
-    <div class="row">
-        <div class="col-md-3 mb-3">
-            <label for="lastName" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="  last name" disabled />
-        </div>
-        <div class="col-md-3 mb-3">
-            <label for="firstName" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="  first name" disabled />
-        </div>
-        <div class="col-md-2 mb-3">
-            <label for="middleName" class="form-label">Middle Name</label>
-            <input type="text" class="form-control" id="middleName" name="middleName" placeholder="  middle name" disabled/>
-        </div>
-        <div class="col-md-2 mb-3">
-            <label for="dob" class="form-label">Date of Birth</label>
-            <input type="date" class="form-control" id="dob" name="dob" disabled />
-        </div>
-        <div class="col-md-2 mb-3">
-            <label for="sex" class="form-label">Sex</label>
-            <select class="form-select form-control" id="sex" name="sex" disabled>
-                <option selected disabled>Select Sex</option>
-                <option value="Female">Female</option>
-                <option value="Male">Male</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- ID and Academic Info -->
-    <div class="row">
-        <div class="col-md-3 mb-3">
-            <label for="staffID" class="form-label">ID Number</label>
-            <input type="text" class="form-control" id="staffID" name="staffID" placeholder="ID number" disabled />
-        </div>
-
-        <!--  Office Input -->
-        <div class="col-md-5 mb-3">
-            <label for="Office" class="form-label"> Office</label>
-            <input type="text" class="form-control" id="Office" name="Office" placeholder="Office" disabled />
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <label for="role" class="form-label">Role</label>
-            <input type="text" class="form-control" id="role" name="role" placeholder="Role" disabled />
-        </div>
-    </div>
-
-    <!-- Address Fields -->
-    <h5>Current Address</h5>
-    <div class="row">
-        <!-- Region Input -->
-        <div class="col-md-2 mb-3">
-            <label for="region" class="form-label">Region</label>
-            <input type="text" class="form-control" id="region" name="region" placeholder=" Region" disabled />
-        </div>
-
-        <!-- Province Input -->
-        <div class="col-md-3 mb-3">
-            <label for="province" class="form-label">Province</label>
-            <input type="text" class="form-control" id="province" name="province" placeholder="Province" disabled />
-        </div>
-
-        <!-- Municipality Input -->
-        <div class="col-md-3 mb-3">
-            <label for="municipality" class="form-label">Municipality</label>
-            <input type="text" class="form-control" id="municipality" name="municipality" placeholder="Municipality" disabled />
-        </div>
-
-        <!-- Barangay Input -->
-        <div class="col-md-2 mb-3">
-            <label for="barangay" class="form-label">Barangay</label>
-            <input type="text" class="form-control" id="barangay" name="barangay" placeholder="Barangay" disabled />
-        </div>
-
-        <!-- Street Input (Text Field) -->
-        <div class="col-md-2 mb-3">
-            <label for="street" class="form-label">Purok/Block No./Street</label>
-            <input type="text" class="form-control" id="street" name="street" placeholder="Street address" disabled />
-        </div>
-    </div>
-
-    <!-- Contact Information -->
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="email" class="form-label">Email Address</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Email" disabled />
-        </div>
-        <div class="col-md-6 mb-3">
-            <label for="contactNumber" class="form-label">Contact Number</label>
-            <input type="tel" class="form-control" id="contactNumber" name="contactNumber" placeholder="Contact number" disabled />
-        </div>
-    </div>
-
-    <!-- Emergency Contact Information -->
-    <h5>Emergency Contact Information</h5>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="emergencyContactName" class="form-label">Emergency Contact Name</label>
-            <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" placeholder="Emergency contact name" disabled />
-        </div>
-        <div class="col-md-3 mb-3">
-            <label for="relationship" class="form-label">Relationship</label>
-            <input type="text" class="form-control" id="relationship" name="relationship" placeholder="Relationship" disabled/>
-        </div>
-        <div class="col-md-3 mb-3">
-            <label for="emergencyContactNumber" class="form-label">Emergency Contact Number</label>
-            <input type="tel" class="form-control" id="emergencyContactNumber" name="emergencyContactNumber" placeholder="Emergency contact number" disabled />
-        </div> 
-    </div>
-
-    <div class="row">
-        <h5>Patient's Account Status</h5>
-        <div class="col-md-2 mb-3">
-            <label for="Status" class="form-label">Status</label>
-            <select class="form-select form-control" id="Status" name="Status" disabled>
-                <option selected disabled>Select Status</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-            </select>
-        </div>
-    </div>
-    <div class="row">
-                    <div class="col-md-12 text-center ">
-
+          <div class="page-inner">
+            <div class="row">
+              <h3 class="fw-bold mb-3">Patient's Profle</h3>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="card">
+                  <div class="profile-image">
+                    <div class="card-header">
+                      <img id="profilePic" src="default-image.jpg" alt="Profile Image" />
+                      <div class="row">
+                        <span style="
+                        display: inline-block;
+                        padding: 5px 10px;
+                        border-radius: 50px;
+                        background-color: #DA6F65; 
+                        color: white; 
+                        text-align: center;
+                        min-width: 60px;">
+                          Staff
+                        </span>
+                      </div>
                     </div>
                   </div>
-
-</form>
- 
-                <!-- End of Form -->
+                  <div class="row" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <h5 style="color: #59535A; margin: 0;">#<span id="staffID"></span></h5>
+                    <h5 style="margin: 0;">
+                      <span id="lastName"></span><span>, </span><span id="firstName"></span> <span id="middleName"></span>
+                    </h5>
+                    <h5 style="color: #59535A; margin: 0;"><span id="Office"></span></h5>
+                    <h5 style="color: #59535A; margin: 0;"><span id="role"></span></h5>
+                    <p style="color: #888888; margin-top: 5px;">Status: <span id="Status"></span></p>
+                  </div>
+                </div>
               </div>
+              <div class="col-md-8">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="d-flex align-items-center">
+                      <h4 class="card-title">Personal Details</h4>
+                    </div>
+                  </div>
+                  <div class="card-body" id="InputInfo">
+                    <div class="row">
+                      <div class="col-md-4 mb-3">
+                        <h5 style=" margin: 0;"><span id="age"></span></h5>
+                        <label for="dob" class="form-label">Age</label>
+
+                      </div>
+                      <div class="col-md-4 mb-3">
+                        <h5 style=" margin: 0;"><span id="sex"></span></h5>
+                        <label for="dob" class="form-label">Sex</label>
+
+                      </div>
+                      <div class="col-md-4 mb-3">
+                        <h5 style=" margin: 0;"><span id="dob"></span></h5>
+                        <label for="dob" class="form-label">Date of Birth</label>
+
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12 mb-3">
+                        <h5 style=" margin: 0;">
+                          <span id="street"></span>,
+                          <span id="barangay"></span>,
+                          <span id="municipality"></span>,
+                          <span id="province"></span>,
+                          <span id="region"></span>
+                        </h5>
+                        <label for="dob" class="form-label">Current Address (Strt./Prk., Brgy., Municipality, Province, Region)</label>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <h5 style=" margin: 0;"><span id="email"></span></h5>
+                        <label for="dob" class="form-label">Email Address</label>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h5 style=" margin: 0;"><span id="contactNumber"></span></h5>
+                        <label for="dob" class="form-label">Contact Number</label>
+
+                      </div>
+                    </div>
+                    <div class="row">
+                      <h5 style="margin-top: 9px">Emergency Contact Information</h5>
+                      <div class="col-md-6 mb-3">
+                        <h5 style=" margin: 0;"><span id="emergencyContactName"></span> <label for="dob" class="form-label" id="relationship">//</label></h5>
+                        <label for="dob" class="form-label">Emergency Contact Name</label>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <h5 style=" margin: 0;"><span id="emergencyContactNumber"></span></h5>
+                        <label for="dob" class="form-label">Emergency Contact Number</label>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Start Medical Record -->
+              <div id="medicalrecord"> </div>
+              <!-- End Medical Record -->
             </div>
           </div>
         </div>
-        <!-- Start Medical Record -->
-            <div id="medicalrecord"> </div>
-         <!-- End Medical Record -->
-    </div>
+      </div>
     </div>
   </div>
-</div>
+  <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
+  <script src="../assets/js/core/popper.min.js"></script>
+  <script src="../assets/js/core/bootstrap.min.js"></script>
 
-<script>
-    var patientData = <?php echo json_encode($patientDetails); ?>;
+  <!-- jQuery Scrollbar -->
+  <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
 
-    function populatePatientForm(patientData) {
+  <!-- Chart JS -->
+  <script src="../assets/js/plugin/chart.js/chart.min.js"></script>
 
-            document.getElementById('lastName').value = patientData.patient.patient_lname || '';
-            document.getElementById('firstName').value = patientData.patient.patient_fname || '';
-            document.getElementById('middleName').value = patientData.patient.patient_mname || '';
-            document.getElementById('dob').value = patientData.patient.patient_dob || '';
-            document.getElementById('sex').value = patientData.patient.patient_sex || 'Male';
-            document.getElementById('staffID').value = patientData.staff.staff_idnum || '';
+  <!-- jQuery Sparkline -->
+  <script src="../assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
 
-            document.getElementById('Office').value = patientData.staff.staff_office || '';
-            document.getElementById('role').value = patientData.staff.staff_role || '';
-            document.getElementById('region').value = patientData.address.address_region || '';
-            document.getElementById('province').value = patientData.address.address_province || '';
-            document.getElementById('municipality').value = patientData.address.address_municipality || '';
-            document.getElementById('barangay').value = patientData.address.address_barangay || '';
-            document.getElementById('street').value = patientData.address.address_prkstrtadd || '';
-            document.getElementById('email').value = patientData.patient.patient_email || '';
-            document.getElementById('contactNumber').value = patientData.patient.patient_connum || '';
-            document.getElementById('emergencyContactName').value = patientData.emergencyContact.emcon_conname || '';
-            document.getElementById('relationship').value = patientData.emergencyContact.emcon_relationship || '';
-            document.getElementById('emergencyContactNumber').value = patientData.emergencyContact.emcon_connum || '';
-            document.getElementById('Status').value = patientData.patient.patient_status || '';
-            document.getElementById('profilePic').src = `uploads/${patientData.patient.patient_profile}` || 'default-image.jpg';
+  <!-- Chart Circle -->
+  <script src="../assets/js/plugin/chart-circle/circles.min.js"></script>
 
-    }
+  <!-- Datatables -->
+  <script src="../assets/js/plugin/datatables/datatables.min.js"></script>
 
-    document.addEventListener("DOMContentLoaded", function() {
-        populatePatientForm(patientData);
-    });
-</script>
+  <!-- Bootstrap Notify -->
+  <script src="../assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
 
-<script>
-document.getElementById('downloadBtn').addEventListener('click', function () {
+  <!-- jQuery Vector Maps -->
+  <script src="../assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+  <script src="../assets/js/plugin/jsvectormap/world.js"></script>
 
-    const imageSrc = document.getElementById('profilePic').src;
+  <!-- Sweet Alert -->
+  <script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
 
-    const link = document.createElement('a');
-    link.href = imageSrc;  
-    link.download = 'profile-image.jpg';  
+  <!-- Kaiadmin JS -->
+  <script src="../assets/js/kaiadmin.min.js"></script>
 
-    document.body.appendChild(link);
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    link.click();
+  <script>
+    $(document).ready(function() {
+      // Dynamically load the sidebar
+      $("#sidebar").load("sidebar.php", function(response, status, xhr) {
+        if (status == "error") {
+          console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
+        }
+      });
 
-    document.body.removeChild(link);
-});
+      $("#header").load("header.php", function(response, status, xhr) {
+        if (status == "error") {
+          console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
+        }
+      });
 
-</script>
+      $("#medicalrecord").load("patientmedrecords.php", function(response, status, xhr) {
+        if (status == "error") {
+          console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
+        }
+      });
 
-    <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
-    <script src="../assets/js/core/popper.min.js"></script>
-    <script src="../assets/js/core/bootstrap.min.js"></script>
-
-    <!-- jQuery Scrollbar -->
-    <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
-
-    <!-- Chart JS -->
-    <script src="../assets/js/plugin/chart.js/chart.min.js"></script>
-
-    <!-- jQuery Sparkline -->
-    <script src="../assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
-
-    <!-- Chart Circle -->
-    <script src="../assets/js/plugin/chart-circle/circles.min.js"></script>
-
-    <!-- Datatables -->
-    <script src="../assets/js/plugin/datatables/datatables.min.js"></script>
-
-    <!-- Bootstrap Notify -->
-    <script src="../assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
-
-    <!-- jQuery Vector Maps -->
-    <script src="../assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
-    <script src="../assets/js/plugin/jsvectormap/world.js"></script>
-
-    <!-- Sweet Alert -->
-    <script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
-
-    <!-- Kaiadmin JS -->
-    <script src="../assets/js/kaiadmin.min.js"></script>
-    
-    <script>
-        $(document).ready(function() {
-            // Dynamically load the sidebar
-            $("#sidebar").load("sidebar.php", function(response, status, xhr) {
-                if (status == "error") {
-                    console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
-                }
-            });
-
-            $("#header").load("header.php", function(response, status, xhr) {
-                if (status == "error") {
-                    console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
-                }
-            });
-
-            $("#medicalrecord").load("patientmedrecords.php", function(response, status, xhr) {
-                if (status == "error") {
-                    console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
-                }
-            });
-
-            <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
-            var status = '<?php echo $_SESSION['status']; ?>';
-            var message = '<?php echo htmlspecialchars($_SESSION['message'], ENT_QUOTES); ?>';
-            Swal.fire({
-                title: status === 'success' ? "Success!" : "Error!",
-                text: message,
-                icon: status,
-                confirmButtonText: "OK",
-                confirmButtonColor: status === 'success' ? "#77dd77" : "#ff6961"
-            }).then(() => {
-                if (status === 'success') {
-                sessionStorage.clear();
-                    window.location.href = "patient-staffprofile.php";
-                }
-                <?php unset($_SESSION['status'], $_SESSION['message']); ?>
-            });
-            <?php endif; ?>
-            });
-    </script>
-
-
-
-<script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
-<!-- Ensure you include these in your HTML -->
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- SweetAlert -->
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-        $(document).ready(function () {
-            // Confirmation before canceling the addition of a patient
-            $("#canceladdpatient").click(function () {
-    // Go back to the previous page
-    window.history.back();
-});
-
-
-            // Address Data Logic
-            const addressData = {
-                regions: {
-                    "Region XI": {
-                        provinces: {
-                            "Davao del Norte": {
-                                municipalities: ["Tagum City", "Sto. Tomas"],
-                                barangays: {
-                                    "Tagum City": ["Apokon", "Pagsabangan"],
-                                    "Sto. Tomas": ["Kinamayan", "Poblacion"]
-                                }
-                            },
-                            "Davao de Oro": {
-                                municipalities: ["Pantukan", "Nabunturan"],
-                                barangays: {
-                                    "Pantukan": ["Kingking", "Magnaga"],
-                                    "Nabunturan": ["Anislagan", "Poblacion"]
-                                }
-                            }
-                        }
-                    },
-                    "Region XII": {
-                        provinces: {
-                            "Cotabato": {
-                                municipalities: ["Alamada", "Carmen"],
-                                barangays: {
-                                    "Alamada": ["Camansi", "Macabasa"],
-                                    "Carmen": ["Bentangan", "General Luna"]
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-
-            // Function to populate dropdowns
-            function populateDropdown(dropdown, options) {
-                dropdown.innerHTML = '<option selected disabled>Select</option>';
-                options.forEach(option => {
-                    const opt = document.createElement("option");
-                    opt.value = option;
-                    opt.textContent = option;
-                    dropdown.appendChild(opt);
-                });
-            }
-
-            // Populate Regions dropdown
-            const regionSelect = document.getElementById("region");
-            populateDropdown(regionSelect, Object.keys(addressData.regions));
-
-            // Handle region change
-            regionSelect.addEventListener("change", function () {
-                const selectedRegion = this.value;
-                const provinces = Object.keys(addressData.regions[selectedRegion].provinces);
-                populateDropdown(document.getElementById("province"), provinces);
-            });
-
-            // Handle province change
-            document.getElementById("province").addEventListener("change", function () {
-                const selectedRegion = regionSelect.value;
-                const selectedProvince = this.value;
-                const municipalities = addressData.regions[selectedRegion].provinces[selectedProvince].municipalities;
-                populateDropdown(document.getElementById("municipality"), municipalities);
-            });
-
-            // Handle municipality change
-            document.getElementById("municipality").addEventListener("change", function () {
-                const selectedRegion = regionSelect.value;
-                const selectedProvince = document.getElementById("province").value;
-                const selectedMunicipality = this.value;
-                const barangays = addressData.regions[selectedRegion].provinces[selectedProvince].barangays[selectedMunicipality];
-                populateDropdown(document.getElementById("barangay"), barangays);
-            });
+      <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
+        var status = '<?php echo $_SESSION['status']; ?>';
+        var message = '<?php echo htmlspecialchars($_SESSION['message'], ENT_QUOTES); ?>';
+        Swal.fire({
+          title: status === 'success' ? "Success!" : "Error!",
+          text: message,
+          icon: status,
+          confirmButtonText: "OK",
+          confirmButtonColor: status === 'success' ? "#77dd77" : "#ff6961"
+        }).then(() => {
+          if (status === 'success') {
+            sessionStorage.clear();
+            window.location.href = "patient-staffprofile.php";
+          }
+          <?php unset($_SESSION['status'], $_SESSION['message']); ?>
         });
-    </script>
+      <?php endif; ?>
 
+      function formatDateToWords(dateString) {
+        if (!dateString || (!dateString.includes('/') && !dateString.includes('-'))) {
+          return '';
+        }
 
+        const monthNames = [
+          "January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ];
 
+        dateString = dateString.replace(/-/g, '/');
+
+        const [year, month, day] = dateString.split('/');
+
+        if (!year || !month || !day) return '';
+
+        const monthName = monthNames[parseInt(month, 10) - 1];
+        const dayNumber = parseInt(day, 10);
+
+        if (!monthName || isNaN(dayNumber)) return '';
+
+        return `${monthName} ${dayNumber}, ${year}`;
+      }
+
+      function calculateAge(dobString) {
+        if (!dobString) return '';
+
+        const dob = new Date(dobString);
+        const today = new Date();
+
+        let age = today.getFullYear() - dob.getFullYear();
+        const monthDifference = today.getMonth() - dob.getMonth();
+
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dob.getDate())) {
+          age--;
+        }
+
+        return age;
+      }
+
+      function getOrdinalSuffix(num) {
+        const suffixes = ["th", "st", "nd", "rd"];
+        const value = num % 100;
+        return suffixes[(value - 20) % 10] || suffixes[value] || suffixes[0];
+      }
+
+      // Passing PHP data to JavaScript
+      var patientData = <?php echo json_encode($patientDetails); ?>;
+
+      function populatePatientForm(data) {
+        const dobFormatted = data.patient.patient_dob ? formatDateToWords(data.patient.patient_dob) : 'Ey';
+        const age = calculateAge(data.patient.patient_dob);
+
+        $('#lastName').text(data.patient.patient_lname || '');
+        $('#firstName').text(data.patient.patient_fname || '');
+        $('#middleName').text(data.patient.patient_mname || '');
+        $('#dob').text(dobFormatted);
+        $('#age').text(age);
+        $('#sex').text(data.patient.patient_sex || 'Male');
+        $('#staffID').text(data.staff.staff_idnum || '');
+        $('#Office').text(data.staff.staff_office || '');
+        $('#role').text(data.staff.staff_role);
+        $('#region').text(data.address.address_region || '');
+        $('#province').text(data.address.address_province || '');
+        $('#municipality').text(data.address.address_municipality || '');
+        $('#barangay').text(data.address.address_barangay || '');
+        $('#street').text(data.address.address_prkstrtadd || '');
+        $('#email').text(data.patient.patient_email || '');
+        $('#contactNumber').text(data.patient.patient_connum || '');
+        $('#emergencyContactName').text(data.emergencyContact.emcon_conname || '');
+        $('#relationship').text(data.emergencyContact.emcon_relationship || '');
+        $('#emergencyContactNumber').text(data.emergencyContact.emcon_connum || '');
+        $('#Status').text(data.patient.patient_status || '');
+        $('#profilePic').attr('src', `uploads/${data.patient.patient_profile}` || 'default-image.jpg');
+
+      }
+
+      populatePatientForm(patientData);
+    });
+  </script>
 </body>
+
 </html>
