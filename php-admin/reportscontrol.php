@@ -23,7 +23,7 @@ try {
             COUNT(CASE WHEN p.patient_patienttype = 'Extension' THEN 1 END) AS extension
         FROM 
             transactions t
-        INNER JOIN 
+        INNER JOIN  
             patients p ON t.transac_patientid = p.patient_id
         WHERE 
             YEAR(t.transac_date) = :year AND t.transac_status = 'Done'

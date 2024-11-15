@@ -11,7 +11,7 @@ class Database {
         $this->connect(); 
     }
 
-    // Method to create and return a PDO connection
+    // Method to create and return a PDO connection 
     private function connect() {
         $dsn = "mysql:host=" . $this->host . ";dbname=" . $this->dbname;
         try {

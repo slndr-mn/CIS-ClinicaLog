@@ -2,10 +2,11 @@
 session_start();
 include('../database/config.php');
 include('../php/user.php');
+include('../php/dashboard.php');
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-  header('Location: ../php-login/index.php'); 
-  exit; 
+    header('Location: ../php-login/index.php'); 
+    exit;
 }
 
 $db = new Database();
@@ -14,10 +15,12 @@ $conn = $db->getConnection();
 $user = new User($conn); 
 $user_id = $_SESSION['user_id'];
 
-?> 
-  
+$dashboard = new Dashboard($conn); 
+
+?>
+ 
 <!DOCTYPE html> 
-<html lang="en">   
+<html lang="en">  
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>CIS:Clinicalog</title> 
@@ -37,7 +40,7 @@ $user_id = $_SESSION['user_id'];
             "simple-line-icons",
           ],
           urls: ["../css/fonts.min.css"], 
-        }, 
+        },
         active: function () {
             
           sessionStorage.fonts = true;
@@ -90,9 +93,6 @@ $user_id = $_SESSION['user_id'];
               <div>
                 <h3 class="fw-bold mb-3">Dashboard</h3>
               </div>
-              <div class="ms-md-auto py-2 py-md-0">
-                <a href="#" class="btn btn-primary btn-round">Add Patient</a>
-              </div>
             </div>
             <div class="row">
               <div class="col-sm-6 col-md-3">
@@ -107,10 +107,10 @@ $user_id = $_SESSION['user_id'];
                         </div>
                       </div>
                       <div class="col col-stats ms-3 ms-sm-0">
-                        <div class="numbers">
-                          <p class="card-category">Patients</p>
-                          <h4 class="card-title">1,294</h4>
-                        </div>
+                          <div class="numbers">
+                              <p class="card-category">Active Patients</p>
+                              <h4 class="card-title"><?php echo $dashboard->countActivePatients();; ?></h4>
+                          </div>
                       </div>
                     </div>
                   </div>
@@ -129,8 +129,8 @@ $user_id = $_SESSION['user_id'];
                       </div>
                       <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
-                          <p class="card-category">Staff Users</p>
-                          <h4 class="card-title">5</h4>
+                          <p class="card-category">Active Staff Users</p>
+                          <h4 class="card-title"><?php echo $dashboard->countActiveStaffUsers();; ?></h4>
                         </div>
                       </div>
                     </div>
@@ -151,7 +151,7 @@ $user_id = $_SESSION['user_id'];
                       <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
                           <p class="card-category">Medicines</p>
-                          <h4 class="card-title">300</h4>
+                          <h4 class="card-title"><?php echo $dashboard->countAvailableMedstocks();; ?></h4>
                         </div>
                       </div>
                     </div>
@@ -171,8 +171,8 @@ $user_id = $_SESSION['user_id'];
                       </div>
                       <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
-                          <p class="card-category">Appointments</p>
-                          <h4 class="card-title">576</h4>
+                          <p class="card-category">Transactions</p>
+                          <h4 class="card-title"><?php echo $dashboard->countAvailableMedstocks(); ?></h4>
                         </div>
                       </div>
                     </div>
@@ -183,523 +183,110 @@ $user_id = $_SESSION['user_id'];
             
             <div class="row">
               <div class="col-md-8">
-                <div class="card card-round">
+              <div class="card card-round">
                   <div class="card-header">
                     <div class="card-head-row">
-                      <div class="card-title">User Statistics</div>
-                      <div class="card-tools">
-                        <a
-                          href="#"
-                          class="btn btn-label-success btn-round btn-sm me-2"
-                        >
-                          <span class="btn-label">
-                            <i class="fa fa-pencil"></i>
-                          </span>
-                          Export
-                        </a>
-                        <a href="#" class="btn btn-label-info btn-round btn-sm">
-                          <span class="btn-label">
-                            <i class="fa fa-print"></i>
-                          </span>
-                          Print
-                        </a>
-                      </div>
+                      <div class="card-title">No. of Classified Active Patients</div>
                     </div>
                   </div>
                   <div class="card-body">
                     <div class="chart-container" style="min-height: 375px">
                       <canvas id="statisticsChart"></canvas>
                     </div>
-                    <div id="myChartLegend"></div>
+                    <div id="myChart"></div>
+                    <?php
+                        // Fetch the data
+                        $monthlyCounts = $dashboard->countAllConsultationsPerMonth();
+
+                        // Generate a list of all months in the range (e.g., last 12 months)
+                        $allMonths = [];
+                        $currentDate = new DateTime();
+                        for ($i = 11; $i >= 0; $i--) {
+                            $month = $currentDate->modify("-1 month")->format("Y-m");
+                            $allMonths[] = $month;
+                        }
+
+                        // Initialize an array to store data for Chart.js
+                        $chartData = [
+                            'labels' => [],
+                            'Faculties' => [],
+                            'Students' => [],
+                            'Staffs' => [],
+                            'Extensions' => []
+                        ];
+
+                        // Populate chart data with monthly counts
+                        foreach ($allMonths as $month) {
+                            $chartData['labels'][] = $month;
+                            $chartData['Faculties'][] = $monthlyCounts[$month]['Faculties'] ?? 0;
+                            $chartData['Students'][] = $monthlyCounts[$month]['Students'] ?? 0;
+                            $chartData['Staffs'][] = $monthlyCounts[$month]['Staffs'] ?? 0;
+                            $chartData['Extensions'][] = $monthlyCounts[$month]['Extensions'] ?? 0;
+                        }
+
+                        // Pass the chart data as JSON to the frontend
+                        echo '<script>var chartData = ' . json_encode($chartData) . ';</script>';
+                      ?>
+
                   </div>
                 </div>
               </div>
               <div class="col-md-4">
-                <div class="card card-primary card-round">
-                  <div class="card-header">
-                    <div class="card-head-row">
-                      <div class="card-title">Daily Transaction</div>
-                      <div class="card-tools">
-                        <div class="dropdown">
-                          <button
-                            class="btn btn-sm btn-label-light dropdown-toggle"
-                            type="button"
-                            id="dropdownMenuButton"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                          >
-                            Export
-                          </button>
-                          <div
-                            class="dropdown-menu"
-                            aria-labelledby="dropdownMenuButton"
-                          >
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#"
-                              >Something else here</a
-                            >
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-category">March 25 - April 02</div>
-                  </div>
-                  <div class="card-body pb-0">
-                    <div class="mb-4 mt-2">
-                      <h1></h1>
-                    </div>
-                    <div class="pull-in">
-                      <canvas id="dailySalesChart"></canvas>
-                    </div>
-                  </div>
+              <div class="card card-equal-height">
+            <div class="card-header">
+                <div class="d-flex align-items-center">
+                    <h4 class="card-title">Short-dated Medicines</h4>
                 </div>
-                <div class="card card-round">
-                  <div class="card-body pb-0"> 
-                    <div class="h1 fw-bold float-end text-primary">+5%</div>
-                    <h2 class="mb-2">17</h2>
-                    <p class="text-muted">Users online</p>
-                    <div class="pull-in sparkline-fix">
-                      <div id="lineChart"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-            <div class="row">
-              <div class="col-md-12">
-                <div class="card card-round">
-                  <div class="card-header">
-                    <div class="card-head-row card-tools-still-right">
-                      <h4 class="card-title">Users Geolocation</h4>
-                      <div class="card-tools">
-                        <button
-                          class="btn btn-icon btn-link btn-primary btn-xs"
-                        > 
-                          <span class="fa fa-angle-down"></span>
-                        </button>
-                        <button
-                          class="btn btn-icon btn-link btn-primary btn-xs btn-refresh-card"
-                        >
-                          <span class="fa fa-sync-alt"></span>
-                        </button>
-                        <button
-                          class="btn btn-icon btn-link btn-primary btn-xs"
-                        >
-                          <span class="fa fa-times"></span>
-                        </button>
-                      </div>
-                    </div>
-                    <p class="card-category">
-                      Map of the distribution of users around the world
-                    </p>
-                  </div>
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="table-responsive table-hover table-sales">
-                          <table class="table">
-                            <tbody>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="../assets/img/flags/id.png"
-                                      alt="indonesia"
-                                    />
-                                  </div>
-                                </td>
-                                <td>Indonesia</td>
-                                <td class="text-end">2.320</td>
-                                <td class="text-end">42.18%</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="../assets/img/flags/us.png"
-                                      alt="united states"
-                                    />
-                                  </div>
-                                </td>
-                                <td>USA</td>
-                                <td class="text-end">240</td>
-                                <td class="text-end">4.36%</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="../assets/img/flags/au.png"
-                                      alt="australia"
-                                    />
-                                  </div>
-                                </td>
-                                <td>Australia</td>
-                                <td class="text-end">119</td>
-                                <td class="text-end">2.16%</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="../assets/img/flags/ru.png"
-                                      alt="russia"
-                                    />
-                                  </div>
-                                </td>
-                                <td>Russia</td>
-                                <td class="text-end">1.081</td>
-                                <td class="text-end">19.65%</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="../assets/img/flags/cn.png"
-                                      alt="china"
-                                    />
-                                  </div>
-                                </td>
-                                <td>China</td>
-                                <td class="text-end">1.100</td>
-                                <td class="text-end">20%</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <div class="flag">
-                                    <img
-                                      src="../assets/img/flags/br.png"
-                                      alt="brazil"
-                                    />
-                                  </div>
-                                </td>
-                                <td>Brasil</td>
-                                <td class="text-end">640</td>
-                                <td class="text-end">11.63%</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="mapcontainer">
-                          <div
-                            id="world-map"
-                            class="w-100"
-                            style="height: 300px"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div class="card-body">
+  
                 </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-4">
-                <div class="card card-round">
-                  <div class="card-body">
-                    <div class="card-head-row card-tools-still-right">
-                      <div class="card-title">New Customers</div>
-                      <div class="card-tools">
-                        <div class="dropdown">
-                          <button
-                            class="btn btn-icon btn-clean me-0"
-                            type="button"
-                            id="dropdownMenuButton"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                          >
-                            <i class="fas fa-ellipsis-h"></i>
-                          </button>
-                          <div
-                            class="dropdown-menu"
-                            aria-labelledby="dropdownMenuButton"
-                          >
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#"
-                              >Something else here</a
-                            >
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-list py-4">
-                      <div class="item-list">
-                        <div class="avatar">
-                          <img
-                            src="../assets/img/jm_denis.jpg"
-                            alt="..."
-                            class="avatar-img rounded-circle"
-                          />
-                        </div>
-                        <div class="info-user ms-3">
-                          <div class="username">Jimmy Denis</div>
-                          <div class="status">Graphic Designer</div>
-                        </div>
-                        <button class="btn btn-icon btn-link op-8 me-1">
-                          <i class="far fa-envelope"></i>
-                        </button>
-                        <button class="btn btn-icon btn-link btn-danger op-8">
-                          <i class="fas fa-ban"></i>
-                        </button>
-                      </div>
-                      <div class="item-list">
-                        <div class="avatar">
-                          <span
-                            class="avatar-title rounded-circle border border-white"
-                            >CF</span
-                          >
-                        </div>
-                        <div class="info-user ms-3">
-                          <div class="username">Chandra Felix</div>
-                          <div class="status">Sales Promotion</div>
-                        </div>
-                        <button class="btn btn-icon btn-link op-8 me-1">
-                          <i class="far fa-envelope"></i>
-                        </button>
-                        <button class="btn btn-icon btn-link btn-danger op-8">
-                          <i class="fas fa-ban"></i>
-                        </button>
-                      </div>
-                      <div class="item-list">
-                        <div class="avatar">
-                          <img
-                            src="../assets/img/talha.jpg"
-                            alt="..."
-                            class="avatar-img rounded-circle"
-                          />
-                        </div>
-                        <div class="info-user ms-3">
-                          <div class="username">Talha</div>
-                          <div class="status">Front End Designer</div>
-                        </div>
-                        <button class="btn btn-icon btn-link op-8 me-1">
-                          <i class="far fa-envelope"></i>
-                        </button>
-                        <button class="btn btn-icon btn-link btn-danger op-8">
-                          <i class="fas fa-ban"></i>
-                        </button>
-                      </div>
-                      <div class="item-list">
-                        <div class="avatar">
-                          <img
-                            src="../assets/img/chadengle.jpg"
-                            alt="..."
-                            class="avatar-img rounded-circle"
-                          />
-                        </div>
-                        <div class="info-user ms-3">
-                          <div class="username">Chad</div>
-                          <div class="status">CEO Zeleaf</div>
-                        </div>
-                        <button class="btn btn-icon btn-link op-8 me-1">
-                          <i class="far fa-envelope"></i>
-                        </button>
-                        <button class="btn btn-icon btn-link btn-danger op-8">
-                          <i class="fas fa-ban"></i>
-                        </button>
-                      </div>
-                      <div class="item-list">
-                        <div class="avatar">
-                          <span
-                            class="avatar-title rounded-circle border border-white bg-primary"
-                            >H</span
-                          >
-                        </div>
-                        <div class="info-user ms-3">
-                          <div class="username">Hizrian</div>
-                          <div class="status">Web Designer</div>
-                        </div>
-                        <button class="btn btn-icon btn-link op-8 me-1">
-                          <i class="far fa-envelope"></i>
-                        </button>
-                        <button class="btn btn-icon btn-link btn-danger op-8">
-                          <i class="fas fa-ban"></i>
-                        </button>
-                      </div>
-                      <div class="item-list">
-                        <div class="avatar">
-                          <span
-                            class="avatar-title rounded-circle border border-white bg-secondary"
-                            >F</span
-                          >
-                        </div>
-                        <div class="info-user ms-3">
-                          <div class="username">Farrah</div>
-                          <div class="status">Marketing</div>
-                        </div>
-                        <button class="btn btn-icon btn-link op-8 me-1">
-                          <i class="far fa-envelope"></i>
-                        </button>
-                        <button class="btn btn-icon btn-link btn-danger op-8">
-                          <i class="fas fa-ban"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-8">
-                <div class="card card-round">
-                  <div class="card-header">
-                    <div class="card-head-row card-tools-still-right">
-                      <div class="card-title">Transaction History</div>
-                      <div class="card-tools">
-                        <div class="dropdown">
-                          <button
-                            class="btn btn-icon btn-clean me-0"
-                            type="button"
-                            id="dropdownMenuButton"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                          >
-                            <i class="fas fa-ellipsis-h"></i>
-                          </button>
-                          <div
-                            class="dropdown-menu"
-                            aria-labelledby="dropdownMenuButton"
-                          >
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#"
-                              >Something else here</a
-                            >
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body p-0">
-                    <div class="table-responsive">
-                      <!-- Projects table -->
-                      <table class="table align-items-center mb-0">
-                        <thead class="thead-light">
-                          <tr>
-                            <th scope="col">Payment Number</th>
-                            <th scope="col" class="text-end">Date & Time</th>
-                            <th scope="col" class="text-end">Amount</th>
-                            <th scope="col" class="text-end">Status</th>
-                          </tr>
+
+                <div class="table-responsive">
+                    <table id="medcert" class="display table table-striped table-hover">
+                    <?php
+                    $daysThreshold = 30;
+                    $medstocks = $dashboard->getAlmostExpiredMedstocks($daysThreshold);
+                    ?>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Expiration Date</th>
+                            </tr>
                         </thead>
+                        <tfoot>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Expiration Date</th>
+                            </tr>
+                        </tfoot>
                         <tbody>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                            <td class="text-end">$250.00</td>
-                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                            <td class="text-end">$250.00</td>
-                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                            <td class="text-end">$250.00</td>
-                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                            <td class="text-end">$250.00</td>
-                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                            <td class="text-end">$250.00</td>
-                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                            <td class="text-end">$250.00</td>
-                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                            <td class="text-end">$250.00</td>
-                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
+                            <?php if (!empty($medstocks)): ?>
+                                <?php foreach ($medstocks as $medstock): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($medstock['medstock_id']); ?></td>
+                                        <td><?= htmlspecialchars($medstock['medicine_name']); ?></td>
+                                        <td><?= htmlspecialchars($medstock['medstock_expirationdt']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="3" class="text-center">No almost expired medicines found.</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
-                      </table>
-                    </div>
-                  </div>
+                    </table>
                 </div>
+
+
+                </div>
+            </div>
+        </div>
               </div>
             </div>
+
           </div>
             </div> 
         </div>
@@ -768,6 +355,155 @@ $user_id = $_SESSION['user_id'];
         });
     });
 </script>
+
+<script>
+  // Access the chart data from PHP
+  const labels = chartData.labels; // Months
+  const datasets = [
+    {
+      label: "Faculties",
+      borderColor: '#f3545d',
+      pointBackgroundColor: 'rgba(243, 84, 93, 0.6)',
+      pointRadius: 0,
+      backgroundColor: 'rgba(243, 84, 93, 0.4)',
+      legendColor: '#f3545d',
+      fill: true,
+      borderWidth: 2,
+      data: chartData.Faculties,
+    },
+    {
+      label: "Students",
+      borderColor: '#fdaf4b',
+      pointBackgroundColor: 'rgba(253, 175, 75, 0.6)',
+      pointRadius: 0,
+      backgroundColor: 'rgba(253, 175, 75, 0.4)',
+      legendColor: '#fdaf4b',
+      fill: true,
+      borderWidth: 2,
+      data: chartData.Students,
+    },
+    {
+      label: "Staffs",
+      borderColor: '#177dff',
+      pointBackgroundColor: 'rgba(23, 125, 255, 0.6)',
+      pointRadius: 0,
+      backgroundColor: 'rgba(23, 125, 255, 0.4)',
+      legendColor: '#177dff',
+      fill: true,
+      borderWidth: 2,
+      data: chartData.Staffs,
+    },
+    {
+      label: "Extensions",
+      borderColor: '#c7f2c4',
+      pointBackgroundColor: 'rgba(199, 242, 196, 0.6)',
+      pointRadius: 0,
+      backgroundColor: 'rgba(199, 242, 196, 0.4)',
+      legendColor: '#c7f2c4',
+      fill: true,
+      borderWidth: 2,
+      data: chartData.Extensions,
+    },
+  ];
+
+  // Chart initialization
+  var ctx = document.getElementById('statisticsChart').getContext('2d');
+  var statisticsChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      legend: {
+        display: false, // Disable default legend
+      },
+      tooltips: {
+        bodySpacing: 4,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest",
+        xPadding: 10,
+        yPadding: 10,
+        caretPadding: 10,
+      },
+      layout: {
+        padding: { left: 5, right: 5, top: 15, bottom: 15 },
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontStyle: "500",
+            beginAtZero: false,
+            maxTicksLimit: 5,
+            padding: 10,
+          },
+          gridLines: {
+            drawTicks: false,
+            display: false,
+          },
+        }],
+        xAxes: [{
+          gridLines: {
+            zeroLineColor: "transparent",
+          },
+          ticks: {
+            padding: 10,
+            fontStyle: "500",
+          },
+        }],
+      },
+      legendCallback: function (chart) {
+        var text = [];
+        text.push('<ul class="' + chart.id + '-legend html-legend">');
+        for (var i = 0; i < chart.data.datasets.length; i++) {
+          text.push('<li><span style="background-color:' + chart.data.datasets[i].legendColor + '"></span>');
+          if (chart.data.datasets[i].label) {
+            text.push(chart.data.datasets[i].label);
+          }
+          text.push('</li>');
+        }
+        text.push('</ul>');
+        return text.join('');
+      },
+    }
+  });
+
+  // Generate HTML legend
+  var myLegendContainer = document.getElementById("myChart");
+  myLegendContainer.innerHTML = statisticsChart.generateLegend();
+
+  // Toggle visibility on legend item click
+  function legendClickCallback(event) {
+    const item = event.target.closest('li');
+    const index = Array.from(legendItems).indexOf(item);
+    const meta = statisticsChart.getDatasetMeta(index);
+
+    // Check if we're showing only one dataset or all
+    const currentlyOnlyOneVisible = statisticsChart.data.datasets.filter((ds, i) => !statisticsChart.getDatasetMeta(i).hidden).length === 1;
+
+    if (currentlyOnlyOneVisible && !meta.hidden) {
+      // All datasets were hidden except this one, so show all
+      statisticsChart.data.datasets.forEach((dataset, i) => {
+        statisticsChart.getDatasetMeta(i).hidden = false;
+      });
+    } else {
+      // Show only the clicked dataset, hide others
+      statisticsChart.data.datasets.forEach((dataset, i) => {
+        statisticsChart.getDatasetMeta(i).hidden = i !== index;
+      });
+      meta.hidden = false;
+    }
+
+    statisticsChart.update(); // Refresh chart
+  }
+
+  // Bind click event to legend items
+  var legendItems = myLegendContainer.getElementsByTagName('li');
+  for (var i = 0; i < legendItems.length; i++) {
+    legendItems[i].addEventListener("click", legendClickCallback, false);
+  }
+</script>
+
 
 </body>
 </html>

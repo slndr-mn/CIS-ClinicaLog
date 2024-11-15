@@ -8,7 +8,7 @@ session_start();
 include '../database/config.php'; 
 include '../php/user.php';
 include '../php/patient.php'; 
-$database = new Database();      
+$database = new Database();       
 $db = $database->getConnection();
 $user = new User($db);
 $patient = new PatientManager($db);
