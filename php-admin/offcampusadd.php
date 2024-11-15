@@ -29,7 +29,7 @@ $allOffCampusRecords = $offCampusManager->getAllOffCampusData();
 
 $patientId = isset($_GET['id']) ? $_GET['id'] : null;
 $patientType = isset($_GET['patient_patienttype']) ? $_GET['patient_patienttype'] : null;
-
+ 
 $patientDetails = null;
 
 $medicineId = isset($_GET['id']) ? $_GET['id'] : null;

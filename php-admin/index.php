@@ -14,7 +14,7 @@ $conn = $db->getConnection();
 $user = new User($conn); 
 $user_id = $_SESSION['user_id'];
 
-?>
+?> 
   
 <!DOCTYPE html> 
 <html lang="en">   
@@ -37,7 +37,7 @@ $user_id = $_SESSION['user_id'];
             "simple-line-icons",
           ],
           urls: ["../css/fonts.min.css"], 
-        },
+        }, 
         active: function () {
             
           sessionStorage.fonts = true;

@@ -37,7 +37,7 @@
     <style>
       .sidebar {
           transition: background 0.3s ease;
-          /* Initial background */
+          /* Initial background */ 
           background: linear-gradient(to bottom, #DB6079, #DA6F65, #E29AB4);
       }
       .logo-header {

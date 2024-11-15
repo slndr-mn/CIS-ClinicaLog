@@ -4,8 +4,8 @@ include('../database/config.php');
 include('../php/user.php');
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-  header('Location: ../php-login/index.php'); 
-  exit; 
+    header('Location: ../php-login/index.php'); 
+    exit; 
 }
 
 $db = new Database();
@@ -14,7 +14,7 @@ $conn = $db->getConnection();
 $user = new User($conn); 
 $user_id = $_SESSION['user_id'];
 
-?>
+?> 
 
 <!DOCTYPE html> 
 <html lang="en">
@@ -36,7 +36,7 @@ $user_id = $_SESSION['user_id'];
             "Font Awesome 5 Brands",
             "simple-line-icons",
           ],
-          urls: ["../css/fonts.min.css"], 
+          urls: ["../css/fonts.min.css"],  
         },
         active: function () {
           sessionStorage.fonts = true;
@@ -55,7 +55,6 @@ $user_id = $_SESSION['user_id'];
     <style>
       .sidebar {
           transition: background 0.3s ease;
-          /* Initial background */
           background: linear-gradient(to bottom, #DB6079, #DA6F65, #E29AB4);
       }
       .logo-header {
@@ -69,66 +68,413 @@ $user_id = $_SESSION['user_id'];
         .nav-item.active i {
             color: #fff;
         } 
-  </style>
+    </style>
 </head>
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar"></div>
         <!-- End Sidebar -->
+
+        <!-- Main Panel -->
         <div class="main-panel">
             <!-- Header -->
             <div class="main-header" id="header"></div>
+
             <!-- Main Content -->
             <div class="container" id="content">
-              <div class="page-inner">
-                <h1>
-                Yearly Statistic Report of Services
-                </h1>
-                <!--start card -->
-                <div class="row">
-                <div class="col-md-8">
-                <div class="card card-round">
-                  <div class="card-header">
-                    <div class="card-head-row">
-                      <div class="card-title">Medical Certificate Issuance</div>
-                      <div class="card-tools">
-                        <a
-                          href="#"
-                          class="btn btn-label-success btn-round btn-sm me-2"
-                        >
-                          <span class="btn-label">
-                            <i class="fa fa-pencil"></i>
-                          </span>
-                          Export
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <div class="chart-container" style="min-height: 375px">
-                      <canvas id="statisticsChart"></canvas>
-                    </div>
-                    <div id="myChart"></div>
-                  </div>
-                </div>
-              </div>                   
-              </div>
-              <!--end card -->
-            </div>
-        </div>
-    </div>
-  </div>
- 
-    
-    
+                <div class="page-inner">
+                <div class="page-inner">
+                <div class="page-inner">
+                                <!-- Year Selection Dropdown -->
 
+
+                                <div class="row">
+                                            <div class="col-md-9 mb-3">
+                                            <label for="yearSelect" class="form-label"></label>
+                                                    <h1>Yearly Statistic Report of Services</h1>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label for="yearSelect" class="form-label">Select a Year</label>
+                                                <select id="yearSelect"  class="form-control" onchange="loadDataForYear(this.value)">
+                                                    
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                <!-- Start All Patient Records Report -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card card-round">
+                                        <div class="card-header">
+                                            <div class="card-head-row">
+                                            <div class="card-title">Summary of All Services</div>
+                                            <div class="card-tools">
+                                                <a href="#" class="btn btn-label-success btn-round btn-sm me-2" onclick="event.preventDefault(); exportToExcel()">
+                                                <span class="btn-label"><i class="fa fa-pencil"></i></span>
+                                                Export
+                                                </a>
+                                            </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-container" style="display: flex; flex-direction: column; gap: 20px;">
+                                            <div class="card-body" style="flex: 1;">
+                                            <div class="chart-container" style="min-height: 255px;"> 
+                                                <canvas id="lineChart"></canvas>
+                                            </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>                   
+                                    </div>
+                                
+                                <h1></h1>
+                                <h1></h1>
+                                <h1></h1>
+                                <h1>Number of Clients Served Each Transactions</h1>
+                                 <!-- Start All Transactions Report -->
+                                 <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card card-round">
+                                        <div class="card-header">
+                                            <div class="card-head-row">
+                                            <div class="card-title">Total for All Transactions</div>
+                                            <div class="card-tools">
+                                                <a
+                                                href="#"
+                                                class="btn btn-label-success btn-round btn-sm me-2"
+                                                >
+                                                <span class="btn-label">
+                                                    <i class="fa fa-pencil"></i>
+                                                </span>
+                                                Export
+                                                </a>
+                                            </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="chart-container" style="min-height: 375px">
+                                            <canvas id="statisticsChart"></canvas>
+                                            </div>
+                                            <div id="myChart"></div>
+                                        </div>
+                                        </div>
+                                    </div>                   
+                                </div>
+                
+                                <!-- Start All Medical Certificate Issuance Report -->
+                                <div class="row">
+                                <div class="col-md-12">
+                                                <div class="card card-equal-height">
+                                                <div class="card-header">
+                                                    <div class="d-flex align-items-center">
+                                                        <h4 class="card-title">Medical Certificate Issuance</h4>
+                                                        <div class="card-tools ms-auto"> <!-- Add ms-auto to align the button to the right -->
+                                                            <a href="#" class="btn btn-label-success btn-round btn-sm me-2">
+                                                                <span class="btn-label">
+                                                                    <i class="fa fa-pencil"></i>
+                                                                </span>
+                                                                Export
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                    <div class="card-body">
+                                                    </div>
+                                                        <div class="table-responsive">
+                                                        <table id="medcert" class="display table table-striped table-hover">
+                                                        <thead>
+                                                                <tr>
+                                                                    <th></th> <!-- Empty header for the row labels column -->
+                                                                    <th>Faculty</th>
+                                                                    <th>Staff</th>
+                                                                    <th>Student</th>
+                                                                    <th>Extension</th>
+                                                                    <th>Total</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <th></th> <!-- Empty footer for the row labels column -->
+                                                                    <th>Faculty</th>
+                                                                    <th>Staff</th>
+                                                                    <th>Student</th>
+                                                                    <th>Extension</th>
+                                                                    <th>Total</th>
+                                                                </tr>
+                                                            </tfoot>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>January</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>February</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td> 
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>March</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>April</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>May</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>June</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>July</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>August</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>September</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>October</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>November</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>December</td>
+                                                                    <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+    
+                                
+                                <!-- Start All Check-Up Report -->
+                                <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card card-equal-height">
+                                    <div class="card-header">
+                                        <div class="d-flex align-items-center">
+                                            <h4 class="card-title">Medical Consultation and Treatment</h4>
+                                            <div class="card-tools ms-auto"> <!-- Add ms-auto to align the button to the right -->
+                                                <a href="#" class="btn btn-label-success btn-round btn-sm me-2">
+                                                    <span class="btn-label">
+                                                        <i class="fa fa-pencil"></i>
+                                                    </span>
+                                                    Export
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                        <div class="card-body">
+                        
+                                        </div>
+
+                                            <div class="table-responsive">
+                                            <table id="consult" class="display table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th> <!-- Empty header for the row labels column -->
+                                                        <th>Faculty</th>
+                                                        <th>Staff</th>
+                                                        <th>Student</th>
+                                                        <th>Extension</th>
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th></th> <!-- Empty footer for the row labels column -->
+                                                        <th>Faculty</th>
+                                                        <th>Staff</th>
+                                                        <th>Student</th>
+                                                        <th>Extension</th>
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>January</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>February</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>March</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>April</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>May</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>June</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>July</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>August</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>September</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>October</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>November</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>December</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card card-equal-height">
+                                    <div class="card-header">
+                                        <div class="d-flex align-items-center">
+                                            <h4 class="card-title">Dental Check Up & Treatment</h4>
+                                            <div class="card-tools ms-auto"> <!-- Add ms-auto to align the button to the right -->
+                                                <a href="#" class="btn btn-label-success btn-round btn-sm me-2">
+                                                    <span class="btn-label">
+                                                        <i class="fa fa-pencil"></i>
+                                                    </span>
+                                                    Export
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                        <div class="card-body">
+                        
+                                        </div>
+
+                                            <div class="table-responsive">
+                                            <table id="checkup" class="display table table-striped table-hover">
+                                            <thead>
+                                                    <tr>
+                                                        <th></th> <!-- Empty header for the row labels column -->
+                                                        <th>Faculty</th>
+                                                        <th>Staff</th>
+                                                        <th>Student</th> 
+                                                        <th>Extension</th>
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th></th> <!-- Empty footer for the row labels column -->
+                                                        <th>Faculty</th>
+                                                        <th>Staff</th>
+                                                        <th>Student</th>
+                                                        <th>Extension</th>
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>January</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>February</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>March</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>April</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>May</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>June</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>July</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>August</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>September</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>October</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>November</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>December</td>
+                                                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                                </div>
+                            </div>
+                     </div>
+                </div>
+            </div>
+            <!-- End Main Content -->
+        </div>
+        <!-- End Main Panel -->
+    </div>
+    
     <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/core/popper.min.js"></script>
     <script src="../assets/js/core/bootstrap.min.js"></script>
 
     <!-- jQuery Scrollbar -->
-    <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+    <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script> 
 
     <!-- Chart JS -->
     <script src="../assets/js/plugin/chart.js/chart.min.js"></script>
@@ -154,7 +500,8 @@ $user_id = $_SESSION['user_id'];
 
     <!-- Kaiadmin JS -->
     <script src="../assets/js/kaiadmin.min.js"></script>
-    
+    <script src="../assets/js/reportjs.js"></script>
+
     <script>
         $(document).ready(function() {
             // Dynamically load the sidebar
@@ -178,153 +525,14 @@ $user_id = $_SESSION['user_id'];
                     console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
                 }
             });
+            $("#allPatientRecords").load("patientrecordReport.php", function(response, status, xhr) {
+                if (status == "error") {
+                    console.log("Error loading patient records: " + xhr.status + " " + xhr.statusText);
+                }
+            });
         });
     </script>
-
-<script>
-  // Chart initialization
-  var ctx = document.getElementById('statisticsChart').getContext('2d');
-  var statisticsChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-      datasets: [{
-        label: "Faculties",
-        borderColor: '#f3545d',
-        pointBackgroundColor: 'rgba(243, 84, 93, 0.6)',
-        pointRadius: 0,
-        backgroundColor: 'rgba(243, 84, 93, 0.4)',
-        legendColor: '#f3545d',
-        fill: true,
-        borderWidth: 2,
-        data: [15, 84, 15, 23, 20, 21, 20, 28, 22, 32, 30, 34]
-      }, {
-        label: "Students",
-        borderColor: '#fdaf4b',
-        pointBackgroundColor: 'rgba(253, 175, 75, 0.6)',
-        pointRadius: 0,
-        backgroundColor: 'rgba(253, 175, 75, 0.4)',
-        legendColor: '#fdaf4b',
-        fill: true,
-        borderWidth: 2,
-        data: [26, 20, 25, 87, 40, 50, 30, 95, 31, 41, 46, 51]
-      }, {
-        label: "Staffs",
-        borderColor: '#177dff',
-        pointBackgroundColor: 'rgba(23, 125, 255, 0.6)',
-        pointRadius: 0,
-        backgroundColor: 'rgba(23, 125, 255, 0.4)',
-        legendColor: '#177dff',
-        fill: true,
-        borderWidth: 2,
-        data: [52, 40, 40, 50, 30, 53, 80, 44, 68, 60, 70, 90]
-      }, {
-        label: "Extensions",
-        borderColor: '#c7f2c4',
-        pointBackgroundColor: 'rgba(199, 242, 196, 0.6)',
-        pointRadius: 0,
-        backgroundColor: 'rgba(199, 242, 196, 0.4)',
-        legendColor: '#c7f2c4',
-        fill: true,
-        borderWidth: 2,
-        data: [50, 40, 42, 54, 50, 53, 38, 44, 58, 10, 70, 90]
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      legend: {
-        display: false
-      },
-      tooltips: {
-        bodySpacing: 4,
-        mode: "nearest",
-        intersect: 0,
-        position: "nearest",
-        xPadding: 10,
-        yPadding: 10,
-        caretPadding: 10
-      },
-      layout: {
-        padding: { left: 5, right: 5, top: 15, bottom: 15 }
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontStyle: "500",
-            beginAtZero: false,
-            maxTicksLimit: 5,
-            padding: 10
-          },
-          gridLines: {
-            drawTicks: false,
-            display: false
-          }
-        }],
-        xAxes: [{
-          gridLines: {
-            zeroLineColor: "transparent"
-          },
-          ticks: {
-            padding: 10,
-            fontStyle: "500"
-          }
-        }]
-      },
-      legendCallback: function (chart) {
-        var text = [];
-        text.push('<ul class="' + chart.id + '-legend html-legend">');
-        for (var i = 0; i < chart.data.datasets.length; i++) {
-          text.push('<li><span style="background-color:' + chart.data.datasets[i].legendColor + '"></span>');
-          if (chart.data.datasets[i].label) {
-            text.push(chart.data.datasets[i].label);
-          }
-          text.push('</li>');
-        }
-        text.push('</ul>');
-        return text.join('');
-      }
-    }
-  });
-
-  // Generate HTML legend
-  var myLegendContainer = document.getElementById("myChart");
-  myLegendContainer.innerHTML = statisticsChart.generateLegend();
-
-  // Toggle visibility on legend item click
-  function legendClickCallback(event) {
-    const item = event.target.closest('li');
-    const index = Array.from(legendItems).indexOf(item);
-    const meta = statisticsChart.getDatasetMeta(index);
-
-    // Check if we're showing only one dataset or all
-    const currentlyOnlyOneVisible = statisticsChart.data.datasets.filter((ds, i) => !statisticsChart.getDatasetMeta(i).hidden).length === 1;
-
-    if (currentlyOnlyOneVisible && !meta.hidden) {
-      // All datasets were hidden except this one, so show all
-      statisticsChart.data.datasets.forEach((dataset, i) => {
-        statisticsChart.getDatasetMeta(i).hidden = false;
-      });
-    } else {
-      // Show only the clicked dataset, hide others
-      statisticsChart.data.datasets.forEach((dataset, i) => {
-        statisticsChart.getDatasetMeta(i).hidden = i !== index;
-      });
-      meta.hidden = false;
-    }
-
-    statisticsChart.update(); // Refresh chart
-  }
-
-  // Bind click event to legend items
-  var legendItems = myLegendContainer.getElementsByTagName('li');
-  for (var i = 0; i < legendItems.length; i++) {
-    legendItems[i].addEventListener("click", legendClickCallback, false);
-  }
-</script>
-
-
-
-
-</body>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+</body> 
 </html>

@@ -23,7 +23,7 @@ $offcampusManager = new OffCampusManager($conn);
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
     if (isset($_POST['addoffcampus'])) {
         $date = date('Y-m-d');
         $medstock_id = $_POST['selected_medicine_id'] ?? null;

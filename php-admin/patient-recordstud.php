@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   break;
               case 'Extension':
                   $redirectUrl = 'patient-extensionprofile.php';
-                  break;
+                  break; 
               default:
                   $redirectUrl = 'patient-record.php';
                   break;

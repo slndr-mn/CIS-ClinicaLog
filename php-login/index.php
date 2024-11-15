@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
     $doctor = "Campus Physician"; 
       
     $userData = $user->userExists($email, $password);
-
+ 
 if ($userData) {  
     session_regenerate_id(true); 
     $_SESSION['logged_in'] = true;  
@@ -30,7 +30,7 @@ if ($userData) {
     $_SESSION['user_position'] = $userData->user_position;
     $_SESSION['user_role'] = $userData->user_role;
 
-    if ($userData->user_status === 'Active') {
+    if ($userData->user_status === 'Active') { 
         if ($_SESSION['user_position'] === $defaultadmin || $_SESSION['user_position'] === $doctor) {
             header('Location: ../php-admin/index.php');  
             exit;
@@ -41,8 +41,8 @@ if ($userData) {
             header('Location: ../php-admin/adminindex.php');  
             exit;
         }
-    } else {  
-        $_SESSION['error_message'] = "Account can't be used.";
+    } else {   
+        $_SESSION['error_message'] = "Account can't be used."; 
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit;
     }

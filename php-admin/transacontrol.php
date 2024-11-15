@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+header('Content-Type: application/json'); 
 include('../database/config.php');
 include('../php/transaction.php');
 
@@ -52,18 +52,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (isset($_POST['patient_id']) && isset($_POST['patient_type'])) {
-        $_SESSION['id'] = $_POST['patient_id']; // Patient ID
-        $_SESSION['type'] = $_POST['patient_type']; // Patient type
+        $_SESSION['id'] = $_POST['patient_id']; 
+        $_SESSION['type'] = $_POST['patient_type']; 
     } else {
         echo "Patient data not found.";
     }
 
     if (isset($_POST['transac_id']) && isset($_POST['status'])) {
-        header('Content-Type: application/json'); 
         $transac_id = $_POST['transac_id'];
         $status = $_POST['status'];
 
-        // Check which status was sent and update the transaction
         switch ($status) {
             case 'Pending':
                 $transac->updateStatusToPending($transac_id);

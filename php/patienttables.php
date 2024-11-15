@@ -179,7 +179,7 @@ class PatLinkedList {
     public function add($item) {
         $newNode = new PatNode($item);
         if ($this->head === null) {
-            $this->head = $newNode;
+            $this->head = $newNode; 
         } else {
             $current = $this->head;
             while ($current->next !== null) {
@@ -269,7 +269,7 @@ class PatientTablesbyType {
                                     p.patient_email, p.patient_sex, p.patient_profile, p.patient_status, ps.student_idnum, 
                                     ps.student_program, ps.student_major, ps.student_year, ps.student_section, p.patient_patienttype
                                     FROM patients p
-                                    JOIN patstudents ps ON p.patient_id = ps.student_patientid");
+                                    JOIN patstudents ps ON p.patient_id = ps.student_patientid"); 
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -388,7 +388,7 @@ class PatientTablesbyType {
     }
 
     public function getAllFaculties() {
-        return $this->faculties->getAllNodes();
+        return $this->faculties->getAllNodes(); 
     }
 
     public function getAllStaffs() {

@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $quarterYear = $_POST['quarteryear']; 
     $quarter = $_POST['quarter'];
 
-    switch ($quarter) {
+    switch ($quarter) { 
         case '1':
             $startOfQuarter = date("Y-m-d", strtotime("$quarterYear-01-01")); 
             $endOfQuarter = date("Y-m-d", strtotime("$quarterYear-03-31")); 
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $startOfQuarter = date("Y-m-d", strtotime("$quarterYear-04-01")); 
             $endOfQuarter = date("Y-m-d", strtotime("$quarterYear-06-30"));
             break;
-        case '3':
+        case '3': 
             $startOfQuarter = date("Y-m-d", strtotime("$quarterYear-07-01"));
             $endOfQuarter = date("Y-m-d", strtotime("$quarterYear-09-30")); 
             break;
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'message' => 'Data submitted successfully.',
         'firstDayOfMonth' => $firstDayOfMonth,
         'quarterStart' => $startOfQuarter,
-        'quarterEnd' => $endOfQuarter,
+        'quarterEnd' => $endOfQuarter, 
         'medstocks' => $medicineManager->getAllMedstocksAsArray()
     ];
     echo json_encode($response);
@@ -146,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                 <label for="monthYear" class="form-label">Select Month & Year as Start Balance</label>
                                                 <input type="month" id="monthYear" class="form-control" required>
                                             </div>
-                                            <div class="col-md-3 mb-3">
+                                            <div class="col-md-3 mb-3"> 
                                                 <label for="quarter" class="form-label">Select a Quarter:</label>
                                                 <select id="quarter" class="form-control" required>
                                                     <option value="" disabled selected>Select Quarter</option>
@@ -170,10 +170,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                             option.textContent = year;
                                                             yearSelect.appendChild(option);
                                                         }
-                                                    </script>
+                                                    </script> 
                                                 </select>
                                             </div>
-                                            <div class="col-md-3 mb-3">
+                                            <div class="col-md-3 mb-3"> 
                                                 <label class="form-label">&nbsp;</label>
                                                 <button type="submit" class="btn btn-primary form-control">Filter</button>
                                             </div>

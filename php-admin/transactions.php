@@ -42,7 +42,7 @@ $medicineId = isset($_GET['id']) ? $_GET['id'] : null;
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
     <script>
       WebFont.load({ 
-        google: { families: ["Public Sans:300,400,500,600,700"] },
+        google: { families: ["Public Sans:300,400,500,600,700"] }, 
         custom: {
           families: [
             "Font Awesome 5 Solid",
@@ -54,7 +54,7 @@ $medicineId = isset($_GET['id']) ? $_GET['id'] : null;
         },
         active: function () {
           sessionStorage.fonts = true;
-        },
+        }, 
       });
     </script> 
 
@@ -403,12 +403,8 @@ $medicineId = isset($_GET['id']) ? $_GET['id'] : null;
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- SweetAlert -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
-
-<!-- Select2 -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <!-- Core JS -->
 <script src="../assets/js/core/popper.min.js"></script>
@@ -498,9 +494,6 @@ $medicineId = isset($_GET['id']) ? $_GET['id'] : null;
         });
     </script>
 
-    <!-- Include SweetAlert library -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
     $(document).ready(function() {
         <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
@@ -567,54 +560,6 @@ $medicineId = isset($_GET['id']) ? $_GET['id'] : null;
     });
 </script>
 
-<script>
-$(document).ready(function () {
-    $('.removeButton').on('click', function () {
-        var offcampusId = $(this).data('id'); 
-        
-        swal({
-            title: "Are you sure?",
-            text: "Once deleted, you will not be able to recover this record!",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        }).then((willDelete) => {
-            if (willDelete) {
-                
-                $.ajax({
-                    url: 'offcampuscontrol.php',
-                    method: 'POST',
-                    data: { deleteoffcampus: true, offcampus_id: offcampusId },
-                    success: function (response) {
-                        console.log(response); 
-
-                        var result = typeof response === 'object' ? response : JSON.parse(response);
-
-                        swal(result.message, {
-                            icon: result.status === 'success' ? 'success' : 'error',
-                        }).then(() => {
-                            if (result.status === 'success') {
-                                window.location.href = 'offcampusadd.php';
-                            }
-                        });
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error deleting record:', error);
-                        swal('An error occurred while deleting the record.', {
-                            icon: 'error',
-                        });
-                    }
-                });
-            } else {
-                
-                swal("Your record is safe!", {
-                    icon: 'info',
-                });
-            }
-        });
-    });
-});
-</script>
 <script>
 document.getElementById('pname').addEventListener('input', function() {
     var pname = this.value;
@@ -782,7 +727,6 @@ $(".viewButton").click(function() {
     var patientId = $(this).closest("tr").data("patientid");
     var patientType = $(this).closest("tr").data("patienttype");
 
-    // Set session variables via Ajax or redirect to the profile page with patient data in URL
     $.ajax({
         url: "transacontrol.php",
         method: "POST",

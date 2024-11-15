@@ -26,7 +26,7 @@ class MedicineManager{
     private $conn;
     private $head;
 
-    public function __construct($conn) {
+    public function __construct($conn) {  
         $this->conn = $conn;
         $this->head = null;
     }

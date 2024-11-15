@@ -125,7 +125,7 @@
         patient_email VARCHAR(255) NOT NULL,
         patient_connum int(12) NOT NULL,
         patient_sex ENUM('Male', 'Female') NOT NULL,   
-        patient_profile VARCHAR(255),
+        patient_profile VARCHAR(255), 
         patient_patienttype ENUM('Student', 'Faculty', 'Staff', 'Extension') NOT NULL,
         patient_dateadded DATE,
         patient_password VARCHAR(60) NOT NULL,    
