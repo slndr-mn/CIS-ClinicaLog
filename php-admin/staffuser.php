@@ -12,8 +12,8 @@ $db = new Database();
 $conn = $db->getConnection();
 
 $user = new User($conn);  
-$user_id = $_SESSION['user_id'];
-$userData = $user->getUserData($user_id);  
+$user_idnum = $_SESSION['user_idnum'];
+$userData = $user->getUserData($user_idnum);  
 ?>
  
 <!DOCTYPE html>
@@ -78,15 +78,15 @@ $userData = $user->getUserData($user_id);
         <div class="sidebar" id="sidebar"></div>
         <!-- End Sidebar -->
         <div class="main-panel">
-            <!-- Header -->
+            <!-- Header --> 
             <div class="main-header" id="header"></div>
             <!-- Main Content -->
-            <div class="container" id="content">
+            <div class="container" id="content"> 
             <div class="page-inner">
             <div class="row">
               <div class="col-md-12"> 
                 <div class="card">
-                  <div class="card-header">
+                  <div class="card-header"> 
                     <div class="d-flex align-items-center">
                       <h4 class="card-title">Add User</h4>
                       <button
@@ -127,10 +127,11 @@ $userData = $user->getUserData($user_id);
                           <div class="modal-body">
                             <p class="small">
                               Create new user for the system. Make sure to fill all of them.
-                            </p>
+                            </p> 
                              <!-- Start Add Modal Form-->
                              <form class="form" action="usercontrol.php" method="POST" enctype="multipart/form-data">
-                              <div class="row">
+                             <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
+                             <div class="row">
                                 <div class="col-md-12">
                                   <div class="form-group form-group-default">
                                     <label>ID</label>
@@ -230,6 +231,7 @@ $userData = $user->getUserData($user_id);
                             <!--Start Edit Form-->
                   <!-- Start Edit Form -->
                   <form id="editForm" action="usercontrol.php" method="POST" enctype="multipart/form-data">
+                  <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
                     <div class="row">
                         <div class="col-md-6">
                             <p class="fw-light">Date Added: <span id="dateadded"></span></p>
@@ -359,9 +361,9 @@ $userData = $user->getUserData($user_id);
                               $statusColor = ($node->user_status === 'Active') ?  '#77dd77' : '#ff6961';
                               $statusText = ucfirst($node->user_status); 
                               
-                              echo "<tr data-id='{$node->user_id}' data-lname='{$node->user_lname}' data-fname='{$node->user_fname}' data-mname='{$node->user_mname}' data-email='{$node->user_email}' data-position='{$node->user_position}' data-role='{$node->user_role}' data-dateadded='{$node->user_dateadded}' data-status='{$node->user_status}'> 
+                              echo "<tr data-id='{$node->user_idnum}' data-lname='{$node->user_lname}' data-fname='{$node->user_fname}' data-mname='{$node->user_mname}' data-email='{$node->user_email}' data-position='{$node->user_position}' data-role='{$node->user_role}' data-dateadded='{$node->user_dateadded}' data-status='{$node->user_status}'> 
                                   <td><img src='uploads/{$node->user_profile}' alt='Profile Picture' style='width: 50px; height: 50px; border-radius: 50%;'></td>
-                                  <td>{$node->user_id}</td>
+                                  <td>{$node->user_idnum}</td>
                                   <td>{$fullName}</td>
                                   <td>{$node->user_email}</td>
                                   <td>{$node->user_position}</td>
@@ -383,9 +385,6 @@ $userData = $user->getUserData($user_id);
                                       <div class='form-button-action'>
                                           <button type='button' class='btn btn-link btn-primary btn-lg editButton'>
                                               <i class='fa fa-edit'></i>
-                                          </button>
-                                          <button type='button' class='btn btn-link btn-danger removeAccess'>
-                                              <i class='fa fa-times'></i>
                                           </button>
                                       </div>
                                   </td>
@@ -521,7 +520,7 @@ $userData = $user->getUserData($user_id);
             $.ajax({
                 url: 'usercontrol.php', 
                 type: 'POST',
-                data: { user_id: userId },
+                data: { user_idnum: userId },
                 success: function(response) {
                    
                     var data = JSON.parse(response);

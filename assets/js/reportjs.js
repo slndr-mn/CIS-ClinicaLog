@@ -78,6 +78,7 @@ function updateLineChart(categoryData) {
                     lineTension: 0.1,
                     backgroundColor: "rgba(0, 0, 255, 0.8)",
                     borderColor: "rgba(0, 0, 255, 0.4)",
+                    label: "Total of All Services",
                     data: yValues
                 }]
             },
@@ -323,80 +324,95 @@ function updateDentalCheckupTable(checkupData) {
 document.addEventListener('DOMContentLoaded', initializeYearDropdown);
 
 async function exportToExcel() {
-    const year = document.getElementById("yearSelect").value; // Get the selected year
+    const year = document.getElementById("yearSelect").value; 
 
-    // Make an AJAX request to fetch the data from the server
-    $.ajax({
-        url: `../php-admin/reportexportcategory.php?year=${year}`, // Use template literal for the correct year
-        type: 'GET',
-        dataType: 'json', // Expecting JSON response
-        success: function(response) {
-            if (response.error) {
-                // Handle any server-side error in the response
-                alert("Error: " + response.error);
-                return;
-            }
+    try {
+        const response = await fetch(`reportexportcategory.php?year=${year}`);
+        const data = await response.json();
 
-            // Call the function to export the data to Excel
-            generateExcel(response);
-        },
-        error: function(xhr, status, error) {
-            // Handle AJAX request errors
-            console.error('Error fetching data:', error);
-            alert('There was an error fetching the data. Please try again.');
+        if (data.error) {
+            console.error("Error fetching data:", data.error);
+            return;
         }
-    });
-}
 
-// Function to generate the Excel file from the server response
-function generateExcel(data) {
-    // Initialize an array for the Excel data
-    let excelData = [];
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
+            'September', 'October', 'November', 'December'
+        ];
 
-    // Create the header row
-    let header = ['Month', 'Faculty', 'Staff', 'Extension', 'Monthly Total'];
+        const programs = Object.keys(data[0] || {}).filter(key => key.endsWith('_count') && key !== 'monthly_total')
+            .map(key => key.replace('_count', ''));
 
-    // Dynamically add program columns based on the response
-    if (data && data.length > 0) {
-        let programColumns = data[0]; // Take the first row to determine columns
-        for (let program in programColumns) {
-            // Only add columns for program data (excluding predefined fields)
-            if (program !== 'month' && program !== 'faculty' && program !== 'staff' && program !== 'extension' && program !== 'monthly_total') {
-                header.push(program);
+        const fullData = [];
+        let totalRow = {
+            month: 'Total',
+            ...programs.reduce((totals, program) => {
+                totals[program] = 0;
+                return totals;
+            }, {}),
+            faculty: 0,
+            staff: 0,
+            extension: 0,
+            monthly_total: 0
+        };
+
+        let dataFound = false;
+        months.forEach(month => {
+            const monthData = data.find(row => row.month === month);
+        
+            const row = { month: month };
+        
+            if (monthData) {
+                dataFound = true;
+        
+                programs.forEach(program => {
+                    const count = Number(monthData[`${program}_count`] || 0); 
+                    row[program] = count;
+                });
+
+                row.faculty = Number(monthData.faculty_count || 0);
+                row.staff = Number(monthData.staff_count || 0);
+                row.extension = Number(monthData.extension_count || 0);
+                row.monthly_total = Number(monthData.monthly_total || 0);
+
+                fullData.push(row);
+            } else {
+                
+                programs.forEach(program => {
+                    row[program] = 0; 
+                });
+                row.faculty = 0;
+                row.staff = 0;
+                row.extension = 0;
+                row.monthly_total = 0;
+        
+                fullData.push(row);
             }
+        });
+
+        programs.forEach(program => {
+            totalRow[program] = fullData.reduce((sum, row) => sum + row[program], 0);
+        });
+        totalRow.faculty = fullData.reduce((sum, row) => sum + row.faculty, 0);
+        totalRow.staff = fullData.reduce((sum, row) => sum + row.staff, 0);
+        totalRow.extension = fullData.reduce((sum, row) => sum + row.extension, 0);
+        totalRow.monthly_total = fullData.reduce((sum, row) => sum + row.monthly_total, 0);
+        
+        if (dataFound) {
+            fullData.push(totalRow);
         }
+        
+        console.log("Computed Total Row:", totalRow);
+        
+        
+        const worksheet = XLSX.utils.json_to_sheet(fullData);
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, `Data ${year}`);
+
+        XLSX.writeFile(workbook, `SummaryofAllServices${year}.xlsx`);
+
+    } catch (error) {
+        console.error("Error:", error);
     }
-
-    // Add the header row to the Excel data array
-    excelData.push(header);
-
-    // Iterate through the data and build each row
-    data.forEach(row => {
-        let rowData = [];
-        rowData.push(row.month);
-        rowData.push(row.faculty);
-        rowData.push(row.staff);
-        rowData.push(row.extension);
-        rowData.push(row.monthly_total);
-
-        // Add data for each program column
-        for (let program in row) {
-            if (program !== 'month' && program !== 'faculty' && program !== 'staff' && program !== 'extension' && program !== 'monthly_total') {
-                rowData.push(row[program]);
-            }
-        }
-
-        // Push the row data to the Excel data array
-        excelData.push(rowData);
-    });
-
-    // Convert the Excel data to a worksheet using the 'aoa_to_sheet' method
-    const ws = XLSX.utils.aoa_to_sheet(excelData);
-
-    // Create a new workbook and append the worksheet to it
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Transaction Data');
-
-    // Generate and trigger the Excel file download
-    XLSX.writeFile(wb, 'transaction_data.xlsx');
 }

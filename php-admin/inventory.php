@@ -13,7 +13,7 @@ $db = new Database();
 $conn = $db->getConnection();
 $user = new User($conn); 
 $medicineManager = new MedicineManager($conn);
-$user_id = $_SESSION['user_id'];
+$user_idnum = $_SESSION['user_idnum'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $monthYear = $_POST['monthYear'];

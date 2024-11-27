@@ -16,11 +16,11 @@ class AllPatients {
 }
 
 class StaffUser {
-    public $user_id;
+    public $user_idnum;
     public $status;
 
-    public function __construct($staffuser_id, $user_status) {
-        $this->user_id = $staffuser_id;
+    public function __construct($staffuser_idnum, $user_status) {
+        $this->user_idnum = $staffuser_idnum;
         $this->status = $user_status;
     }
 }
@@ -105,7 +105,7 @@ class Dashboard {
         $this->extens = new DashboardLinkedList();
         $this->countActivePatients();
         $this->countAllConsultationsPerMonth();
-        $this->countActiveStaffUsers();
+        $this->countActiveadminusers();
         $this->countAvailableMedstocks();
         $this->getAlmostExpiredMedstocks();
         $this->countTransactions();
@@ -199,10 +199,10 @@ class Dashboard {
     
     
 
-    public function countActiveStaffUsers() {
+    public function countActiveadminusers() {
         try {
             // Prepare the SQL query to count active staff users with role 'Admin'
-            $query = "SELECT COUNT(*) AS active_staff_count FROM staffusers WHERE user_status = 'Active' AND user_role = 'Admin'";
+            $query = "SELECT COUNT(*) AS active_staff_count FROM adminusers WHERE user_status = 'Active' AND user_role = 'Admin'";
     
             // Execute the query
             $stmt = $this->db->prepare($query);

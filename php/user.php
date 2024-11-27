@@ -2,6 +2,7 @@
 
 class ListNode {
     public $user_id;
+    public $user_idnum;
     public $user_fname; 
     public $user_lname;
     public $user_mname; 
@@ -15,8 +16,9 @@ class ListNode {
     public $code; 
     public $next;
 
-    public function __construct($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $passwordhash, $code, $next = null) {
+    public function __construct($user_id, $user_idnum, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $passwordhash, $code, $next = null) {
         $this->user_id = $user_id;
+        $this->user_idnum = $user_idnum;
         $this->user_fname = $user_fname;
         $this->user_lname = $user_lname;
         $this->user_mname = $user_mname;
@@ -43,8 +45,8 @@ class LinkedList {
         return $this->head;
     }
 
-    public function addNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $passwordhash, $code) {
-        $newNode = new ListNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $passwordhash, $code, $this->head);
+    public function addNode($user_id, $user_idnum, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $passwordhash, $code) {
+        $newNode = new ListNode($user_id, $user_idnum, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $passwordhash, $code, $this->head);
         $this->head = $newNode;
     }
 
@@ -55,7 +57,7 @@ class LinkedList {
                 return $current;
             }
             $current = $current->next;
-        }
+        } 
         return null;
     }
 
@@ -81,12 +83,12 @@ class LinkedList {
         return $nodes;
     }
 
-    public function removeNode($user_id) {
+    public function removeNode($user_idnum) {
         $current = $this->head;
         $prev = null;
 
         while ($current !== null) {
-            if ($current->user_id === $user_id) {
+            if ($current->user_idnum === $user_idnum) {
                 if ($prev === null) {
                     $this->head = $current->next;
                 } else { 
@@ -116,7 +118,7 @@ class User {
         $filteredUsers = [];
     
         foreach ($allUsers as $user) {
-            if ($user->user_id !== 'ADMIN001') {
+            if ($user->user_idnum !== 'ADMIN001') {
                 $filteredUsers[] = $user;
             }
         }
@@ -126,12 +128,13 @@ class User {
     
 
     private function loadUsers() {
-        $query = "SELECT user_id, user_fname, user_lname, user_mname, user_email, user_position, user_role, user_status, user_dateadded, user_profile, user_password, user_code FROM staffusers";
+        $query = "SELECT user_id, user_idnum, user_fname, user_lname, user_mname, user_email, user_position, user_role, user_status, user_dateadded, user_profile, user_password, user_code FROM adminusers";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $this->linkedList->addNode(
                 $row['user_id'],
+                $row['user_idnum'],
                 $row['user_fname'],
                 $row['user_lname'],
                 $row['user_mname'],
@@ -146,13 +149,15 @@ class User {
             );
         }
     }
-    public function getUserDataa($user_id) {
+
+    public function getUserDataa($user_idnum) {
     
-        $node = $this->linkedList->findNode($user_id);
+        $node = $this->linkedList->findNode($user_idnum);
         
         if ($node) {
             return [
                 'user_id' => $node->user_id,
+                'user_idnum' => $node->user_idnum,
                 'user_fname' => $node->user_fname,
                 'user_lname' => $node->user_lname,
                 'user_mname' => $node->user_mname,
@@ -167,9 +172,9 @@ class User {
             ];
         } else {
             
-            $query = "SELECT user_id, user_fname, user_lname, user_mname, user_email, user_position, user_role, user_status, user_dateadded, user_profile, user_password, user_code FROM staffusers WHERE user_id = ?";
+            $query = "SELECT user_id, user_idnum, user_fname, user_lname, user_mname, user_email, user_position, user_role, user_status, user_dateadded, user_profile, user_password, user_code FROM adminusers WHERE user_idnum = ?";
             $stmt = $this->conn->prepare($query);
-            $stmt->bindValue(1, $user_id);
+            $stmt->bindValue(1, $user_idnum);
             $stmt->execute();
             
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -177,6 +182,7 @@ class User {
                 
                 $this->linkedList->addNode(
                     $row['user_id'],
+                    $row['user_idnum'],
                     $row['user_fname'],
                     $row['user_lname'],
                     $row['user_mname'],
@@ -197,10 +203,10 @@ class User {
         } 
     }
 
-    public function getUserData($user_id) {
-        $query = "SELECT * FROM staffusers WHERE user_id = :user_id";
+    public function getUserData($user_idnum) {
+        $query = "SELECT * FROM adminusers WHERE user_idnum = :user_idnum";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':user_idnum', $user_idnum);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);  
     }
@@ -247,9 +253,9 @@ class User {
         return $node && $node->code == $otp;
     }
 
-    public function getProfileImageURL($user_id) {
+    public function getProfileImageURL($user_idnum) {
         
-        $node = $this->linkedList->findNode($user_id);
+        $node = $this->linkedList->findNode($user_idnum);
         if ($node) {
             return $node->user_profile;
         } else {
@@ -258,18 +264,23 @@ class User {
     }
     
 
-    public function register($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $password, $code) {
+    public function register($user_idnum, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $password, $code, $admin_id) {
         if ($this->emailVerify($user_email)) {
             $_SESSION['status'] = 'error';
             $_SESSION['message'] = 'Email already exists.';
             return false;
         }
 
-        $query = "INSERT INTO staffusers (user_id, user_fname, user_lname, user_mname, user_email, user_position, user_role, user_status, user_dateadded, user_profile, user_password, user_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $setAdminIdQuery = "SET @admin_id = :admin_id";
+        $setStmt = $this->conn->prepare($setAdminIdQuery);
+        $setStmt->bindValue(':admin_id', $admin_id);
+        $setStmt->execute();
+
+        $query = "INSERT INTO adminusers (user_idnum, user_fname, user_lname, user_mname, user_email, user_position, user_role, user_status, user_dateadded, user_profile, user_password, user_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($query);
 
         if ($stmt) {
-            $stmt->bindValue(1, $user_id); 
+            $stmt->bindValue(1, $user_idnum); 
             $stmt->bindValue(2, $user_fname);
             $stmt->bindValue(3, $user_lname);
             $stmt->bindValue(4, $user_mname); 
@@ -283,7 +294,9 @@ class User {
             $stmt->bindValue(12, $code); 
 
             if ($stmt->execute()) {
-                $this->linkedList->addNode($user_id, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $password, $code);
+                $user_id = $this->conn->lastInsertedId();
+
+                $this->linkedList->addNode($user_id,$user_idnum, $user_fname, $user_lname, $user_mname, $user_email, $user_position, $user_role, $user_status, $user_dateadded, $user_profile, $password, $code);
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = 'User registered successfully!';
                 header('Location: staffuser.php');
@@ -306,7 +319,7 @@ class User {
     }
 
     public function updateCode($email, $otp) {
-        $sql_update_statement = "UPDATE staffusers SET user_code = ? WHERE user_email = ?";
+        $sql_update_statement = "UPDATE adminusers SET user_code = ? WHERE user_email = ?";
         $stmt = $this->conn->prepare($sql_update_statement);
 
         if ($stmt) {
@@ -318,14 +331,14 @@ class User {
             die("Error preparing statement: " . $this->conn->errorInfo()[2]);
         }
     }
-
+ 
     public function changePassword($email, $newPassword) {
         $code = 0;
         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
         $node = $this->linkedList->findNode($email);
 
         if ($node) {
-            $sql_update_statement = "UPDATE staffusers SET user_password = ?, user_code = ? WHERE user_email = ?";
+            $sql_update_statement = "UPDATE adminusers SET user_password = ?, user_code = ? WHERE user_email = ?";
             $stmt = $this->conn->prepare($sql_update_statement);
 
             if ($stmt) {
@@ -342,15 +355,15 @@ class User {
         }
     }
 
-    public function deleteUser($user_id) {
-        $sql_delete = "DELETE FROM staffusers WHERE user_id = ?";
+    public function deleteUser($user_idnum) {
+        $sql_delete = "DELETE FROM adminusers WHERE user_idnum = ?";
         $stmt = $this->conn->prepare($sql_delete);
 
         if ($stmt) {
-            $stmt->bindValue(1, $user_id);
+            $stmt->bindValue(1, $user_idnum);
 
             if ($stmt->execute()) {
-                $this->linkedList->removeNode($user_id);
+                $this->linkedList->removeNode($user_idnum);
                 return true;
             } else {
                 $_SESSION['status'] = 'error';
@@ -365,78 +378,75 @@ class User {
             return false;
         }
     }
-
-    public function updateUser($old_user_id, $new_user_id, $new_fname, $new_lname, $new_mname, $new_email, $new_position, $new_role, $new_status) {
-       
-        $sql_update_statement = "UPDATE staffusers SET 
-            user_id = ?, 
-            user_fname = ?, 
-            user_lname = ?, 
-            user_mname = ?, 
-            user_email = ?, 
-            user_position = ?, 
-            user_role = ?, 
-            user_status = ? 
-            WHERE user_id = ?"; 
-        
-        $stmt = $this->conn->prepare($sql_update_statement);
+    public function updateUser($admin_id, $old_user_idnum, $new_user_idnum, $new_fname, $new_lname, $new_mname, $new_email, $new_position, $new_role, $new_status) {
+        try {
+            // Start a transaction to ensure atomicity
+            $this->conn->beginTransaction();
+            
+            // Optional: Set the admin ID if needed for auditing purposes
+            $setAdminIdQuery = "SET @admin_id = :admin_id";
+            $setStmt = $this->conn->prepare($setAdminIdQuery);
+            $setStmt->bindValue(':admin_id', $admin_id);
+            $setStmt->execute();
     
-        if ($stmt) {
-           
-            $stmt->bindParam(1, $new_user_id);  
-            $stmt->bindParam(2, $new_fname);
-            $stmt->bindParam(3, $new_lname);
-            $stmt->bindParam(4, $new_mname);
-            $stmt->bindParam(5, $new_email);
-            $stmt->bindParam(6, $new_position);
-            $stmt->bindParam(7, $new_role);
-            $stmt->bindParam(8, $new_status);
-            $stmt->bindParam(9, $old_user_id);  
+            // Update the user details
+            $sql_update_statement = "UPDATE adminusers SET 
+                user_idnum = ?, 
+                user_fname = ?, 
+                user_lname = ?, 
+                user_mname = ?, 
+                user_email = ?, 
+                user_position = ?, 
+                user_role = ?,  
+                user_status = ? 
+                WHERE user_idnum = ?";
+    
+            $stmt = $this->conn->prepare($sql_update_statement);
+    
+            $stmt->bindValue(1, $new_user_idnum);
+            $stmt->bindValue(2, $new_fname);
+            $stmt->bindValue(3, $new_lname);
+            $stmt->bindValue(4, $new_mname);
+            $stmt->bindValue(5, $new_email);
+            $stmt->bindValue(6, $new_position);
+            $stmt->bindValue(7, $new_role);
+            $stmt->bindValue(8, $new_status);
+            $stmt->bindValue(9, $old_user_idnum);
+    
             if ($stmt->execute()) {
-              
-                $node = $this->linkedList->findNode($old_user_id);
-                if ($node) {
-                  
-                    $node->user_id = $new_user_id;  
-                    $node->user_fname = $new_fname;
-                    $node->user_lname = $new_lname;
-                    $node->user_mname = $new_mname;
-                    $node->user_email = $new_email;
-                    $node->user_position = $new_position;
-                    $node->user_position = $new_role;
-                    $node->user_status = $new_status;
-                }
-    
+                // Commit the transaction
+                $this->conn->commit();
                 
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = 'User updated successfully!';
                 return true;
             } else {
-                
-                $_SESSION['status'] = 'error';
-                $_SESSION['message'] = 'Error updating user in the database: ' . $stmt->errorInfo()[2];
-                error_log("Error updating user in the database: " . $stmt->errorInfo()[2]);
-                return false;
+                // If execution fails, roll back the transaction
+                $this->conn->rollBack();
+                throw new Exception("Error executing update query: " . implode(", ", $stmt->errorInfo()));
             }
-        } else {
+        } catch (Exception $e) {
+            // Roll back the transaction in case of error
+            $this->conn->rollBack();
             
             $_SESSION['status'] = 'error';
-            $_SESSION['message'] = 'Error preparing update statement: ' . $this->conn->errorInfo()[2];
-            error_log("Error preparing update statement: " . $this->conn->errorInfo()[2]);
+            $_SESSION['message'] = $e->getMessage();
+            error_log($e->getMessage());
             return false;
         }
     }
-
-    public function updateProfilePicture($user_id, $profile) {
+    
+    
+    public function updateProfilePicture($user_idnum, $profile) {
         
-        $sql_update_statement = "UPDATE staffusers SET user_profile = ? WHERE user_id = ?";
+        $sql_update_statement = "UPDATE adminusers SET user_profile = ? WHERE user_idnum = ?";
         
         $stmt = $this->conn->prepare($sql_update_statement);
     
         if ($stmt) {
            
             $stmt->bindParam(1, $profile);
-            $stmt->bindParam(2, $user_id);
+            $stmt->bindParam(2, $user_idnum);
     
             if ($stmt->execute()) {
                 return true;

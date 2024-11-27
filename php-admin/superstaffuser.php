@@ -12,8 +12,8 @@ $db = new Database();
 $conn = $db->getConnection();
 
 $user = new User($conn); 
-$user_id = $_SESSION['user_id'];
-$userData = $user->getUserData($user_id);  
+$user_idnum = $_SESSION['user_idnum'];
+$userData = $user->getUserData($user_idnum);  
 ?>
  
 <!DOCTYPE html>
@@ -359,9 +359,9 @@ $userData = $user->getUserData($user_id);
                               $statusColor = ($node->user_status === 'Active') ?  '#77dd77' : '#ff6961';
                               $statusText = ucfirst($node->user_status); 
                               
-                              echo "<tr data-id='{$node->user_id}' data-lname='{$node->user_lname}' data-fname='{$node->user_fname}' data-mname='{$node->user_mname}' data-email='{$node->user_email}' data-position='{$node->user_position}' data-role='{$node->user_role}' data-dateadded='{$node->user_dateadded}' data-status='{$node->user_status}'> 
+                              echo "<tr data-id='{$node->user_idnum}' data-lname='{$node->user_lname}' data-fname='{$node->user_fname}' data-mname='{$node->user_mname}' data-email='{$node->user_email}' data-position='{$node->user_position}' data-role='{$node->user_role}' data-dateadded='{$node->user_dateadded}' data-status='{$node->user_status}'> 
                                   <td><img src='uploads/{$node->user_profile}' alt='Profile Picture' style='width: 50px; height: 50px; border-radius: 50%;'></td>
-                                  <td>{$node->user_id}</td>
+                                  <td>{$node->user_idnum}</td>
                                   <td>{$fullName}</td>
                                   <td>{$node->user_email}</td>
                                   <td>{$node->user_position}</td>
@@ -522,7 +522,7 @@ $userData = $user->getUserData($user_id);
             $.ajax({
                 url: 'usercontrol.php', 
                 type: 'POST',
-                data: { user_id: userId },
+                data: { user_idnum: userId },
                 success: function(response) {
                    
                     var data = JSON.parse(response);

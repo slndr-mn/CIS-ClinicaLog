@@ -14,8 +14,8 @@ $patient = new PatientManager($db);
 $user = new User($conn);
 $medicalrecords = new MedRecManager($conn);
 
-$user_id = $_SESSION['user_id']; 
-$userData = $user->getUserData($user_id);
+$user_idnum = $_SESSION['user_idnum']; 
+$userData = $user->getUserData($user_idnum);
 
 if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
     $patientId = $_SESSION['id'];
@@ -35,7 +35,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
 </div>
 <div class="col-md-12">
             <div class="card card-equal-height">
-                <div class="card-header">
+                <div class="card-header"> 
                     <div class="d-flex align-items-center">
                         <h4 class="card-title">List of Medical Records</h4>
                         <button
@@ -62,7 +62,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
                           <div class="modal-header border-0">
                             <h5 class="modal-title">
                               <span class="fw-mediumbold"> New</span>
-                              <span class="fw-light"> Medicine </span>
+                              <span class="fw-light"> Medical Records </span>
                             </h5>
                             <button
                               type="button"
@@ -79,7 +79,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
                             <form class="form" action="patientmedrecscontrol.php" method="POST" enctype="multipart/form-data">
                             <input type="hidden" class="form-control" id="patientid" name="patientid" value="<?php echo $patientId; ?>" />
                             <input type="hidden" class="form-control" id="patienttype" name="patienttype" value="<?php echo $patientType; ?>" />
-
+                            <input id="admin_id" name="admin_id" type="text" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
                                 <div class="row">
                                     <!-- Upload PDF (Medical Record File) -->
                                     <div class="col-md-12">
@@ -153,6 +153,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
                             <form class="form" action="patientmedrecscontrol.php" method="POST">
                             <input type="hidden" class="form-control" id="patientid" name="patientid" value="<?php echo $patientId; ?>" />
                             <input type="hidden" class="form-control" id="patienttype" name="patienttype" value="<?php echo $patientType; ?>" />
+                            <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
 
                             <input type="hidden" id="editid" name="editid" class="form-control"/>
                                 <div class="row">

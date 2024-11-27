@@ -20,12 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email']) && isset($_P
     $defaultadmin = "Administrator";
     $doctor = "Campus Physician"; 
       
-    $userData = $user->userExists($email, $password);
- 
+    $userData = $user->userExists($email, $password); 
+  
 if ($userData) {  
     session_regenerate_id(true); 
     $_SESSION['logged_in'] = true;  
-    $_SESSION['user_id'] = $userData->user_id;  
+    $_SESSION['user_idnum'] = $userData->user_idnum;  
     $_SESSION['user_status'] = $userData->user_status;
     $_SESSION['user_position'] = $userData->user_position;
     $_SESSION['user_role'] = $userData->user_role;
@@ -34,9 +34,9 @@ if ($userData) {
         if ($_SESSION['user_position'] === $defaultadmin || $_SESSION['user_position'] === $doctor) {
             header('Location: ../php-admin/index.php');  
             exit;
-        } elseif ($_SESSION['user_role'] === 'Super Admin') {
+        } elseif ($_SESSION['user_role'] === 'Super Admin') { 
             header('Location: ../php-admin/superadindex.php'); 
-            exit;
+            exit; 
         } elseif ($_SESSION['user_role'] === 'Admin') { 
             header('Location: ../php-admin/adminindex.php');  
             exit;
@@ -53,7 +53,7 @@ if ($userData) {
         if ($patientData->patient_status === 'Active') {
             session_regenerate_id(true); 
             $_SESSION['logged_in'] = true; 
-            $_SESSION['patuser_id'] = $patientData->patient_id;  
+            $_SESSION['patuser_idnum'] = $patientData->patient_id;  
             $_SESSION['patuser_status'] = $patientData->patient_status;
             $_SESSION['patuser_type'] = $patientData->patient_patienttype;
 
@@ -103,7 +103,7 @@ unset($_SESSION['error_message']);
                 <?php endif; ?>
                 
                 <div class="form-container">
-                    <div class="form-group">
+                    <div class="form-group"> 
                         <label for="email" class="form-label">Email:</label> 
                         <img src="../assets/img/email.png" alt="email icon">
                         <input type="text" name="email" id="email" class="form-input" placeholder="Enter your Email" required>

@@ -21,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $timeadded = date('H:i:s');
         $files = $_FILES['uploadfile'];   
         $patienttype = $_POST['patienttype']; 
-
-        $filenames = [];
+        $admin_id = $_POST['admin_id'];
+        $filenames = []; 
         $hashedFiles = []; 
         $duplicateFilenames = [];
 
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
     
-        $response = $medicalrecords->insertMedicalRecord($patientid, $filenames, $hashedFiles, $comment, $dateadded, $timeadded);
+        $response = $medicalrecords->insertMedicalRecord($admin_id, $patientid, $filenames, $hashedFiles, $comment, $dateadded, $timeadded);
     
         if ($response['status'] === 'success') {
             for ($i = 0; $i < count($hashedFiles); $i++) {

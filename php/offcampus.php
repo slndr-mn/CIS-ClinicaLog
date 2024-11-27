@@ -71,7 +71,7 @@ class OffCampusManager {
     
         $filteredRecords = [];
     
-        foreach ($allRecords as $record) {
+        foreach ($allRecords as $record) { 
             $filteredRecords[] = [
                 'id' => $record->offcampus_id,
                 'medstockid' => $record->offcampus_medstockid,

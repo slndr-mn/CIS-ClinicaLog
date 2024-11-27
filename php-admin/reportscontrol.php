@@ -1,7 +1,6 @@
 <?php
 header('Content-Type: application/json');
 
-// Database connection
 $host = 'localhost';
 $dbname = 'clinicalog';
 $username = 'root';
@@ -29,7 +28,7 @@ try {
             YEAR(t.transac_date) = :year AND t.transac_status = 'Done'
         GROUP BY 
             MONTH(t.transac_date)
-        ORDER BY 
+        ORDER BY  
             month
     ");
     $stmt1->execute(['year' => $year]);

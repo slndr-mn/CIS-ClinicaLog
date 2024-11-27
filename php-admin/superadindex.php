@@ -12,7 +12,7 @@ $db = new Database();
 $conn = $db->getConnection();
 
 $user = new User($conn); 
-$user_id = $_SESSION['user_id'];
+$user_idnum = $_SESSION['user_idnum'];
 
 ?>
  

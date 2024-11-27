@@ -128,7 +128,7 @@ session_start();
                 </a>  
               </li>
               <li class="nav-item" id="inventory-item">
-                <a href="inventory.php">
+                <a href="inventory.php"> 
                   <i class="fas fas fa-clipboard-list"></i>
                   <p>Medicine Report</p> 
                 </a>

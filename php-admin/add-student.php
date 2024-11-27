@@ -7,6 +7,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 }
 
 
+$user_idnum = $_SESSION['user_idnum'];
 ?>
 <!DOCTYPE html> 
 <html lang="en">
@@ -83,7 +84,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
               </div>
               <div class="card-body" id="InputInfo">
                 <!-- Form Starts Here -->
-                <form id="studentForm" action="patientcontrol.php" method="POST" enctype="multipart/form-data">                  <!-- Name Fields -->
+                <form id="studentForm" action="patientcontrol.php" method="POST" enctype="multipart/form-data">    
+                                  <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>              <!-- Name Fields -->
                   <div class="row">
                   <div class="col-md-3 mb-3">
                         <label for="Profile" class="form-label">Profile Upload</label>

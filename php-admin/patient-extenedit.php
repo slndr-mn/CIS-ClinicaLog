@@ -18,8 +18,8 @@ $conn = $db->getConnection();
 
 $patient = new PatientManager($db);
 $user = new User($conn);
-$user_id = $_SESSION['user_id'];
-$userData = $user->getUserData($user_id);
+$user_idnum = $_SESSION['user_idnum'];
+$userData = $user->getUserData($user_idnum);
 
 if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
     $patientId = $_SESSION['id'];
@@ -118,6 +118,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
         <!-- Form Starts Here --> 
         <form id="uppatientForm" action="patientcontrol.php" method="POST" enctype="multipart/form-data">   
         <input type="hidden" class="form-control" id="patientid" name="patientid" value="<?php echo $patientId; ?>" />  
+        <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
                 <div class="row">
                     <div class="profile-image col-md-3 text-center mx-auto d-flex flex-column align-items-center">
                         <img id="profilePic" src="default-image.jpg" alt="Profile Image" class="img-thumbnail mb-2" />

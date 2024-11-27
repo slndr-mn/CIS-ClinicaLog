@@ -13,7 +13,7 @@ $db = new Database();
 $conn = $db->getConnection();
 
 $user = new User($conn); 
-$user_id = $_SESSION['user_id'];
+$user_idnum = $_SESSION['user_idnum'];
 
 $dashboard = new Dashboard($conn); 
 
@@ -21,7 +21,7 @@ $dashboard = new Dashboard($conn);
  
 <!DOCTYPE html> 
 <html lang="en">  
-<head>
+<head> 
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>CIS:Clinicalog</title> 
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
@@ -130,7 +130,7 @@ $dashboard = new Dashboard($conn);
                       <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
                           <p class="card-category">Active Staff Users</p>
-                          <h4 class="card-title"><?php echo $dashboard->countActiveStaffUsers();; ?></h4>
+                          <h4 class="card-title"><?php echo $dashboard->countActiveadminusers();; ?></h4>
                         </div>
                       </div>
                     </div>
@@ -442,7 +442,7 @@ $dashboard = new Dashboard($conn);
             display: false,
           },
         }],
-        xAxes: [{
+        xAxes: [{ 
           gridLines: {
             zeroLineColor: "transparent",
           },

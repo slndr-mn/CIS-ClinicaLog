@@ -2,6 +2,9 @@
 session_start();
 include('../database/config.php');
 include('../php/user.php');
+include('../php/dashboard.php');
+include('../php/adminlogs.php');
+
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header('Location: ../php-login/index.php'); 
@@ -14,13 +17,17 @@ $conn = $db->getConnection();
 $user = new User($conn); 
 $user_idnum = $_SESSION['user_idnum'];
 
+$logs = new SystemLogs($conn);
+
+$logData = $logs->getAllSystemLogs();
+
 ?>
  
 <!DOCTYPE html> 
-<html lang="en">
+<html lang="en">   
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Dashboard</title> 
+    <title>CIS:Clinicalog</title> 
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
 
@@ -30,7 +37,7 @@ $user_idnum = $_SESSION['user_idnum'];
       WebFont.load({ 
         google: { families: ["Public Sans:300,400,500,600,700"] },
         custom: {
-          families: [
+          families: [ 
             "Font Awesome 5 Solid",
             "Font Awesome 5 Regular",
             "Font Awesome 5 Brands",
@@ -39,15 +46,16 @@ $user_idnum = $_SESSION['user_idnum'];
           urls: ["../css/fonts.min.css"], 
         },
         active: function () {
+            
           sessionStorage.fonts = true;
-        },
+        }, 
       });
     </script>
-
+ 
     <!-- CSS Files -->
     <link rel="stylesheet" href="../css/bootstrap.min.css" />
-    <link rel="stylesheet" href="../css/plugins.min.css" />
-    <link rel="stylesheet" href="../css/kaiadmin.min.css" />
+    <link rel="stylesheet" href="../css/plugins.min.css" /> 
+    <link rel="stylesheet" href="../css/kaiadmin.min.css" /> 
 
     <!-- ICONS -->
     <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
@@ -68,8 +76,8 @@ $user_idnum = $_SESSION['user_idnum'];
 
         .nav-item.active i {
             color: #fff;
-        }
-
+        } 
+ 
   </style>
 </head>
 <body>
@@ -82,12 +90,76 @@ $user_idnum = $_SESSION['user_idnum'];
             <div class="main-header" id="header"></div>
             <!-- Main Content -->
             <div class="container" id="content">
-                <h1>
-                Dashboard
-                </h1>
+            <div class="page-inner">
+                <div
+                class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
+                >
+                    <div class="col-md-12">
+                        <div class="card card-equal-height">
+                            <div class="card-header">
+                                <div class="d-flex align-items-center">
+                                    <h4 class="card-title">Admin Logs</h4>
+                                    <button
+                                        class="btn btn-primary btn-round ms-auto"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#addRowModal"
+                                    >
+                                        <i class="fa fa-arrow"></i>
+                                        Refresh List
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="admin-logs" class="display table table-striped table-hover">             
+                                            <thead>
+                                                <tr>
+                                                <th>No.</th>
+                                                <th>ID Number</th>
+                                                <th>Name</th>
+                                                <th>Date & Time</th>
+                                                <th>Action Made</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                <th>No.</th>
+                                                <th>ID Number</th>
+                                                <th>Name</th>
+                                                <th>Date & Time</th>
+                                                <th>Action Made</th>
+                                                </tr>
+                                            </tfoot>
+                                            <tbody>
+                                            <?php 
+                                                $counter = 1;
+
+                                                while ($row = $logData->fetch(PDO::FETCH_ASSOC)) {
+                                                    echo "<tr>
+                                                            <td>" . $counter++ . "</td>
+                                                            <td>" . htmlspecialchars($row['idnum']) . "</td>
+                                                            <td>" . htmlspecialchars($row['name']) . "</td>
+                                                            <td>" . htmlspecialchars($row['date']) . " " . htmlspecialchars($row['time']) . "</td>
+                                                            <td>" . htmlspecialchars($row['action']) . "</td>
+                                                          </tr>";
+                                                }
+                                                
+                                                ?>
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- End of Consultations List -->
+                </div>            
+            </div>
             </div>
         </div>
     </div>
+           
 
     
     
@@ -123,10 +195,14 @@ $user_idnum = $_SESSION['user_idnum'];
 
     <!-- Kaiadmin JS -->
     <script src="../assets/js/kaiadmin.min.js"></script>
-    
+
     <script>
     $(document).ready(function() {
+        $("#admin-logs").DataTable({
         
+    });
+ 
+       
         $("#sidebar").load("sidebar.php", function(response, status, xhr) {
             if (status == "error") {
                 console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
@@ -153,5 +229,6 @@ $user_idnum = $_SESSION['user_idnum'];
     });
 </script>
 
+    
 </body>
 </html>

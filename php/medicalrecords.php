@@ -159,8 +159,13 @@ class MedRecManager {
 
     
     
-    public function insertMedicalRecord($patientid, $filenames, $files, $comment, $dateadded, $timeadded) {
+    public function insertMedicalRecord($admin_id, $patientid, $filenames, $files, $comment, $dateadded, $timeadded) {
         try {    
+            $setAdminIdQuery = "SET @admin_id = :admin_id";
+            $setStmt = $this->db->prepare($setAdminIdQuery);
+            $setStmt->bindValue(':admin_id', $admin_id);
+            $setStmt->execute();
+            
             $sql = "INSERT INTO medicalrec (medicalrec_patientid, medicalrec_filename, medicalrec_file, medicalrec_comment, medicalrec_dateadded, medicalrec_timeadded) 
                     VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $this->db->prepare($sql);
@@ -186,7 +191,7 @@ class MedRecManager {
             ];
     
         } catch (PDOException $e) {
-            return [
+            return [ 
                 'status' => 'error',
                 'message' => 'Error: ' . $e->getMessage()
             ];

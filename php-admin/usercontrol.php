@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['addstaff'])) {
         
         $id = trim($_POST['addid']);
-        $first_name = $_POST['addfname'];
+        $first_name = $_POST['addfname']; 
         $last_name = $_POST['addlname'];
         $middle_name = $_POST['addmname'];
         $email = filter_var($_POST['addemail'], FILTER_SANITIZE_EMAIL);
@@ -27,11 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $status = $_POST['addstatus'];
         $dateadded = date('Y-m-d H:i:s');
         $password = password_hash($id, PASSWORD_BCRYPT);  
+        $admin_id = $_POST['admin_id'];
         $code = 0; 
 
         $user_profile = '';
         if (isset($_FILES['addprofile']) && $_FILES['addprofile']['error'] === UPLOAD_ERR_OK) {
-            $profile = $_FILES['addprofile'];
+            $profile = $_FILES['addprofile']; 
             $profile_original_name = basename($profile['name']);
             $profile_tmp = $profile['tmp_name'];
 
@@ -60,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
   
-            if ($user->register($id, $first_name, $last_name, $middle_name, $email, $position, $role, $status, $dateadded, $user_profile, $password, $code)) {
+            if ($user->register($id, $first_name, $last_name, $middle_name, $email, $position, $role, $status, $dateadded, $user_profile, $password, $code, $admin_id)) {
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = 'User registered successfully!';
                 header('Location: staffuser.php');
@@ -80,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['updateuser'])) {
 
         $user_oldid = $_POST['editoldid'];
-        $user_id = $_POST['editid'];
+        $user_idnum = $_POST['editid'];
         $new_fname = $_POST['editfname'];
         $new_lname = $_POST['editlname'];
         $new_mname = $_POST['editmname'];
@@ -88,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new_position = $_POST['editposition'];
         $new_role = $_POST['editrole'];
         $new_status = $_POST['editstatus'];
+        $admin_id = $_POST['admin_id'];
 
         $new_profile = null;
 
@@ -115,10 +117,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             finfo_close($finfo);
         }
 
-        if ($user->updateUser($user_oldid, $user_id, $new_fname, $new_lname, $new_mname, $new_email, $new_position, $new_role, $new_status)) {
+        if ($user->updateUser($admin_id, $user_oldid, $user_idnum, $new_fname, $new_lname, $new_mname, $new_email, $new_position, $new_role, $new_status)) {
 
             if ($new_profile) {
-                if ($user->updateProfilePicture($user_id, $new_profile)) {
+                if ($user->updateProfilePicture($user_idnum, $new_profile)) {
                     $_SESSION['status'] = 'success';
                     $_SESSION['message'] = 'User updated successfully!';
                 } else {
@@ -138,10 +140,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    if (isset($_POST['user_id'])) {
-        $user_id = $_POST['user_id'];
+    if (isset($_POST['user_idnum'])) {
+        $user_idnum = $_POST['user_idnum'];
         
-        if ($user->deleteUser($user_id)) {
+        if ($user->deleteUser($user_idnum)) {
             echo json_encode(['success' => true]);
         } else {
             echo json_encode(['success' => false, 'message' => $_SESSION['message']]);

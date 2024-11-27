@@ -22,8 +22,8 @@ $patient = new PatientManager($db);
 
  
 $user = new User($conn); 
-$user_id = $_SESSION['user_id'];
-$userData = $user->getUserData($user_id); 
+$user_idnum = $_SESSION['user_idnum'];
+$userData = $user->getUserData($user_idnum); 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_POST['id'], $_POST['type'], $_POST['action'])) {

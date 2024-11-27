@@ -16,8 +16,8 @@ $conn = $db->getConnection();
 $medicine = new MedicineManager($conn); 
 
 $user = new User($conn); 
-$user_id = $_SESSION['user_id'];
-$userData = $user->getUserData($user_id); 
+$user_idnum = $_SESSION['user_idnum'];
+$userData = $user->getUserData($user_idnum); 
 ?>
 <!DOCTYPE html>
 <html lang="en">

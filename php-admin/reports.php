@@ -12,7 +12,7 @@ $db = new Database();
 $conn = $db->getConnection();
 
 $user = new User($conn); 
-$user_id = $_SESSION['user_id'];
+$user_idnum = $_SESSION['user_idnum'];
 
 ?> 
 
@@ -23,7 +23,7 @@ $user_id = $_SESSION['user_id'];
     <title>CIS:Clinicalog</title> 
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" /> 
     <link rel="icon" href="../assets/img/ClinicaLog.ico" type="image/x-icon"/>
- 
+
     <!-- Fonts and icons -->
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
     <script>
@@ -110,7 +110,7 @@ $user_id = $_SESSION['user_id'];
                                             <div class="card-head-row">
                                             <div class="card-title">Summary of All Services</div>
                                             <div class="card-tools">
-                                                <a href="#" class="btn btn-label-success btn-round btn-sm me-2" onclick="event.preventDefault(); exportToExcel()">
+                                                <a href="#" class="btn btn-label-success btn-round btn-sm me-2" onclick="exportToExcel()">
                                                 <span class="btn-label"><i class="fa fa-pencil"></i></span>
                                                 Export
                                                 </a>
@@ -500,8 +500,12 @@ $user_id = $_SESSION['user_id'];
 
     <!-- Kaiadmin JS -->
     <script src="../assets/js/kaiadmin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
     <script src="../assets/js/reportjs.js"></script>
+    
 
+
+    
     <script>
         $(document).ready(function() {
             // Dynamically load the sidebar
@@ -533,6 +537,5 @@ $user_id = $_SESSION['user_id'];
         });
     </script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </body> 
 </html>

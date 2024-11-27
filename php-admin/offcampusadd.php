@@ -443,7 +443,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
 
 <!-- Kaiadmin JS -->
 <script src="../assets/js/kaiadmin.min.js"></script>
-
+ 
 <!-- Plugins -->
 <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
 <script src="../assets/js/plugin/chart.js/chart.min.js"></script>

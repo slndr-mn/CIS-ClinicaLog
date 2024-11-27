@@ -232,7 +232,7 @@ class PatientLinkedList {
         while ($current !== null) {
             if (strcasecmp($current->item->faculty_idnum, $id) === 0) { 
                 return true; 
-            }
+            } 
             $current = $current->next;
         }
         return false; 
@@ -430,17 +430,25 @@ class PatientManager{
 
     
 
-    public function insertPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code) {
+    public function insertPatient($admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code) {
         try {
+            // Set admin ID for logging
+            $setAdminIdQuery = "SET @admin_id = :admin_id";
+            $setStmt = $this->db->prepare($setAdminIdQuery);
+            $setStmt->bindValue(':admin_id', $admin_id);
+            $setStmt->execute();
+    
+            // Check if the patient already exists
             if ($this->patients->patientExists($email)) {
                 return ['status' => 'error', 'message' => 'Patient already exists.'];
             }
     
+            // Insert the patient
             $sql = "INSERT INTO patients 
                     (patient_lname, patient_fname, patient_mname, patient_dob, patient_email, patient_connum, patient_sex, patient_profile, patient_patienttype, patient_dateadded, patient_password, patient_status, patient_code)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $this->db->prepare($sql);
- 
+    
             $params = [
                 $lname, 
                 $fname, 
@@ -459,16 +467,18 @@ class PatientManager{
     
             $stmt->execute($params);
     
+            // Get the inserted patient ID
             $patient_id = $this->db->lastInsertId();
     
+            // Add the patient to the linked list
             $patient = new Patient($patient_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
             $this->patients->add($patient);
-            
+    
             return ['status' => 'success', 'message' => 'Patient inserted successfully.', 'patient_id' => $patient_id];
     
         } catch (PDOException $e) {
             error_log("Error inserting patient: " . $e->getMessage());
-            
+    
             return [
                 'status' => 'error',
                 'message' => 'Error inserting patient: ' . $e->getMessage(),  
@@ -518,14 +528,14 @@ class PatientManager{
         
             return [
                 'status' => 'success', 
-                'message' => 'Faculty inserted successfully. Faculty ID: ' . $faculty_id // Include Faculty ID in message
+                'message' => 'Faculty inserted successfully. Faculty ID: ' . $faculty_id 
             ];
         } catch (PDOException $e) {
             $errorMessage = "Error inserting faculty: " . $e->getMessage();
             echo $errorMessage . "<br>";
             return [
                 'status' => 'error', 
-                'message' => 'Error inserting faculty. Please try again later. SQL Error: ' . $errorMessage // Include SQL error in message
+                'message' => 'Error inserting faculty. Please try again later. SQL Error: ' . $errorMessage 
             ];
         }
     }
@@ -608,8 +618,8 @@ class PatientManager{
         }
     }
     
-    public function addStudentPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code, $idnum, $program, $major, $year, $section, $region, $province, $municipality, $barangay, $prkstrtadd, $conname, $relationship, $emergency_connum) {
-        $insertPatientResponse = $this->insertPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
+    public function addStudentPatient($admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code, $idnum, $program, $major, $year, $section, $region, $province, $municipality, $barangay, $prkstrtadd, $conname, $relationship, $emergency_connum) {
+        $insertPatientResponse = $this->insertPatient($admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
         
         if ($insertPatientResponse['status'] !== 'success') {
             return $insertPatientResponse; 
@@ -644,12 +654,12 @@ class PatientManager{
     }
     
     public function addFacultyPatient(
-        $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, 
+        $admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, 
         $password, $status, $code, $idnum, $college, $depart, $role,
         $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
         $relationship, $emergency_connum
     ) {
-        $insertPatientResponse = $this->insertPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
+        $insertPatientResponse = $this->insertPatient($admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
         
        
         if ($insertPatientResponse['status'] !== 'success') {
@@ -685,12 +695,12 @@ class PatientManager{
     }
 
     public function addStaffPatient(
-        $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, 
+        $admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, 
         $password, $status, $code, $idnum, $office, $role,
         $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
         $relationship, $emergency_connum
     ) {
-        $insertPatientResponse = $this->insertPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
+        $insertPatientResponse = $this->insertPatient($admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
         
         if ($insertPatientResponse['status'] !== 'success') {
             return $insertPatientResponse; 
@@ -724,12 +734,12 @@ class PatientManager{
     }
 
     public function addExtenPatient(
-        $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, 
+        $admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, 
         $password, $status, $code, $idnum, $role,
         $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
         $relationship, $emergency_connum
     ) {
-        $insertPatientResponse = $this->insertPatient($lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
+        $insertPatientResponse = $this->insertPatient($admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, $type, $dateadded, $password, $status, $code);
         
         if ($insertPatientResponse['status'] !== 'success') {
             return $insertPatientResponse; 
@@ -762,32 +772,35 @@ class PatientManager{
     
     }
 
-    public function updatePatient($patient_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $newPassword, $status) {
+    public function updatePatient($admin_id, $patient_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $newPassword, $status) {
         try {
-            // Start building the SQL query
+            // Set admin ID for logging
+            $setAdminIdQuery = "SET @admin_id = :admin_id";
+            $setStmt = $this->db->prepare($setAdminIdQuery);
+            $setStmt->bindValue(':admin_id', $admin_id);
+            $setStmt->execute();
+    
+            // Update patient details
             $sql = "UPDATE patients 
                     SET patient_lname = ?, patient_fname = ?, patient_mname = ?, patient_dob = ?, 
                         patient_email = ?, patient_connum = ?, patient_sex = ?, 
                         patient_password = ?, patient_status = ?   
                     WHERE patient_id = ?";
-            
             $stmt = $this->db->prepare($sql);
     
-            // Prepare the values
             $params = [
                 $lname,
                 $fname,
-                $mname === '' ? null : $mname,  // Set to null if empty
+                $mname === '' ? null : $mname,
                 $dob,
                 $email,
                 $connum,
                 $sex,
-                $newPassword, 
+                $newPassword,
                 $status,
                 $patient_id
             ];
     
-            // Execute the prepared statement
             $stmt->execute($params);
     
             return ['status' => 'success', 'message' => 'Patient updated successfully.'];
@@ -801,7 +814,6 @@ class PatientManager{
         }
     }
     
-
     
     public function updateStudent($patientid, $idnum, $program, $major, $year, $section) {
         $sql = "UPDATE patstudents 
@@ -940,12 +952,12 @@ class PatientManager{
     
 
     public function updateStudentPatient(
-        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex,   
+        $admin_id, $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex,   
         $password, $status, $idnum, $program, $major, $year, $section, 
         $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
         $relationship, $emergency_connum
     ) {
-        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
+        $updatePatientResponse = $this->updatePatient($admin_id, $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
         
         if ($updatePatientResponse['status'] !== 'success') {
             return $updatePatientResponse; 
@@ -977,12 +989,12 @@ class PatientManager{
     }
     
     public function updateFacultyPatient(
-        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, 
+        $admin_id, $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, 
         $password, $status, $idnum, $college, $depart, $role,
         $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
         $relationship, $emergency_connum
     ) {
-        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
+        $updatePatientResponse = $this->updatePatient($admin_id, $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
         
         if ($updatePatientResponse['status'] !== 'success') {
             return $updatePatientResponse; 
@@ -1014,12 +1026,12 @@ class PatientManager{
     }
     
     public function updateStaffPatient(
-        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex,
+        $admin_id,  $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex,
         $password, $status, $idnum, $office, $role,
         $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
         $relationship, $emergency_connum
     ) {
-        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
+        $updatePatientResponse = $this->updatePatient($admin_id, $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
         
         if ($updatePatientResponse['status'] !== 'success') {
             return $updatePatientResponse; 
@@ -1051,12 +1063,12 @@ class PatientManager{
     }
     
     public function updateExtenPatient(
-        $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex,
+        $admin_id,  $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex,
         $password, $status, $idnum, $role,
         $region, $province, $municipality, $barangay, $prkstrtadd, $conname, 
         $relationship, $emergency_connum
     ) {
-        $updatePatientResponse = $this->updatePatient($patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
+        $updatePatientResponse = $this->updatePatient($admin_id,  $patientId, $lname, $fname, $mname, $dob, $email, $connum, $sex, $password, $status);
         
         if ($updatePatientResponse['status'] !== 'success') {
             return $updatePatientResponse; 

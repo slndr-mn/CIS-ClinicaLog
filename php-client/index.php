@@ -1,3 +1,25 @@
+
+<?php
+session_start();
+include('../database/config.php');
+include '../php/patient.php';
+
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: login.php'); 
+    exit;
+}
+
+$db = new Database();
+$conn = $db->getConnection();
+
+$patient_id = $_SESSION['patuser_idnum'];
+$patient_type = $_SESSION['patuser_type'];
+
+$patient = new PatientManager($conn);
+$patientData = $patient->getPatientData($patient_id); 
+ 
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,7 +44,7 @@
         sessionStorage.fonts = true;
       },
     });
-  </script>
+  </script> 
  
   <!-- CSS Files -->
   <link rel="stylesheet" href="../css/bootstrap.min.css" />
@@ -64,7 +86,7 @@
           <div class="row">
             <div class="col-md-5 mb-4 d-flex">
               <div class="appointment-form">
-                <h3>Set an Appointment</h3>
+                <h3><?php echo ($patientData->patient_fname); ?></h3>
                 <form id="appointmentForm">
                   <div class="mb-3">
                     <label for="appointmentDate" class="form-label">Appointment Date <span class="text-danger">*</span></label>

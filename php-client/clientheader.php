@@ -11,19 +11,19 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 $db = new Database();
 $conn = $db->getConnection();
 
-$patient_id = $_SESSION['patuser_id'];
+$patient_id = $_SESSION['patuser_idnum'];
 $patient_type = $_SESSION['patuser_type'];
 
 $patient = new PatientManager($conn);
 $patientData = $patient->getPatientData($patient_id); 
-
+ 
 ?>
-
-
+ 
+ 
 
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
 
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -45,7 +45,7 @@ $patientData = $patient->getPatientData($patient_id);
       },
       custom: {
         families: [
-          "Font Awesome 5 Solid",
+          "Font Awesome 5 Solid", 
           "Font Awesome 5 Regular",
           "Font Awesome 5 Brands",
           "simple-line-icons",
@@ -213,7 +213,7 @@ $patientData = $patient->getPatientData($patient_id);
         </li>
         <li class="nav-item topbar-user dropdown hidden-caret">
           <a
-            class="dropdown-toggle profile-pic"
+            class="dropdown-toggle profile-pic" 
             data-bs-toggle="dropdown"
             href="#"
             aria-expanded="false">

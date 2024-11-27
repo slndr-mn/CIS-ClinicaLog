@@ -13,8 +13,8 @@
     }
 
     // SQL to create table
-    $sql_staffusers = "CREATE TABLE staffusers (
-    user_id VARCHAR(15) PRIMARY KEY,
+    $sql_adminusers = "CREATE TABLE adminusers (
+    user_idnum VARCHAR(15) PRIMARY KEY,
     user_fname VARCHAR(50) NOT NULL,
     user_lname VARCHAR(50) NOT NULL,
     user_mname VARCHAR(50),
@@ -27,10 +27,10 @@
     user_code MEDIUMINT NOT NULL
     )";
 
-    if (mysqli_query($conn, $sql_staffusers)) {
-        echo "Table 'staffusers' created successfully<br>";
+    if (mysqli_query($conn, $sql_adminusers)) {
+        echo "Table 'adminusers' created successfully<br>";
     } else {
-        echo "Error creating table 'staffusers': " . mysqli_error($conn) . "<br>";
+        echo "Error creating table 'adminusers': " . mysqli_error($conn) . "<br>";
     }
 
     // SQL to create table 'medicine'

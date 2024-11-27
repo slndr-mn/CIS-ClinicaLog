@@ -12,8 +12,8 @@ $db = new Database();
 $conn = $db->getConnection();
 
 $user = new User($conn); 
-$user_id = $_SESSION['user_id'];
-$userData = $user->getUserData($user_id); 
+$user_idnum = $_SESSION['user_idnum'];
+$userData = $user->getUserData($user_idnum); 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +23,7 @@ $userData = $user->getUserData($user_id);
     <title>User Profile</title>
 </head>
 <body>
-    <p><?php echo $user_id; ?></p>
+    <p><?php echo $user_idnum; ?></p>
     <?php if ($userData): ?>
     <table border="1">
         <thead>
@@ -40,7 +40,7 @@ $userData = $user->getUserData($user_id);
         <tbody>
             <tr>
                 <td><img src='/php-admin/uploads/<?php echo htmlspecialchars($userData['user_profile']); ?>' alt='Profile Picture' style='width: 50px; height: 50px; border-radius: 50%;'></td>
-                <td><?php echo htmlspecialchars($userData['user_id']); ?></td>
+                <td><?php echo htmlspecialchars($userData['user_idnum']); ?></td>
                 <td><?php echo htmlspecialchars($userData['user_lname']) . ', ' . htmlspecialchars($userData['user_fname']) . ' ' . htmlspecialchars($userData['user_mname']); ?></td>
                 <td><?php echo htmlspecialchars($userData['user_email']); ?></td>
                 <td><?php echo htmlspecialchars($userData['user_position']); ?></td>

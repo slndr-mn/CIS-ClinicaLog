@@ -32,6 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conname = $_POST['emergencyContactName'];
         $relationship = $_POST['relationship'];
         $emergency_connum = $_POST['emergencyContactNumber'];
+        $admin_id = $_POST['admin_id'];
+
 
         $profile = ''; // Default to empty if no profile picture uploaded
 
@@ -72,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             // Call the addStudentPatient method and store the response
             $response = $patient->addStudentPatient(
-                $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'Student', 
+                $admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'Student', 
                 date('Y-m-d H:i:s'), password_hash($idnum, PASSWORD_DEFAULT), 'Active', 0, 
                 $idnum, $program, $major, $year, $section, 
                 $region, $province, $municipality, $barangay, 
@@ -111,6 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conname = $_POST['emergencyContactName'];
         $relationship = $_POST['relationship'];
         $emergency_connum = $_POST['emergencyContactNumber'];
+        $admin_id = $_POST['admin_id'];
 
         $profile = ''; // Default to empty if no profile picture uploaded
 
@@ -151,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             // Call the addStudentPatient method and store the response
             $response = $patient->addFacultyPatient(
-                $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'faculty', 
+             $admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'faculty', 
                 date('Y-m-d'), password_hash($idnum, PASSWORD_DEFAULT), 'Active', 0, 
                 $idnum, $college, $department, $role,
                 $region, $province, $municipality, $barangay, 
@@ -189,6 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conname = $_POST['emergencyContactName'];
         $relationship = $_POST['relationship'];
         $emergency_connum = $_POST['emergencyContactNumber'];
+        $admin_id = $_POST['admin_id'];
 
         $profile = ''; // Default to empty if no profile picture uploaded
 
@@ -227,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $response = $patient->addStaffPatient(
-                $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'Staff', 
+               $admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'Staff', 
                 date('Y-m-d H:i:s'), password_hash($idnum, PASSWORD_DEFAULT), 'Active', 0, 
                 $idnum, $office, $role,
                 $region, $province, $municipality, $barangay, 
@@ -264,7 +268,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conname = $_POST['emergencyContactName'];
         $relationship = $_POST['relationship'];
         $emergency_connum = $_POST['emergencyContactNumber'];
-    
+        $admin_id = $_POST['admin_id'];
+
         $profile = ''; // Default to empty if no profile picture uploaded
 
         // Handle Profile Upload
@@ -304,7 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             // Call the addStudentPatient method and store the response
             $response = $patient->addExtenPatient(
-                $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'Extension', 
+               $admin_id, $lname, $fname, $mname, $dob, $email, $connum, $sex, $profile, 'Extension', 
                 date('Y-m-d H:i:s'), password_hash($idnum, PASSWORD_DEFAULT), 'Active', 0, 
                 $idnum, $role,
                 $region, $province, $municipality, $barangay, 
@@ -332,6 +337,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $connum = $_POST['contactNumber'];
         $sex = $_POST['sex'];
         $idnum = $_POST['studentID'];
+        $admin_id = $_POST['admin_id'];
+
 
         $program = (!empty($_POST['program']) &&  $_POST['program'] !== 'Click to type...') ? 
                         $_POST['program'] : $_POST['customProgram'];
@@ -353,7 +360,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
             $response = $patient->updateStudentPatient(
-                $patientid, 
+               $admin_id, $patientid, 
                 $lname, $fname, $mname, $dob, $email, $connum, $sex,
                 password_hash($idnum, PASSWORD_DEFAULT), $status, 
                 $idnum, $program, $major, $year, $section, 
@@ -412,6 +419,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $connum = $_POST['contactNumber'];
         $sex = $_POST['sex'];
         $idnum = $_POST['facultyID'];
+        $admin_id = $_POST['admin_id'];
 
         $college= (!empty($_POST['college']) &&  $_POST['college'] !== 'Click to type...') ? 
                         $_POST['college'] : $_POST['customCollege'];
@@ -432,7 +440,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
             $response = $patient->updateFacultyPatient(
-                $patientid, 
+               $admin_id, $patientid, 
                 $lname, $fname, $mname, $dob, $email, $connum, $sex,
                 password_hash($idnum, PASSWORD_DEFAULT), $status, 
                 $idnum, $college, $department, $role, 
@@ -494,6 +502,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $office= (!empty($_POST['office']) &&  $_POST['office'] !== 'Click to type...') ? 
                         $_POST['office'] : $_POST['customOffice'];
+        
+        $admin_id = $_POST['admin_id'];
 
         $role = $_POST['role'];
         $region = $_POST['region'];
@@ -509,7 +519,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
             $response = $patient->updateStaffPatient(
-                $patientid, 
+                $admin_id, $patientid, 
                 $lname, $fname, $mname, $dob, $email, $connum, $sex,
                 password_hash($idnum, PASSWORD_DEFAULT), $status, 
                 $idnum, $office, $role, 
@@ -578,11 +588,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $relationship = $_POST['relationship'];
         $emergency_connum = $_POST['emergencyContactNumber'];
         $status = $_POST['Status'];
+        $admin_id = $_POST['admin_id'];
+
 
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
             $response = $patient->updateExtenPatient(
-                $patientid, 
+               $admin_id, $patientid, 
                 $lname, $fname, $mname, $dob, $email, $connum, $sex,
                 password_hash($idnum, PASSWORD_DEFAULT), $status, 
                 $idnum, $role, 
