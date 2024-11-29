@@ -27,9 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $treatment_notes = htmlspecialchars($_POST['presmednotes'], ENT_QUOTES);
         $remark = htmlspecialchars($_POST['Remarks'], ENT_QUOTES);
         $consult_date = date('Y-m-d');
+        $adminId = $_POST['admin_id'];
+
     
         if (!$patient_idnum || !$diagnosis) {
-            $_SESSION['status'] = 'error';
+            $_SESSION['status'] = 'error'; 
             $_SESSION['message'] = "Missing required fields.";
             header('Location: addconsultation.php');
             exit();
@@ -54,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
     
-        $consultationResult = $consultationManager->insertConsultation($patient_idnum, $diagnosis, $treatment_notes, $remark, $consult_date);
+        $consultationResult = $consultationManager->insertConsultation($adminId, $patient_idnum, $diagnosis, $treatment_notes, $remark, $consult_date);
     
         if ($consultationResult['status'] === 'success') {
             $consult_id = $consultationResult['consult_id'];
@@ -84,6 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $treatment_notes = htmlspecialchars($_POST['edit_notes'], ENT_QUOTES);
         $remark = htmlspecialchars($_POST['edit_remarks'], ENT_QUOTES);
         $consult_date = $_POST['edit_date'] ?? date('Y-m-d');
+        $adminId = $_POST['admin_id'];
+
     
         error_log("Consult ID: $consult_id, Medicine ID: $medstock_id, Edited Quantity: $edited_medqty");
     
@@ -142,8 +146,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $originalMedStockId = $originalMedData['pm_medstockid'];
         $originalMedQty = $originalMedData['pm_medqty'];
-    
+        
+        $setAdminIdQuery = "SET @admin_id = :admin_id";
+        $setStmt = $db->prepare($setAdminIdQuery);  
+        $setStmt->bindValue(':admin_id', $adminId);
+        $setStmt->execute();
+
         try {
+            
             // Update consultation details
             $stmt = $db->prepare("UPDATE consultations SET 
                 consult_patientid = :consult_patientid,

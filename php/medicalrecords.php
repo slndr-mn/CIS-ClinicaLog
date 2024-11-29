@@ -200,9 +200,10 @@ class MedRecManager {
     
     
 
-    public function updateMedicalRecord($medicalrec_id, $patientid, $filename, $comment) {
+    public function updateMedicalRecord($admin_id, $medicalrec_id, $patientid, $filename, $comment) {
         try {
 
+            
             if ($this->medicalrecs->MedRecExists($patientid, $filename)) {
                 $existingRecord = $this->medicalrecs->findMedicalRecordById($medicalrec_id);
                 if ($existingRecord && 
@@ -215,6 +216,11 @@ class MedRecManager {
                 }
             }
     
+            $setAdminIdQuery = "SET @admin_id = :admin_id";
+            $setStmt = $this->db->prepare($setAdminIdQuery);
+            $setStmt->bindValue(':admin_id', $admin_id);
+            $setStmt->execute();
+
             $sql = "UPDATE medicalrec 
                     SET medicalrec_filename = ?,  medicalrec_comment = ?
                     WHERE medicalrec_id = ? AND medicalrec_patientid = ?";
@@ -242,31 +248,42 @@ class MedRecManager {
     }
     
 
-    public function deleteMedicalRecord($medicalrec_id) {
+    public function deleteMedicalRecord($admin_id, $medicalrec_id) {
         try {
+            $this->db->beginTransaction(); 
+    
             $sql = "DELETE FROM medicalrec WHERE medicalrec_id = ?";
             $stmt = $this->db->prepare($sql);
     
             if ($stmt->execute([$medicalrec_id])) {
-                return [
-                    'status' => 'success',
-                    'message' => 'Medical record deleted successfully.',
-                    'medicalrec_id' => $medicalrec_id
-                ];
-            } else {
-                return [
-                    'status' => 'error',
-                    'message' => 'Failed to delete medical record.'
-                ];
-            }
+                $patientQuery = "SELECT CONCAT(patient_fname, ' ', patient_lname, ' ', patient_mname) AS full_name 
+                                 FROM patients 
+                                 WHERE patient_id = (
+                                     SELECT medicalrec_patientid FROM medicalrec WHERE medicalrec_id = ?
+                                 )";
+                $patientStmt = $this->db->prepare($patientQuery);
+                $patientStmt->execute([$medicalrec_id]);
+                $fullName = $patientStmt->fetchColumn();
     
+                $logQuery = "INSERT INTO systemlog (syslog_userid, syslog_date, syslog_time, syslog_action) 
+                             VALUES (?, CURDATE(), CURTIME(), ?)";
+                $logStmt = $this->db->prepare($logQuery);
+                $logAction = "Deleted Medical Record for Patient: " . $fullName;
+                $logStmt->execute([$admin_id, $logAction]);
+    
+                $this->db->commit();
+                return ['success' => true, 'message' => 'Medical record deleted and log entry created successfully.'];
+            } else {
+                $this->db->rollBack();
+                return ['success' => false, 'message' => 'Failed to delete the medical record.'];
+            }
         } catch (PDOException $e) {
-            return [
-                'status' => 'error',
-                'message' => 'Error: ' . $e->getMessage()
-            ];
+            $this->db->rollBack();
+            return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
         }
     }
+    
+    
     
     public function getMedicalRecords($patientid) {
         $records = [];

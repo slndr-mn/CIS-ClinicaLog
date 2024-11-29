@@ -193,11 +193,16 @@ class MedicineManager {
     }
     
 
-    public function insertMedicine($name, $category) {
+    public function insertMedicine($admin_id, $name, $category) {
         if ($this->medicines->medicineExists($name)) {
             echo "Medicine already exists.<br>";
             return false;
         }
+
+        $setAdminIdQuery = "SET @admin_id = :admin_id";
+        $setStmt = $this->db->prepare($setAdminIdQuery);
+        $setStmt->bindValue(':admin_id', $admin_id);
+        $setStmt->execute();
 
         $sql = "INSERT INTO medicine (medicine_name, medicine_category) VALUES (?, ?)";
         $stmt = $this->db->prepare($sql);
@@ -214,7 +219,12 @@ class MedicineManager {
         }
     }
 
-    public function insertMedstock($medicine_id, $quantity, $dosage, $date_added, $time_added, $expiration_date, $disabled) {
+    public function insertMedstock($admin_id, $medicine_id, $quantity, $dosage, $date_added, $time_added, $expiration_date, $disabled) {
+        $setAdminIdQuery = "SET @admin_id = :admin_id";
+        $setStmt = $this->db->prepare($setAdminIdQuery);
+        $setStmt->bindValue(':admin_id', $admin_id);
+        $setStmt->execute();
+
         $sql = "INSERT INTO medstock (medicine_id, medstock_qty, medstock_dosage, medstock_dateadded, medstock_timeadded, medstock_expirationdt, medstock_disable) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
         if ($stmt) {
@@ -286,40 +296,40 @@ class MedicineManager {
     }
     
 
-    public function updateMedicine($medicine_id, $name, $category) {
+    public function updateMedicine($admin_id, $medicine_id, $name, $category) {
         try {
-            
+            // Set admin ID for the trigger (if required in session)
+            $setAdminIdQuery = "SET @admin_id = :admin_id";
+            $setStmt = $this->db->prepare($setAdminIdQuery);
+            $setStmt->bindValue(':admin_id', $admin_id);
+            $setStmt->execute();
+    
+            // Update the medicine record directly
             $sql = "UPDATE medicine SET medicine_name = ?, medicine_category = ? WHERE medicine_id = ?";
             $stmt = $this->db->prepare($sql);
-            
-            if (!$stmt) {
-                throw new Exception("Failed to prepare the SQL statement.");
-            }
-     
+    
             if ($stmt->execute([$name, $category, $medicine_id])) {
-              
-                $medicine = $this->medicines->find($medicine_id);
-                if ($medicine) {
-                    $medicine->medicine_name = $name;
-                    $medicine->medicine_category = $category;
-                }
                 echo "Medicine updated successfully.<br>";
                 return true;
             } else {
-                
                 throw new Exception("Failed to execute the update statement.");
             }
         } catch (Exception $e) {
-            
             echo "Error updating medicine: " . $e->getMessage() . "<br>";
             return false;
         }
     }
     
+    
 
     
-    public function updateMedstock($medstock_id, $medicine_id, $medicine_qty, $medicine_dosage, $medicine_expirationdt, $medicine_disable) {
+    public function updateMedstock($admin_id, $medstock_id, $medicine_id, $medicine_qty, $medicine_dosage, $medicine_expirationdt, $medicine_disable) {
         try {
+
+            $setAdminIdQuery = "SET @admin_id = :admin_id";
+            $setStmt = $this->db->prepare($setAdminIdQuery);
+            $setStmt->bindValue(':admin_id', $admin_id);
+            $setStmt->execute();
             
             $sql = "UPDATE medstock SET medicine_id = ?, medstock_qty = ?, medstock_dosage = ?, medstock_expirationdt = ?, medstock_disable = ? WHERE medstock_id = ?";
             $stmt = $this->db->prepare($sql);

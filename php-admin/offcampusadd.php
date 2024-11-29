@@ -20,7 +20,9 @@ include('../php/consultation.php');
 
 
 $db = new Database();
-$conn = $db->getConnection();
+$conn = $db->getConnection(); 
+
+$user_idnum = $_SESSION['user_idnum']; 
 
 $consultations = new ConsultationManager($conn);
 $medicine = new MedicineManager($conn);
@@ -193,6 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                             </p>
                              <!-- Start Add Modal Form-->
                              <form class="form" action="offcampuscontrol.php" method="POST" enctype="multipart/form-data">
+                             <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
                              <div class="row">
                                     <div class="col-md-6 mb-3">
                                     <div class="form-group mb-3">
@@ -256,6 +259,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                             </div>
                             <div class="modal-body">
                                 <form id="editConForm" action="offcampuscontrol.php" method="POST">
+                                <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
                                        <input id="editid" name="editid" type="text" class="form-control" hidden/>
                                         <input id="edit_patient_id" name="edit_patient_id" type="text" class="form-control" hidden  />
                                     <div class="form-group mb-3">
@@ -395,7 +399,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                                             </tfoot>
                                             <tbody>
                                                 <?php foreach ($allOffCampusRecords as $index => $record): ?>
-                                                    <tr data-id="<?= $record['id']; ?>" data-medstockid="<?= $record['medstockid']; ?>" data-medstockname="<?= $record['medstockname']; ?>" data-medqty="<?= $record['medqty']; ?>" data-date="<?= $record['date']; ?>">
+                                                    <tr data-id="<?= $record['id']; ?>" 
+                                                    data-medstockid="<?= $record['medstockid']; ?>" 
+                                                    data-medstockname="<?= $record['medstockname']; ?>" 
+                                                    data-medqty="<?= $record['medqty']; ?>" 
+                                                    data-date="<?= $record['date']; ?>"
+                                                    data-adminid="<?= htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>">
+
                                                         <td><?= $index + 1; ?></td>
                                                         <td><?= htmlspecialchars($record['medstockid']) ?></td>
                                                         <td><?= htmlspecialchars($record['medstockname']);?></td>
@@ -406,7 +416,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                                                                 <button type="button" class="btn btn-link btn-primary btn-lg editButton" data-id="<?= $record['id']; ?>">
                                                                     <i class="fa fa-edit"></i>
                                                                 </button>
-                                                                <button type="button" class="btn btn-link btn-danger removeButton" data-id="<?= $record['id']; ?>">
+                                                                <button type="button" class="btn btn-link btn-danger removeButton">
                                                                     <i class="fa fa-times"></i>
                                                                 </button>
                                                             </div>
@@ -706,6 +716,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
 $(document).ready(function () {
     $('.removeButton').on('click', function () {
         var offcampusId = $(this).data('id'); 
+        var adminid= $(this).data('adminid'); 
         
         swal({
             title: "Are you sure?",
@@ -719,12 +730,12 @@ $(document).ready(function () {
                 $.ajax({
                     url: 'offcampuscontrol.php',
                     method: 'POST',
-                    data: { deleteoffcampus: true, offcampus_id: offcampusId },
+                    data: { deleteoffcampus: true, offcampus_id: offcampusId, admin_id: adminid},
                     success: function (response) {
                         console.log(response); 
 
                         var result = typeof response === 'object' ? response : JSON.parse(response);
-
+ 
                         swal(result.message, {
                             icon: result.status === 'success' ? 'success' : 'error',
                         }).then(() => {

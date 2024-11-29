@@ -24,7 +24,7 @@ class LinkedListNode {
         $this->next = null;
     }
 }
-
+ 
 class OffCampusLinked {
     private $head;
 
@@ -106,7 +106,12 @@ class OffCampusManager {
     }
 
 
-    public function insertOffCampusRecord($medstockid, $medqty, $date) {
+    public function insertOffCampusRecord($admin_id, $medstockid, $medqty, $date) {
+        $setAdminIdQuery = "SET @admin_id = :admin_id";
+        $setStmt = $this->db->prepare($setAdminIdQuery);
+        $setStmt->bindValue(':admin_id', $admin_id);
+        $setStmt->execute();
+
         $sql = "INSERT INTO medissued (mi_medstockid, mi_medqty, mi_date) VALUES (?, ?, ?)";
         $stmt = $this->db->prepare($sql);
 
@@ -132,7 +137,12 @@ class OffCampusManager {
         ];
     }
 
-    public function updateOffCampusRecord($id, $medstockid, $medqty, $date) {
+    public function updateOffCampusRecord($admin_id, $id, $medstockid, $medqty, $date) {
+        $setAdminIdQuery = "SET @admin_id = :admin_id";
+        $setStmt = $this->db->prepare($setAdminIdQuery);
+        $setStmt->bindValue(':admin_id', $admin_id);
+        $setStmt->execute();
+
         $sql = "UPDATE medissued SET mi_medstockid = ?, mi_medqty = ?, mi_date = ? WHERE mi_id = ?";
         $stmt = $this->db->prepare($sql);
 
@@ -157,7 +167,12 @@ class OffCampusManager {
         ];
     }
 
-    public function deleteOffCampusRecord($id) {
+    public function deleteOffCampusRecord($admin_id, $id) {
+        $setAdminIdQuery = "SET @admin_id = :admin_id";
+        $setStmt = $this->db->prepare($setAdminIdQuery);
+        $setStmt->bindValue(':admin_id', $admin_id);
+        $setStmt->execute();
+        
         $sql = "DELETE FROM medissued WHERE mi_id = ?";
         $stmt = $this->db->prepare($sql);
 

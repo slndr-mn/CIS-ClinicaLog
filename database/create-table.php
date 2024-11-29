@@ -124,7 +124,7 @@
         medstock_timeadded TIME,
         medstock_expirationdt DATE,
         medstock_disable TINYINT(1) NOT NULL DEFAULT 0,       
-        FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id)
+        FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id) 
     )";    
 
     if (mysqli_query($conn, $sql_medstock)) {

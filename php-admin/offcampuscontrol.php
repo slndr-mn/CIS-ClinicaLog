@@ -8,7 +8,7 @@ include('../database/config.php');
 include('../php/user.php');
 include('../php/medicine.php');
 include('../php/patient.php');
-include('../php/offcampus.php');
+include('../php/offcampus.php'); 
 @include('../php/patient-studprofile.php');
 @include('../php/patient-staffprofile.php');
 @include('../php/patient-facultyprofile.php'); 
@@ -25,6 +25,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
     if (isset($_POST['addoffcampus'])) {
+        $adminId = $_POST['admin_id'];
         $date = date('Y-m-d');
         $medstock_id = $_POST['selected_medicine_id'] ?? null;
         $treatment_medqty = isset($_POST['presmedqty']) ? (int)$_POST['presmedqty'] : null;
@@ -38,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit();
             }
 
-            $offcampusresult = $offcampusManager->insertOffCampusRecord($medstock_id, $treatment_medqty, $date);
+            $offcampusresult = $offcampusManager->insertOffCampusRecord($adminId, $medstock_id, $treatment_medqty, $date);
 
             if ($offcampusresult['status'] === 'success') {
                 $_SESSION['status'] = 'success';
@@ -57,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (isset($_POST['updateoffcampus'])) {
+        $adminId = $_POST['admin_id'];
         $date = $_POST['editdate'];
         $medstock_id = $_POST['editmedstockid'] ?? null;
         $treatment_medqty = isset($_POST['editmedqty']) ? (int)$_POST['editmedqty'] : null;
@@ -71,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit();
             }
 
-            $updateResult = $offcampusManager->updateOffCampusRecord($offcampus_id, $medstock_id, $treatment_medqty, $date);
+            $updateResult = $offcampusManager->updateOffCampusRecord($adminId, $offcampus_id, $medstock_id, $treatment_medqty, $date);
             if ($updateResult['status'] === 'success') {
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = 'Off-campus record updated successfully.';
@@ -90,11 +92,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['deleteoffcampus'])) {
         header('Content-Type: application/json'); 
-    
+        $adminId = $_POST['admin_id'];
+
         $offcampus_id = $_POST['offcampus_id'] ?? null;
     
         if ($offcampus_id) {
-            $deleteResult = $offcampusManager->deleteOffCampusRecord($offcampus_id);
+            $deleteResult = $offcampusManager->deleteOffCampusRecord($adminId, $offcampus_id);
             if ($deleteResult['status'] === 'success') {
                 echo json_encode(['status' => 'success', 'message' => 'Record deleted successfully']);
             } else {

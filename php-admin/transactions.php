@@ -16,6 +16,9 @@ $conn = $db->getConnection();
 
 $transac = new TransacManager($conn);
 
+
+$user_idnum = $_SESSION['user_idnum']; 
+
 $patientId = isset($_GET['id']) ? $_GET['id'] : null;
 $patientType = isset($_GET['patient_patienttype']) ? $_GET['patient_patienttype'] : null;
 
@@ -41,7 +44,7 @@ $medicineId = isset($_GET['id']) ? $_GET['id'] : null;
     <!-- Fonts and icons -->
     <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
     <script>
-      WebFont.load({ 
+      WebFont.load({  
         google: { families: ["Public Sans:300,400,500,600,700"] }, 
         custom: {
           families: [
@@ -133,6 +136,8 @@ $medicineId = isset($_GET['id']) ? $_GET['id'] : null;
                             </p>
                              <!-- Start Add Modal Form-->
                              <form class="form" action="transacontrol.php" method="POST" enctype="multipart/form-data">
+                             <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
+
                              <div class="row">
                              <div class="col-md-12 mb-3">
                                     <div class="form-group mb-3">
@@ -180,6 +185,8 @@ $medicineId = isset($_GET['id']) ? $_GET['id'] : null;
                             </div>
                             <div class="modal-body">
                                     <form class="form" action="transacontrol.php" method="POST" enctype="multipart/form-data">
+                                    <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
+
                                     <div class="row">
                                     <div class="col-md-12 mb-3">
                                             <div class="form-group mb-3">
@@ -320,6 +327,7 @@ $medicineId = isset($_GET['id']) ? $_GET['id'] : null;
                                                                 data-out="<?php echo $transaction->transac_out; ?>"
                                                                 data-spent="<?php echo $transaction->transac_spent; ?>"
                                                                 data-status="<?php echo $transaction->transac_status; ?>"
+                                                                data-adminid="<?= htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"
                                                                 class="<?php echo $statusColor; ?>">
                                                                 <td>
                                                                     <div style="display: flex; align-items: center;">
@@ -403,7 +411,7 @@ $medicineId = isset($_GET['id']) ? $_GET['id'] : null;
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- SweetAlert -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 <!-- Core JS -->
@@ -663,90 +671,101 @@ $(document).ready(function() {
 
 
 $(document).ready(function() {
-    $(document).on('click', '#statusDisplay', function() {
-        var $row = $(this).closest('tr'); 
-        var optionsDiv = $row.find('.statusOptions');  
-        optionsDiv.toggle();  
+    $(document).on('click', '.statusDisplay', function() {
+        var $row = $(this).closest('tr');
+        $row.find('.statusOptions').toggle();
     });
 
     $(document).on('click', '.statusOption', function() {
-        var selectedStatus = $(this).data('status'); 
-        var $row = $(this).closest('tr');             
-        var transac_id = $row.data('id');           
-
-        console.log('Transac ID:', transac_id);
-        console.log('Selected Status:', selectedStatus);
-
+        var selectedStatus = $(this).data('status');
+        var $row = $(this).closest('tr');
+        var transac_id = $row.data('id');
+        var adminid = $row.data('adminid');
+        
         $.ajax({
-            url: 'transacontrol.php', 
+            url: 'transacontrol.php',
             method: 'POST',
             data: {
                 transac_id: transac_id,
-                status: selectedStatus
+                status: selectedStatus,
+                admin_id: adminid
             },
             dataType: 'json',  
             success: function(response) {
-                console.log(response); 
-
                 if (response.status === 'success') {
-                    $row.find('#statusDisplay').text(selectedStatus);  
-                    
-                    var statusColor = getStatusColor(selectedStatus);
-                    $row.find('#statusDisplay').css('background-color', statusColor);
-
-                    swal("Status updated!", "Transaction status has been changed to " + selectedStatus, "success");
-
-                    setTimeout(function() {
-                        location.reload();  
-                    }, 2000); 
-                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Status updated!',
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // Reload the page after the success message
+                        window.location.reload();
+                    });
                 } else {
-                    swal("Error!", response.message, "error");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: response.message
+                    });
                 }
-
-                $row.find('.statusOptions').hide();  
-
             },
-            error: function() {
-                swal("Error!", "There was an issue updating the status. Please try again.", "error");
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'An error occurred: ' + xhr.responseText
+                });
             }
         });
+
+
 
     });
 
     function getStatusColor(status) {
-        switch(status) {
-            case 'Pending': return '#ffd54f';   // Yellow for Pending
-            case 'Progress': return '#64b5f6';  // Blue for Progress
-            case 'Done': return '#81c784';      // Green for Done
-            default: return '#ffffff';          // Default color (white)
+        switch (status) {
+            case 'Pending': return '#ffd54f'; // Yellow
+            case 'Progress': return '#64b5f6'; // Blue
+            case 'Done': return '#81c784';    // Green
+            default: return '#ffffff';        // Default (white)
         }
     }
 });
+
 $(".viewButton").click(function() {
     var patientId = $(this).closest("tr").data("patientid");
     var patientType = $(this).closest("tr").data("patienttype");
 
     $.ajax({
-        url: "transacontrol.php",
+        url: "transacpatientview.php",
         method: "POST",
         data: {
             patient_id: patientId,
             patient_type: patientType
         },
+        dataType: "json",
         success: function(response) {
-            // Redirect based on patient type
-            if (patientType === 'Faculty') {
-                window.location.href = "patient-facultyprofile.php";  // Redirect to faculty profile
-            } else if (patientType === 'Student') {
-                window.location.href = "patient-studprofile.php";  // Redirect to student profile
-            } else if (patientType === 'Staff') {
-                window.location.href = "patient-staffprofile.php";  // Redirect to staff profile
-            } else if (patientType === 'Extension') {
-                window.location.href = "patient-extensionprofile.php";  // Redirect to extension profile
+            if (response.status === 'success') {
+                // Redirect based on patient type
+                if (patientType === 'Faculty') {
+                    window.location.href = "patient-facultyprofile.php";
+                } else if (patientType === 'Student') {
+                    window.location.href = "patient-studprofile.php";
+                } else if (patientType === 'Staff') {
+                    window.location.href = "patient-staffprofile.php";
+                } else if (patientType === 'Extension') {
+                    window.location.href = "patient-extensionprofile.php";
+                } else {
+                    alert("Invalid patient type");
+                }
             } else {
-                alert("Invalid patient type");
+                Swal.fire('Error', response.message, 'error');
             }
+        },
+        error: function(xhr) {
+            Swal.fire('Error', 'Something went wrong: ' + xhr.responseText, 'error');
         }
     });
 });

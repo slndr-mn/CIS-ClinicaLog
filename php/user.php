@@ -405,7 +405,7 @@ class User {
     
             $stmt->bindValue(1, $new_user_idnum);
             $stmt->bindValue(2, $new_fname);
-            $stmt->bindValue(3, $new_lname);
+            $stmt->bindValue(3, $new_lname); 
             $stmt->bindValue(4, $new_mname);
             $stmt->bindValue(5, $new_email);
             $stmt->bindValue(6, $new_position);

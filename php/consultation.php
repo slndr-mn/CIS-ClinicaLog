@@ -18,7 +18,7 @@ class Consultation {
     }
 }
 
-//Prescribemed class
+//Prescribemed class 
 class Prescribemed {
     public $pm_id;
     public $pm_consultid;
@@ -170,10 +170,14 @@ class ConsultationManager {
         }
     }
  
-    public function insertConsultation($consult_patientid, $consult_diagnosis, $consult_treatmentnotes, $consult_remark, $consult_date) {
+    public function insertConsultation($admin_id, $consult_patientid, $consult_diagnosis, $consult_treatmentnotes, $consult_remark, $consult_date) {
         try {
 
-    
+            $setAdminIdQuery = "SET @admin_id = :admin_id";
+            $setStmt = $this->db->prepare($setAdminIdQuery);
+            $setStmt->bindValue(':admin_id', $admin_id);
+            $setStmt->execute();
+
             // SQL statement to match database table column names
             $sql = "INSERT INTO consultations (consult_patientid, consult_diagnosis, consult_treatmentnotes, consult_remark, consult_date)
                     VALUES (?, ?, ?, ?, ?)";
@@ -303,9 +307,8 @@ class ConsultationManager {
     
 
 
-    public function updateConsultation($consult_id, $diagnosis, $treatment_notes, $remark) {
+    public function updateConsultation($admin_id, $consult_id, $diagnosis, $treatment_notes, $remark) {
         try {
-            // Check if the consultation exists
             $checkSql = "SELECT consult_id FROM consultations WHERE consult_id = :consult_id";
             $checkStmt = $this->db->prepare($checkSql);
             $checkStmt->bindParam(':consult_id', $consult_id, PDO::PARAM_INT);
@@ -314,6 +317,11 @@ class ConsultationManager {
             if ($checkStmt->rowCount() === 0) {
                 return ['status' => 'error', 'message' => 'Consultation not found.'];
             }
+
+            $setAdminIdQuery = "SET @admin_id = :admin_id";
+            $setStmt = $this->db->prepare($setAdminIdQuery);
+            $setStmt->bindValue(':admin_id', $admin_id);
+            $setStmt->execute();        
     
             // If consultation exists, proceed to update
             $sql = "UPDATE consultations SET 

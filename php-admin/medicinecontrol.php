@@ -21,9 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $medicine_timeadded = date('h:i:s');
         $medicine_expirationdt = $_POST['addED'];
         $medicine_disable = "0";
-
+        $admin_id = $_POST['admin_id'];
        
-        if ($medicine->insertMedstock($medicine_id, $medicine_qty, $medicine_dosage, $medicine_dateadded, $medicine_timeadded,$medicine_expirationdt, $medicine_disable )) {
+        if ($medicine->insertMedstock($admin_id, $medicine_id, $medicine_qty, $medicine_dosage, $medicine_dateadded, $medicine_timeadded,$medicine_expirationdt, $medicine_disable )) {
             $_SESSION['status'] = 'success';
             $_SESSION['message'] = "Medicine added successfully";
         } else {
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     } 
 
-    if (isset($_POST['updatemedicine'])) {
+    if (isset($_POST['updatemedicine'])) { 
     
         $medstock_id = $_POST['editid'];
         $medicine_name = $_POST['editname'];
@@ -42,8 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $medicine_dosage = $_POST['editDS']; 
         $medicine_expirationdt = $_POST['editED']; 
         $medicine_disable = $_POST['editDisable'];
+        $admin_id = $_POST['admin_id'];
+
     
-        $result = $medicine->updateMedstock($medstock_id, $medicine_name, $medicine_qty, $medicine_dosage, $medicine_expirationdt, $medicine_disable);
+        $result = $medicine->updateMedstock($admin_id, $medstock_id, $medicine_name, $medicine_qty, $medicine_dosage, $medicine_expirationdt, $medicine_disable);
     
         if ($result['status'] === 'success') {
             $_SESSION['status'] = 'success';
@@ -63,6 +65,8 @@ if (isset($_POST['addmed'])) {
     $medicine_id = $_POST['medicineId'];
     $medicine_name = $_POST['medicineName'];
     $medicine_category = $_POST['medicineCategory'];
+    $admin_id = $_POST['admin_id'];
+
 
     if (empty($medicine_id)) {
        
@@ -70,7 +74,7 @@ if (isset($_POST['addmed'])) {
             $_SESSION['status'] = 'error';
             $_SESSION['message'] = "Medicine with this name already exists.";
         } else {
-            if ($medicine->insertMedicine($medicine_name, $medicine_category)) {
+            if ($medicine->insertMedicine($admin_id, $medicine_name, $medicine_category)) {
                 $_SESSION['status'] = 'success';
                 $_SESSION['message'] = "Medicine added successfully";
             } else {
@@ -89,7 +93,7 @@ if (isset($_POST['addmed'])) {
                     $_SESSION['status'] = 'error';
                     $_SESSION['message'] = "Medicine with this name already exists.";
                 } else {
-                    if ($medicine->updateMedicine($medicine_id, $medicine_name, $medicine_category)) {
+                    if ($medicine->updateMedicine($admin_id, $medicine_id, $medicine_name, $medicine_category)) {
                         $_SESSION['status'] = 'success';
                         $_SESSION['message'] = "Medicine updated successfully";
                     } else {
@@ -99,7 +103,7 @@ if (isset($_POST['addmed'])) {
                 }
             } else {
                 
-                if ($medicine->updateMedicine($medicine_id, $medicine_name, $medicine_category)) {
+                if ($medicine->updateMedicine($admin_id, $medicine_id, $medicine_name, $medicine_category)) {
                     $_SESSION['status'] = 'success';
                     $_SESSION['message'] = "Medicine updated successfully";
                 } else {

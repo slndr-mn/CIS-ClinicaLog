@@ -9,12 +9,13 @@ $conn = $db->getConnection();
 $transac = new TransacManager($conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+ 
     if (isset($_POST['addtransac'])) {
         $patientId = $_POST['selected_patient_id'];
         $purpose = $_POST['transac_purpose'];
+        $adminId = $_POST['admin_id'];
 
-        $transaction = $transac->addTransaction($patientId, $purpose);
+        $transaction = $transac->addTransaction($adminId, $patientId, $purpose);
 
         if ($transaction['status'] == 'success') {    
             $_SESSION['message'] = $transaction['message'];
@@ -33,9 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['edittransac'])) {
         $transacid = $_POST['transac_id'];
         $patient_id = $_POST['edit_patient_id'];
-        $purpose = $_POST['edit_purpose'];
+        $purpose = $_POST['edit_purpose']; 
+        $adminId = $_POST['admin_id'];
 
-        $transaction = $transac->updatePatientAndPurpose($transacid, $patient_id, $purpose);
+        $transaction = $transac->updatePatientAndPurpose($adminId, $transacid, $patient_id, $purpose);
 
         if ($transaction['status'] == 'success') {    
             $_SESSION['message'] = $transaction['message'];
@@ -51,39 +53,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
     }
 
-    if (isset($_POST['patient_id']) && isset($_POST['patient_type'])) {
-        $_SESSION['id'] = $_POST['patient_id']; 
-        $_SESSION['type'] = $_POST['patient_type']; 
-    } else {
-        echo "Patient data not found.";
-    }
-
-    if (isset($_POST['transac_id']) && isset($_POST['status'])) {
+    if (isset($_POST['transac_id']) && isset($_POST['status']) && isset($_POST['admin_id'])) {
+        $adminId = $_POST['admin_id'];
         $transac_id = $_POST['transac_id'];
         $status = $_POST['status'];
-
+    
+        $response = [];
+    
         switch ($status) {
             case 'Pending':
-                $transac->updateStatusToPending($transac_id);
+                $response = $transac->updateStatusToPending($adminId, $transac_id);
                 break;
             case 'Progress':
-                $transac->updateStatusToInProgress($transac_id);
+                $response = $transac->updateStatusToInProgress($adminId, $transac_id);
                 break;
             case 'Done':
-                $transac->updateStatusToDone($transac_id);
+                $response = $transac->updateStatusToDone($adminId, $transac_id);
                 break;
             default:
                 echo json_encode(['status' => 'error', 'message' => 'Invalid status']);
                 exit;
         }
-
-        // Return a success message
-        echo json_encode(['status' => 'success', 'message' => 'Status updated successfully']);
+    
+        echo json_encode($response);
     } else {
-        // Missing parameters
         echo json_encode(['status' => 'error', 'message' => 'Missing required parameters']);
         exit;
     }
+    
+    
 
     
 

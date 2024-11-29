@@ -1,5 +1,6 @@
 
 <?php
+session_start();
 include('../database/config.php');
 include('../php/user.php');
 include('../php/medicine.php');
@@ -9,6 +10,8 @@ $db = new Database();
 $conn = $db->getConnection(); 
 
 $medicine = new MedicineManager($conn); 
+
+$user_idnum = $_SESSION['user_idnum']; 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,13 +23,15 @@ $medicine = new MedicineManager($conn);
         <!-- Medicine Form Card -->
         <div class="col-md-4">
             <div class="card card-equal-height">
-                <div class="card-header">
+                <div class="card-header"> 
                     <div class="d-flex align-items-center">
                         <h4 class="card-title">Medicine Details</h4> 
                     </div>
                 </div> 
                 <div class="card-body"> 
                     <form id="medicineForm" action="medicinecontrol.php" method="POST">
+                    <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
+
                     <input type="hidden" id="medicineId" name="medicineId" value="" />
                         <div class="form-group mb-3">
                             <label for="medicineName">Medicine Name</label>

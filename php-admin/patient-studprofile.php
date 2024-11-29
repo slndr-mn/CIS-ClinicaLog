@@ -28,10 +28,12 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
 } else {
     echo "No patient data found.";
 }
+
+
  
 ?> 
  
-<!DOCTYPE html> 
+<!DOCTYPE html>  
 <html lang="en">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 

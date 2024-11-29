@@ -27,7 +27,7 @@ $userData = $user->getUserData($user_idnum);
     <meta
       content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
       name="viewport"
-    />
+    /> 
     <link 
       rel="icon"
       href="../assets/img/ClinicaLog.ico"
@@ -110,7 +110,7 @@ $userData = $user->getUserData($user_idnum);
                 <div class="card">
                   <div class="card-header">
                     <div class="d-flex align-items-center">
-                      <h4 class="card-title">Medicine</h4>
+                      <h4 class="card-title">Medicine Stock</h4>
                       <button
                         class="btn btn-primary btn-round ms-auto"
                         data-bs-toggle="modal"
@@ -135,7 +135,7 @@ $userData = $user->getUserData($user_idnum);
                           <div class="modal-header border-0">
                             <h5 class="modal-title">
                               <span class="fw-mediumbold"> New</span>
-                              <span class="fw-light"> Medicine </span>
+                              <span class="fw-light"> Medicine Stock </span>
                             </h5>
                             <button
                               type="button"
@@ -150,6 +150,7 @@ $userData = $user->getUserData($user_idnum);
                             <p class="small">
                             </p>
                             <form class="form" action="medicinecontrol.php" method="POST">
+                            <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
                               <div class="row">
                                 <div class="col-sm-12">
                                   <div class="form-group form-group-default">
@@ -242,7 +243,7 @@ $userData = $user->getUserData($user_idnum);
                           <div class="modal-header border-0">
                             <h5 class="modal-title">
                               <span class="fw-mediumbold"> Edit</span>
-                              <span class="fw-light"> Medicine </span>
+                              <span class="fw-light"> Medicine Stock</span>
                             </h5>
                             <button
                               type="button"
@@ -256,6 +257,7 @@ $userData = $user->getUserData($user_idnum);
                           </div>
                           <div class="modal-body">
                           <form id="editForm" action="medicinecontrol.php" method="POST">
+                          <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
                           <div class="row">
                           <div class="col-md-6">
                             <p class="fw-light">Date & Time Added: <span id="editdatetimeadded"></span></p>

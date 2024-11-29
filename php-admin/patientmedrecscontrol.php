@@ -1,8 +1,6 @@
 <?php
 session_start();
-header('Content-Type: application/json');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+
 
 include('../database/config.php');
 include('../php/medicalrecords.php');
@@ -156,8 +154,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $filename = $_POST['editfilename'];  
         $comment = $_POST['editcomment'];
         $patienttype = $_POST['patienttype']; 
+        $admin_id = $_POST['admin_id'];
 
-            $response = $medicalrecords->updateMedicalRecord($id, $patientid, $filename, $comment);
+
+            $response = $medicalrecords->updateMedicalRecord($admin_id, $id, $patientid, $filename, $comment);
 
             if ($response['status'] === 'success') {
                 $_SESSION['status'] = 'success';
@@ -188,30 +188,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         
     }
-    if (isset($_POST['medrec_id'])) {
-        $medicalrecId = $_POST['medrec_id'];
+    if (isset($_POST['medrec_id'], $_POST['file_name'], $_POST['admin_id'])) {
+        try {
+            error_reporting(E_ALL);
+ini_set('display_errors', 1);
+header('Content-Type: application/json');
+
+            $medrecId = $_POST['medrec_id'];
+            $fileName = $_POST['file_name'];
+            $adminId = $_POST['admin_id'];
     
-        $filePath = $medicalrecords->getFilePathByMedicalRecId($medicalrecId);
-    
-        if ($medicalrecords->deleteMedicalRecord($medicalrecId)) {
-            if ($filePath && file_exists("uploadmedrecs/" . $filePath)) {
-                if (!unlink("uploadmedrecs/" . $filePath)) {
-                    echo json_encode(['success' => false, 'message' => 'Failed to delete the associated file.']);
+            // Fetch file path  
+            $filePath = $medicalrecords->getFilePathByMedicalRecId($medrecId);
+            if ($filePath && $filePath == $fileName) {
+                $fullPath = "uploadmedrecs/" . $filePath;
+                if (file_exists($fullPath)) {
+                    if (!unlink($fullPath)) {
+                        echo json_encode(['success' => false, 'message' => 'Failed to delete the file.']);
+                        exit();
+                    }
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'File does not exist.']);
                     exit();
                 }
             }
-            echo json_encode(['success' => true, 'message' => 'Record and associated file deleted successfully.']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to delete the medical record.']);
+    
+            // Delete from database
+            $deleteResult = $medicalrecords->deleteMedicalRecord($adminId, $medrecId);
+            echo json_encode($deleteResult);
+    
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid medical record ID.']);
+        echo json_encode(['success' => false, 'message' => 'Invalid input.']);
     }
     
     
     
     
-}
+} 
 else {
     $_SESSION['status'] = 'error';
     $_SESSION['message'] = 'Invalid request method.';

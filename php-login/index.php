@@ -36,7 +36,7 @@ if ($userData) {
             exit;
         } elseif ($_SESSION['user_role'] === 'Super Admin') { 
             header('Location: ../php-admin/superadindex.php'); 
-            exit; 
+            exit;  
         } elseif ($_SESSION['user_role'] === 'Admin') { 
             header('Location: ../php-admin/adminindex.php');  
             exit;

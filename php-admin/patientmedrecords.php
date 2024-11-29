@@ -79,7 +79,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
                             <form class="form" action="patientmedrecscontrol.php" method="POST" enctype="multipart/form-data">
                             <input type="hidden" class="form-control" id="patientid" name="patientid" value="<?php echo $patientId; ?>" />
                             <input type="hidden" class="form-control" id="patienttype" name="patienttype" value="<?php echo $patientType; ?>" />
-                            <input id="admin_id" name="admin_id" type="text" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
+                            <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
                                 <div class="row">
                                     <!-- Upload PDF (Medical Record File) -->
                                     <div class="col-md-12">
@@ -226,7 +226,8 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
                                 <?php if (!empty($records)) : ?>
                                     <?php foreach ($records as $record) : ?>
                                         <tr data-id="<?= $record->medicalrec_id ?>", 
-                                            data-filename="<?= htmlspecialchars($record->medicalrec_filename) ?>", 
+                                            data-filename="<?= htmlspecialchars($record->medicalrec_filename) ?>",
+                                            data-admin="<?= htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>", 
                                             data-comment="<?= htmlspecialchars($record->medicalrec_comment) ?>" >
                                             <td><?= $record->medicalrec_id ?></td>
                                             <td>
@@ -256,14 +257,16 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
                                                     >
                                                         <i class="fa fa-edit"></i>
                                                     </button>
-                                                    <button
-                                                        type="button"
-                                                        data-bs-toggle="tooltip"
-                                                        class="btn btn-link btn-primary btn-lg removeAccess"
+                                                    <button 
+                                                        type="button" 
+                                                        class="btn btn-link btn-primary btn-lg removeAccess" 
                                                         data-id="<?= $record->medicalrec_id ?>"
+                                                        data-filename="<?= $record->medicalrec_filename?>", 
+                                                        data-admin="<?= htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>",
                                                     >
                                                         <i class="fa fa-trash"></i>
                                                     </button>
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -281,6 +284,8 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
             </div>
         </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.7/dist/sweetalert2.all.min.js"></script>
+
 <script>
 $(document).ready(function () {
     
@@ -305,75 +310,42 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.removeAccess', function (e) {
-    e.preventDefault(); 
-    var row = $(this).closest('tr');
-    var medrecId = row.data('id'); 
-    var medrecname = row.data('filename'); 
-    
-    swal({
-        title: `Do you want to remove ${medrecname}?`, 
+    e.preventDefault();
+
+    var row = $(this).closest('tr');  // Get the closest table row
+    var medrecId = $(this).data('id');  // Get the medical record ID
+    var fileName = $(this).data('filename');  // Get the file name
+    var adminId = $(this).data('admin');  // Get the admin ID
+
+    Swal.fire({
+        title: `Do you want to remove the medical record and the file: ${fileName}?`,
         text: "You won't be able to revert this!",
         icon: "warning",
-        buttons: {
-            confirm: {
-                text: "Yes",
-                className: "btn btn-success",
-            },
-            cancel: {
-                visible: true,
-                className: "btn btn-danger",
-            },
-        },
-    }).then((Delete) => {
-        if (Delete) {
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel"
+    }).then((result) => {
+        if (result.isConfirmed) {
             $.ajax({
-                url: 'patientmedrecscontrol.php', 
+                url: 'patientmedrecscontrol.php',
                 type: 'POST',
-                data: { medrec_id: medrecId },
-                success: function(response) {
-                    var data = JSON.parse(response);
-                    if (data.success) {
-                        
-                        $("#addmedrecord").DataTable().row(row).remove().draw(); 
+                data: { medrec_id: medrecId, file_name: fileName, admin_id: adminId },  // Include admin ID
+                async: true
+            });
 
-                        swal({
-                            title: "Removed!",
-                            text: "User access has been removed along with the medical record.",
-                            icon: "success",
-                            buttons: {
-                                confirm: {
-                                    className: "btn btn-success",
-                                },
-                            },
-                        }).then(() => {
-                            location.reload(); 
-                        });
-                    } else {
-                        
-                        console.error('Error message from server:', data.message); 
-                        swal({
-                            title: "Failed!",
-                            text: data.message,
-                            icon: "error",
-                            buttons: {
-                                confirm: {
-                                    className: "btn btn-danger",
-                                },
-                            },
-                        }).then(() => {
-                            location.reload();    
-                        });
-                    }
-                    location.reload();
-                }
+            // Remove the row and display success message
+            $("#addmedrecord").DataTable().row(row).remove().draw();
+            Swal.fire({
+                title: "Removed!",
+                text: `The medical record and file "${fileName}" "${adminId}" have been successfully removed.`,
+                icon: "success",
+                confirmButtonText: "OK"
             });
         } else {
-            swal.close();
+            Swal.close();
         }
     });
 });
-
-
 
 
 

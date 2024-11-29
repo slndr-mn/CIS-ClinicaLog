@@ -25,7 +25,7 @@ class Transaction {
         $this->transac_out = $transac_out;
         $this->transac_spent = $transac_spent;
         $this->transac_status = $transac_status;
-        $this->transac_patientidnum = $transac_patientidnum;
+        $this->transac_patientidnum = $transac_patientidnum; 
 
     }
 }
@@ -171,13 +171,19 @@ ORDER BY
     
     
 
-    public function addTransaction($transac_patientid, $transac_purpose) {
+    public function addTransaction($admin_id, $transac_patientid, $transac_purpose) {
+        
         $transac_in = '00:00:00';
         $transac_out = '00:00:00';
         $transac_spent = 0;
         $transac_date = date('Y-m-d'); 
         $transac_status = 'Pending';
-    
+        
+        $setAdminIdQuery = "SET @admin_id = :admin_id";
+        $setStmt = $this->db->prepare($setAdminIdQuery);
+        $setStmt->bindValue(':admin_id', $admin_id);
+        $setStmt->execute();
+
         $query = "
             INSERT INTO transactions (transac_patientid, transac_purpose, transac_date, transac_in, transac_out, transac_spent, transac_status) 
             VALUES (?, ?, ?, ?, ?, ?, ?);
@@ -213,22 +219,27 @@ ORDER BY
     }
     
    // Method to update the status to "Pending"
-public function updateStatusToPending($transac_id) {
-    return $this->updateTransactionStatusToPending($transac_id);
+public function updateStatusToPending($admin_id, $transac_id) {
+    return $this->updateTransactionStatusToPending($admin_id, $transac_id);
 }
-
+ 
 // Method to update the status to "In Progress"
-public function updateStatusToInProgress($transac_id) {
-    return $this->updateTransactionStatusToInProgress($transac_id);
+public function updateStatusToInProgress($admin_id, $transac_id) {
+    return $this->updateTransactionStatusToInProgress($admin_id, $transac_id);
 }
 
 // Method to update the status to "Done"
-public function updateStatusToDone($transac_id) {
-    return $this->updateTransactionStatusToDone($transac_id);
+public function updateStatusToDone($admin_id, $transac_id) {
+    return $this->updateTransactionStatusToDone($admin_id, $transac_id);
 }
 
 // Helper method to update the transaction status to "Pending"
-private function updateTransactionStatusToPending($transac_id) {
+private function updateTransactionStatusToPending($admin_id, $transac_id) {
+    $setAdminIdQuery = "SET @admin_id = :admin_id";
+    $setStmt = $this->db->prepare($setAdminIdQuery);
+    $setStmt->bindValue(':admin_id', $admin_id);
+    $setStmt->execute();
+
     $query = "UPDATE transactions SET transac_status = ?, transac_in = ?, transac_out = ?, transac_spent = ? WHERE transac_id = ?";
     $transac_in = '00:00:00';
     $transac_out = '00:00:00';
@@ -257,7 +268,12 @@ private function updateTransactionStatusToPending($transac_id) {
 }
 
 // Helper method to update the transaction status to "In Progress"
-private function updateTransactionStatusToInProgress($transac_id) {
+private function updateTransactionStatusToInProgress($admin_id, $transac_id) {
+    $setAdminIdQuery = "SET @admin_id = :admin_id";
+    $setStmt = $this->db->prepare($setAdminIdQuery);
+    $setStmt->bindValue(':admin_id', $admin_id);
+    $setStmt->execute();
+
     $query = "UPDATE transactions SET transac_status = ?, transac_in = ? WHERE transac_id = ?";
     date_default_timezone_set('Asia/Manila');
     $transac_in = date('H:i:s');
@@ -283,7 +299,12 @@ private function updateTransactionStatusToInProgress($transac_id) {
 }
 
 // Helper method to update the transaction status to "Done"
-private function updateTransactionStatusToDone($transac_id) {
+private function updateTransactionStatusToDone($admin_id, $transac_id) {
+    $setAdminIdQuery = "SET @admin_id = :admin_id";
+    $setStmt = $this->db->prepare($setAdminIdQuery);
+    $setStmt->bindValue(':admin_id', $admin_id);
+    $setStmt->execute();
+
     $query = "UPDATE transactions SET transac_status = ?, transac_out = ?, transac_spent = ? WHERE transac_id = ?";
     date_default_timezone_set('Asia/Manila');
     $transac_out = date('H:i:s');
@@ -364,7 +385,12 @@ private function updateStatusInLinkedList($transac_id, $new_status, $transac_in,
     }
 }
 
-public function updatePatientAndPurpose($transac_id, $new_patientid, $new_purpose) {
+public function updatePatientAndPurpose($admin_id, $transac_id, $new_patientid, $new_purpose) {
+    $setAdminIdQuery = "SET @admin_id = :admin_id";
+    $setStmt = $this->db->prepare($setAdminIdQuery);
+    $setStmt->bindValue(':admin_id', $admin_id);
+    $setStmt->execute();
+
     $query = "UPDATE transactions SET transac_patientid = ?, transac_purpose = ? WHERE transac_id = ?";
     $stmt = $this->db->prepare($query);
     $stmt->bindValue(1, $new_patientid);

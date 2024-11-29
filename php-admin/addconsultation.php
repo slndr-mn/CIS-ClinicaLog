@@ -21,12 +21,14 @@ include('../php/consultation.php');
 $db = new Database();
 $conn = $db->getConnection();
 
+$user_idnum = $_SESSION['user_idnum']; 
+
 $consultations = new ConsultationManager($conn);
 $medicine = new MedicineManager($conn);
 
 $patientId = isset($_GET['id']) ? $_GET['id'] : null;
 $patientType = isset($_GET['patient_patienttype']) ? $_GET['patient_patienttype'] : null;
-
+ 
 $patientDetails = null;
 
 if (isset($_POST['pname'])) {
@@ -213,6 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                             </div>
                             <div class="card-body">
                                 <form id="addConsultationForm" action="consultationcontrol.php" method="POST">
+                                <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
                                 <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <div class="form-group mb-3">
@@ -328,6 +331,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['medstock_id'], $_POST
                             </div>
                             <div class="modal-body">
                                 <form id="editConForm" action="consultationcontrol.php" method="POST">
+                                    <input id="admin_id" name="admin_id" type="hidden" class="form-control" value="<?php echo htmlspecialchars($user_idnum, ENT_QUOTES, 'UTF-8'); ?>"/>
                                        <input id="edit_consult_id" name="edit_consult_id" type="text" class="form-control" hidden/>
                                         <input id="edit_patient_id" name="edit_patient_id" type="text" class="form-control" hidden  />
                                     <div class="form-group mb-3">
