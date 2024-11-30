@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 include('../database/config.php');
@@ -12,13 +11,38 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 $db = new Database();
 $conn = $db->getConnection();
 
-$patient_id = $_SESSION['patuser_idnum'];
+$patient_id = $_SESSION['patuser_id'];
 $patient_type = $_SESSION['patuser_type'];
 
 $patient = new PatientManager($conn);
 $patientData = $patient->getPatientData($patient_id); 
- 
-?>
+
+$facultyData = $patient->getFacultyData($patient_id);
+
+$profilePic = $facultyData['patient']['patient_profile'];
+$facultyID = $facultyData['faculty']['faculty_idnum'];
+$lastName = $facultyData['patient']['patient_lname'];
+$firstName = $facultyData['patient']['patient_fname'];
+$middleName = $facultyData['patient']['patient_mname'];
+$department = $facultyData['faculty']['faculty_department'];
+$role = $facultyData['faculty']['faculty_role'];
+$dob = $facultyData['patient']['patient_dob'];
+$sex = $facultyData['patient']['patient_sex'];
+$address = "{$facultyData['address']['address_prkstrtadd']}, 
+    {$facultyData['address']['address_barangay']}, 
+    {$facultyData['address']['address_municipality']}, 
+    {$facultyData['address']['address_province']}, 
+    {$facultyData['address']['address_region']}";
+$email = $facultyData['patient']['patient_email'];
+$contactNumber = $facultyData['patient']['patient_connum'];
+$emergencyContactName = $facultyData['emergencyContact']['emcon_conname'];
+$emergencyContactNumber = $facultyData['emergencyContact']['emcon_connum'];
+$status = $facultyData['patient']['patient_status'];
+
+// Calculate age
+$dobDateTime = new DateTime($dob);
+$age = $dobDateTime->diff(new DateTime())->y;
+?> 
 
 <!DOCTYPE html>
 <html lang="en">
@@ -42,7 +66,7 @@ $patientData = $patient->getPatientData($patient_id);
       },   
       active: function() {
         sessionStorage.fonts = true;
-      },
+      }, 
     });
   </script> 
  
@@ -65,71 +89,99 @@ $patientData = $patient->getPatientData($patient_id);
       <div class="container" id="content">
         <div class="page-inner">
         <div class="page-inner">
-          <!-- Modal Structure -->
-          <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="appointmentModalLabel">Appointment Details</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <p id="appointmentDetails"></p>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-              </div>
+            <div class="row">
+              <h3 class="fw-bold mb-3">Patient's Profile</h3>
             </div>
-          </div>
-          <!-- Appointment and Calendar Integration Start -->
-          <div class="row">
-            <div class="col-md-5 mb-4 d-flex">
-              <div class="appointment-form">
-                <h3><?php echo ($patientData->patient_fname); ?></h3>
-                <form id="appointmentForm">
-                  <div class="mb-3">
-                    <label for="appointmentDate" class="form-label">Appointment Date <span class="text-danger">*</span></label>
-                    <input type="date" class="form-control" id="appointmentDate" required>
-                  </div>
-                  <div class="mb-3">
-                    <label for="appointmentTime" class="form-label">Appointment Time <span class="text-danger">*</span></label>
-                    <input type="time" class="form-control" id="appointmentTime" required>
-                  </div>
-                  <div class="mb-3">
-                    <label for="notes" class="form-label">Notes</label>
-                    <textarea class="form-control" id="notes" rows="3"></textarea>
-                  </div>
-                  <button type="submit" class="btn btn-primary">Set Appointment</button>
-                </form>
-              </div>
+            <div class="row">
+        <div class="col-md-4">
+        <div class="card">
+        <div class="profile-image">
+            <div class="card-header">
+            <img id="profilePic" src="<?php echo $profilePic; ?>" alt="" />   
+                <div class="row" >                
+                    <span style="
+                        display: inline-block;
+                        padding: 5px 10px;
+                        border-radius: 50px;
+                        background-color: #DA6F65; 
+                        color: white; 
+                        text-align: center;
+                        min-width: 60px;">
+                        Faculty
+                </span>  
+            </div>         
             </div>
-            <div class="col-md-7 d-flex">
-              <div class="calendar">
-                <div class="calendar-header">
-                  <div class="navigation">
-                    <button id="prevMonth" aria-label="Previous Month"><i class="fas fa-chevron-left"></i></button>
-                  </div>
-                  <div class="month-year" id="monthYear"></div>
-                  <div class="navigation">
-                    <button id="nextMonth" aria-label="Next Month"><i class="fas fa-chevron-right"></i></button>
-                  </div>
-                </div>
-                <div class="calendar-days">
-                  <div>Sun</div>
-                  <div>Mon</div>
-                  <div>Tue</div>
-                  <div>Wed</div>
-                  <div>Thu</div>
-                  <div>Fri</div>
-                  <div>Sat</div>
-                </div>
-                <div class="calendar-dates" id="calendarDates"></div>
-              </div>
-            </div>
-          </div>
-          <!-- Appointment and Calendar Integration End -->
         </div>
+            <div class="row" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                <h5 style="color: #59535A; margin: 0;">#<?php echo $facultyID; ?></h5>
+                <h5 style="margin: 0;">
+                    <span id="lastName"><?php echo $lastName; ?></span><span>, </span><span id="firstName"><?php echo $firstName; ?></span> <span id="middleName"><?php echo $middleName; ?></span>
+                </h5>
+                <h5 style="color: #59535A; margin: 0;"><?php echo $department; ?></h5>
+                <h5 style="color: #59535A; margin: 0;">Role: <?php echo $role; ?></h5>
+                <p style="color: #888888; margin-top: 5px;">Status: <?php echo $status; ?></p>
+            </div>
+        </div>
+        </div>
+            <div class="col-md-8">  
+            <div class="card">
+              <div class="card-header">
+                <div class="d-flex align-items-center">
+                  <h4 class="card-title">Personal Details</h4>
+                </div>
+              </div>
+              <div class="card-body" id="InputInfo">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <h5 style="margin: 0;" id="age"><?php echo $age; ?> years old</h5>
+                        <label for="dob" class="form-label">Age</label>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <h5 style="margin: 0;" id="sex"><?php echo $sex; ?></h5>
+                        <label for="dob" class="form-label">Sex</label>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <h5 style="margin: 0;" id="dob"><?php echo $dob; ?></h5>
+                        <label for="dob" class="form-label">Date of Birth</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h5 style="margin: 0;">
+                            <?php echo $address; ?>
+                        </h5>
+                        <label for="dob" class="form-label">Current Address (Strt./Prk., Brgy., Municipality, Province, Region)</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h5 style="margin: 0;" id="email"><?php echo $email; ?></h5>
+                        <label for="dob" class="form-label">Email Address</label>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h5 style="margin: 0;" id="contactNumber"><?php echo $contactNumber; ?></h5>
+                        <label for="dob" class="form-label">Contact Number</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <h5 style="margin-top: 9px">Emergency Contact Information</h5>
+                    <div class="col-md-6 mb-3">
+                        <h5 style="margin: 0;" id="emergencyContactName"><?php echo $emergencyContactName; ?></h5>
+                        <label for="dob" class="form-label">Emergency Contact Name</label>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h5 style="margin: 0;" id="emergencyContactNumber"><?php echo $emergencyContactNumber; ?></h5>
+                        <label for="dob" class="form-label">Emergency Contact Number</label>
+                    </div>
+                </div> 
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Start Medical Record -->
+        <div id="medicalrecord"> </div>
+              <!-- End Medical Record -->
+      </div>
         </div>
       </div>
     </div>
@@ -182,131 +234,82 @@ $patientData = $patient->getPatientData($patient_id);
           console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
         }
       });
-      // Calendar Functionality
-      const monthYear = document.getElementById('monthYear');
-      const calendarDates = document.getElementById('calendarDates');
-      const prevMonthBtn = document.getElementById('prevMonth');
-      const nextMonthBtn = document.getElementById('nextMonth');
 
-      let currentDate = new Date();
-
-      // Example appointment date
-      const appointmentDate = new Date(2024, 9, 25); // October is month 9 in JavaScript (0-indexed)
-      const appointmentMessage = "You have an appointment scheduled for this date at 9:30 AM";
-
-      function renderCalendar(date) {
-        // Clear previous dates
-        calendarDates.innerHTML = '';
-
-        const year = date.getFullYear();
-        const month = date.getMonth();
-
-        // Set month and year in header
-        const options = {
-          month: 'long',
-          year: 'numeric'
-        };
-        monthYear.textContent = date.toLocaleDateString(undefined, options);
-
-        // First day of the month
-        const firstDay = new Date(year, month, 1).getDay();
-
-        // Number of days in the month
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        // Today's date
-        const today = new Date();
-        const currentDay = today.getDate();
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
-
-        // Fill in the blanks for the first week
-        for (let i = 0; i < firstDay; i++) {
-          const blankCell = document.createElement('div');
-          blankCell.classList.add('bg-light');
-          calendarDates.appendChild(blankCell);
-        }
-
-        // Populate the days of the current month
-        for (let day = 1; day <= daysInMonth; day++) {
-          const dateCell = document.createElement('div');
-
-          // Create a span to hold the day number
-          const daySpan = document.createElement('span');
-          daySpan.textContent = day;
-
-          // Highlight today
-          if (day === currentDay && month === currentMonth && year === currentYear) {
-            daySpan.classList.add('today');
-          }
-
-          // Check if the current day is the appointment date
-          const selectedDate = new Date(year, month, day);
-          if (selectedDate.toDateString() === appointmentDate.toDateString()) {
-            daySpan.classList.add('appointment-day'); // Highlight the appointment date
-          }
-
-          // Add event listeners for date selection
-          daySpan.addEventListener('click', function() {
-            // Check if the selected date matches the appointment date
-            if (selectedDate.toDateString() === appointmentDate.toDateString()) {
-              // Set the appointment details and show the modal
-              $('#appointmentDetails').text(appointmentMessage);
-              $('#appointmentModal').modal('show');
-            } else {
-              alert(`You clicked on ${monthYear.textContent} ${day}, ${year}`);
+      $("#medicalrecord").load("client-patientmedrecords.php", function(response, status, xhr) {
+            if (status == "error") {
+              console.log("Error loading header: " + xhr.status + " " + xhr.statusText);
             }
           });
 
-          dateCell.appendChild(daySpan);
-          calendarDates.appendChild(dateCell);
-        }
 
-        // Fill the remaining cells to complete the last week
-        const totalCells = firstDay + daysInMonth;
-        const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
-        for (let i = 0; i < remainingCells; i++) {
-          const blankCell = document.createElement('div');
-          blankCell.classList.add('bg-light');
-          calendarDates.appendChild(blankCell);
-        }
-      }
+          <?php if (isset($_SESSION['status']) && isset($_SESSION['message'])): ?>
+            var status = '<?php echo $_SESSION['status']; ?>';
+            var message = '<?php echo htmlspecialchars($_SESSION['message'], ENT_QUOTES); ?>';
+            Swal.fire({
+              title: status === 'success' ? "Success!" : "Error!",
+              text: message,
+              icon: status,
+              confirmButtonText: "OK",
+              confirmButtonColor: status === 'success' ? "#77dd77" : "#ff6961"
+            }).then(() => {
+              if (status === 'success') {
+                sessionStorage.clear();
+                window.location.href = "patient-facultyprofile.php";
+              }
+              <?php unset($_SESSION['status'], $_SESSION['message']); ?>
+            });
+          <?php endif; ?>
 
-      // Initial render
-      renderCalendar(currentDate);
+          function formatDateToWords(dateString) {
+            if (!dateString || (!dateString.includes('/') && !dateString.includes('-'))) {
+              return '';
+            }
 
-      // Event listeners for navigation
-      prevMonthBtn.addEventListener('click', function() {
-        currentDate.setMonth(currentDate.getMonth() - 1);
-        renderCalendar(currentDate);
-      });
+            const monthNames = [
+              "January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"
+            ];
 
-      nextMonthBtn.addEventListener('click', function() {
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        renderCalendar(currentDate);
-      });
+            dateString = dateString.replace(/-/g, '/');
 
-      // Appointment Form Submission Handling
-      $('#appointmentForm').on('submit', function(e) {
-        e.preventDefault();
+            const [year, month, day] = dateString.split('/');
 
-        // Gather form data
-        const date = $('#appointmentDate').val();
-        const time = $('#appointmentTime').val();
-        const notes = $('#notes').val().trim();
+            if (!year || !month || !day) return '';
 
-        // Simple validation (extend as needed)
-        if (!date || !time) {
-          swal("Error", "Please fill in all required fields.", "error");
-          return;
-        }
+            const monthName = monthNames[parseInt(month, 10) - 1];
+            const dayNumber = parseInt(day, 10);
 
-        // For demonstration, we'll just show a success message
-        swal("Success", "Your appointment has been set!", "success");
+            if (!monthName || isNaN(dayNumber)) return '';
 
-        // Reset the form
-        $(this)[0].reset();
-      });
+            return `${monthName} ${dayNumber}, ${year}`;
+          }
+
+          function calculateAge(dobString) {
+            if (!dobString) return '';
+
+            const dob = new Date(dobString);
+            const today = new Date();
+
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDifference = today.getMonth() - dob.getMonth();
+
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dob.getDate())) {
+              age--;
+            }
+
+            return age;
+          }
+
+          function getOrdinalSuffix(num) {
+            const suffixes = ["th", "st", "nd", "rd"];
+            const value = num % 100;
+            return suffixes[(value - 20) % 10] || suffixes[value] || suffixes[0];
+          }
+
+          $(document).ready(function () {
+              var $patientDetails = <?php echo json_encode($patientData); ?>;
+
+          });  
     });
   </script>
 </body>

@@ -19,11 +19,11 @@ $userData = $user->getUserData($user_idnum);
 
 if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
     $patientId = $_SESSION['id'];
-    $patientType = $_SESSION['type']; 
+    $patientType = $_SESSION['type'];  
 
 } else {
     echo "No patient data found.";
-}
+} 
 
 ?>
 <!DOCTYPE html>

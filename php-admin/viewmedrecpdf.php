@@ -38,7 +38,7 @@
         // Define the path where PDF files are stored
         $pdf_directory = 'uploadmedrecs/';  // Adjust the folder path as needed
 
-        // Full path to the PDF file
+        // Full path to the PDF file 
         $file_path = $pdf_directory . $hashedFile;
 
         // Check if the file exists in the directory

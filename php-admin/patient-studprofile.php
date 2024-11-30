@@ -271,7 +271,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['type'])) {
                 console.log("Error loading sidebar: " + xhr.status + " " + xhr.statusText);
             }
         });
-
+ 
         $("#header").load("header.php", function(response, status, xhr) {
             if (status == "error") {
                 console.log("Error loading header: " + xhr.status + " " + xhr.statusText);

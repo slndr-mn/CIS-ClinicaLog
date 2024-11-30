@@ -11,7 +11,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 $db = new Database();
 $conn = $db->getConnection();
 
-$patient_id = $_SESSION['patuser_idnum'];
+$patient_id = $_SESSION['patuser_id'];
 $patient_type = $_SESSION['patuser_type'];
 
 $patient = new PatientManager($conn);
@@ -33,9 +33,9 @@ $patientData = $patient->getPatientData($patient_id);
     name="viewport" />
   <link
     rel="icon"
-    href="../assets/img/ClinicaLog.ico"
+    href="../assets/img/ClinicaLog.ico" 
     type="image/x-icon" />
-
+ 
   <!-- Fonts and icons -->
   <script src="../assets/js/plugin/webfont/webfont.min.js"></script>
   <script>

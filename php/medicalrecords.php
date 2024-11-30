@@ -27,7 +27,7 @@ class MedRecNode {
         $this->item = $item;
         $this->next = null;
     }
-}
+} 
 
 class MedRecordsList {
     public $head;
@@ -192,6 +192,84 @@ class MedRecManager {
     
         } catch (PDOException $e) {
             return [ 
+                'status' => 'error',
+                'message' => 'Error: ' . $e->getMessage()
+            ];
+        }
+    }
+    
+    public function insertMedicalRecordbyPatient($patientid, $filenames, $files, $comment, $dateadded, $timeadded) {
+        try {    
+
+            
+            $sql = "INSERT INTO medicalrec (medicalrec_patientid, medicalrec_filename, medicalrec_file, medicalrec_comment, medicalrec_dateadded, medicalrec_timeadded) 
+                    VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $this->db->prepare($sql);
+
+            foreach ($filenames as $index => $filename) {
+                $file = $files[$index]; 
+                
+                if ($stmt->execute([$patientid, $filename, $file, $comment, $dateadded, $timeadded])) {
+                    $medicalrec_id = $this->db->lastInsertId();
+                    $newRecord = new MedicalRecords($medicalrec_id, $patientid, $filename, $file, $comment, $dateadded, $timeadded);
+                    $this->medicalrecs->add($newRecord);
+                } else {
+                    return [
+                        'status' => 'error',
+                        'message' => 'Failed to insert one or more medical records.'
+                    ];
+                }
+            }
+
+            return [
+                'status' => 'success',
+                'message' => 'All medical records inserted successfully.'
+            ];
+    
+        } catch (PDOException $e) {
+            return [ 
+                'status' => 'error',
+                'message' => 'Error: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    public function updateMedicalRecordbyPatient($medicalrec_id, $patientid, $filename, $comment) {
+        try {
+
+            
+            if ($this->medicalrecs->MedRecExists($patientid, $filename)) {
+                $existingRecord = $this->medicalrecs->findMedicalRecordById($medicalrec_id);
+                if ($existingRecord && 
+                    ($existingRecord->medicalrec_patientid !== $patientid || 
+                     strcasecmp($existingRecord->medicalrec_filename, $filename) !== 0)) {
+                    return [
+                        'status' => 'error',
+                        'message' => 'A medical record with this patient ID and filename already exists.'
+                    ];
+                }
+            }
+
+            $sql = "UPDATE medicalrec 
+                    SET medicalrec_filename = ?,  medicalrec_comment = ?
+                    WHERE medicalrec_id = ? AND medicalrec_patientid = ?";
+            $stmt = $this->db->prepare($sql);
+    
+            if ($stmt->execute([$filename, $comment, $medicalrec_id, $patientid ])) {
+                return [
+                    'status' => 'success',
+                    'message' => 'Medical record updated successfully.',
+                    'medicalrec_id' => $medicalrec_id
+                ];
+            } else {
+                return [
+                    'status' => 'error',
+                    'message' => 'Failed to update medical record.'
+                ];
+            }
+    
+        } catch (PDOException $e) {
+            return [
                 'status' => 'error',
                 'message' => 'Error: ' . $e->getMessage()
             ];

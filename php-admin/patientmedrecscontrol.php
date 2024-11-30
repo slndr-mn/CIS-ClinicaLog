@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     break;
             }
             header("Location: $redirectUrl");
-            exit();
+            exit(); 
         }
     
         $response = $medicalrecords->insertMedicalRecord($admin_id, $patientid, $filenames, $hashedFiles, $comment, $dateadded, $timeadded);
@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         } else {
             // Error during insert
-            $_SESSION['status'] = 'error';
+            $_SESSION['status'] = 'error'; 
             $_SESSION['message'] = $response['message'];
             // Redirect based on patient type
             switch ($patienttype) {
